@@ -20,7 +20,7 @@ build/obj/chcond.o: ../../../os/rt/src/chcond.c \
  ../../../os/rt/include/chport.h \
  ../../../os/common/ports/ARMv7-M/chcore.h \
  ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h \
- ../../../os/hal/boards/ST_NUCLEO144_H743ZI/board.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h \
  ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h \
@@ -77,7 +77,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/rt/include/chport.h:
 ../../../os/common/ports/ARMv7-M/chcore.h:
 ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h:
-../../../os/hal/boards/ST_NUCLEO144_H743ZI/board.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h:
 ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h:

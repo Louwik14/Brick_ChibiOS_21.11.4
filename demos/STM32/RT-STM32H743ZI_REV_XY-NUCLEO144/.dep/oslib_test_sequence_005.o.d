@@ -23,7 +23,7 @@ build/obj/oslib_test_sequence_005.o: \
  ../../../os/rt/include/chport.h \
  ../../../os/common/ports/ARMv7-M/chcore.h \
  ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h \
- ../../../os/hal/boards/ST_NUCLEO144_H743ZI/board.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h \
  ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h \
@@ -80,21 +80,27 @@ build/obj/oslib_test_sequence_005.o: \
  ../../../os/hal/include/hal_pal.h \
  ../../../os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.h \
  ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h \
- ../../../os/hal/include/hal_adc.h ../../../os/hal/include/hal_can.h \
- ../../../os/hal/include/hal_crypto.h ../../../os/hal/include/hal_dac.h \
- ../../../os/hal/include/hal_efl.h ../../../os/hal/include/hal_gpt.h \
- ../../../os/hal/include/hal_i2c.h ../../../os/hal/include/hal_i2s.h \
- ../../../os/hal/include/hal_icu.h ../../../os/hal/include/hal_mac.h \
- ../../../os/hal/include/hal_pwm.h ../../../os/hal/include/hal_rtc.h \
- ../../../os/hal/include/hal_serial.h \
+ ../../../os/hal/include/hal_adc.h \
+ ../../../os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h \
+ ../../../os/hal/include/hal_can.h ../../../os/hal/include/hal_crypto.h \
+ ../../../os/hal/include/hal_dac.h ../../../os/hal/include/hal_efl.h \
+ ../../../os/hal/include/hal_gpt.h ../../../os/hal/include/hal_i2c.h \
+ ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
+ ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
+ ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
  ../../../os/hal/include/hal_sdc.h \
  ../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h \
  ../../../os/hal/include/hal_sio.h ../../../os/hal/include/hal_spi.h \
+ ../../../os/hal/include/hal_spi_v2.h \
+ ../../../os/hal/ports/STM32/LLD/SPIv3/hal_spi_v2_lld.h \
  ../../../os/hal/include/hal_trng.h ../../../os/hal/include/hal_uart.h \
- ../../../os/hal/include/hal_usb.h ../../../os/hal/include/hal_wdg.h \
- ../../../os/hal/include/hal_wspi.h ../../../os/hal/include/hal_st.h \
+ ../../../os/hal/include/hal_usb.h \
+ ../../../os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.h \
+ ../../../os/hal/ports/STM32/LLD/OTGv1/stm32_otg.h \
+ ../../../os/hal/include/hal_wdg.h ../../../os/hal/include/hal_wspi.h \
+ ../../../os/hal/include/hal_st.h \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
  ../../../os/hal/include/hal_serial_usb.h \
@@ -139,7 +145,7 @@ cfg/chconf.h:
 ../../../os/rt/include/chport.h:
 ../../../os/common/ports/ARMv7-M/chcore.h:
 ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h:
-../../../os/hal/boards/ST_NUCLEO144_H743ZI/board.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h:
 ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h:
@@ -209,6 +215,7 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.h:
 ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h:
 ../../../os/hal/include/hal_adc.h:
+../../../os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h:
 ../../../os/hal/include/hal_can.h:
 ../../../os/hal/include/hal_crypto.h:
 ../../../os/hal/include/hal_dac.h:
@@ -227,9 +234,13 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h:
 ../../../os/hal/include/hal_sio.h:
 ../../../os/hal/include/hal_spi.h:
+../../../os/hal/include/hal_spi_v2.h:
+../../../os/hal/ports/STM32/LLD/SPIv3/hal_spi_v2_lld.h:
 ../../../os/hal/include/hal_trng.h:
 ../../../os/hal/include/hal_uart.h:
 ../../../os/hal/include/hal_usb.h:
+../../../os/hal/ports/STM32/LLD/OTGv1/hal_usb_lld.h:
+../../../os/hal/ports/STM32/LLD/OTGv1/stm32_otg.h:
 ../../../os/hal/include/hal_wdg.h:
 ../../../os/hal/include/hal_wspi.h:
 ../../../os/hal/include/hal_st.h:
