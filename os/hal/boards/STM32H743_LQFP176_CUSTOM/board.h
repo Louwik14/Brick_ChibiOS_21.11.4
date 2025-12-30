@@ -1566,4 +1566,18 @@
 #define VAL_GPIOK_AFRL              0x00000000U
 #define VAL_GPIOK_AFRH              0x00000000U
 
+/*===========================================================================*/
+/* External declarations.                                                    */
+/*===========================================================================*/
+
+#if !defined(_FROM_ASM_)
+#ifdef __cplusplus
+extern "C" {
+#endif
+  void boardInit(void);
+#ifdef __cplusplus
+}
+#endif
+#endif /* _FROM_ASM_ */
+
 #endif /* BOARD_H */
