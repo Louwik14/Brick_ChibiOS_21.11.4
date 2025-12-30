@@ -331,8 +331,9 @@
 #define GPIOG_SPI6_MOSI              GPIOG_PIN14
 #define GPIOG_FMC_SDNCAS             GPIOG_PIN15
 
-#define GPIOH_FMC_SDCKE1             GPIOH_PIN2
-#define GPIOH_FMC_SDNE1              GPIOH_PIN5
+#define GPIOH_FMC_SDCKE0             GPIOH_PIN2
+#define GPIOH_FMC_SDNE0              GPIOH_PIN3
+#define GPIOH_FMC_SDNWE              GPIOH_PIN5
 
 #define GPIOI_SPI2_SCK               GPIOI_PIN1
 #define GPIOI_SPI2_MOSI              GPIOI_PIN3
@@ -436,8 +437,9 @@
 #define LINE_SPI6_MOSI               PAL_LINE(GPIOG, 14U)
 #define LINE_FMC_SDNCAS              PAL_LINE(GPIOG, 15U)
 
-#define LINE_FMC_SDCKE1              PAL_LINE(GPIOH, 2U)
-#define LINE_FMC_SDNE1               PAL_LINE(GPIOH, 5U)
+#define LINE_FMC_SDCKE0              PAL_LINE(GPIOH, 2U)
+#define LINE_FMC_SDNE0               PAL_LINE(GPIOH, 3U)
+#define LINE_FMC_SDNWE               PAL_LINE(GPIOH, 5U)
 
 #define LINE_SPI2_SCK                PAL_LINE(GPIOI, 1U)
 #define LINE_SPI2_MOSI               PAL_LINE(GPIOI, 3U)
@@ -1311,10 +1313,10 @@
  *
  * PH0  - PIN0                      (analog).
  * PH1  - PIN1                      (analog).
- * PH2  - FMC_SDCKE1                (alternate 12).
- * PH3  - PIN3                      (analog).
+ * PH2  - FMC_SDCKE0                (alternate 12).
+ * PH3  - FMC_SDNE0                 (alternate 12).
  * PH4  - PIN4                      (analog).
- * PH5  - FMC_SDNE1                 (alternate 12).
+ * PH5  - FMC_SDNWE                 (alternate 12).
  * PH6  - PIN6                      (analog).
  * PH7  - PIN7                      (analog).
  * PH8  - PIN8                      (analog).
@@ -1328,10 +1330,10 @@
  */
 #define VAL_GPIOH_MODER             (PIN_MODE_ANALOG(GPIOH_PIN0) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN1) |         \
-                                     PIN_MODE_ALTERNATE(GPIOH_FMC_SDCKE1) |\
-                                     PIN_MODE_ANALOG(GPIOH_PIN3) |         \
+                                     PIN_MODE_ALTERNATE(GPIOH_FMC_SDCKE0) |\
+                                     PIN_MODE_ALTERNATE(GPIOH_FMC_SDNE0) | \
                                      PIN_MODE_ANALOG(GPIOH_PIN4) |         \
-                                     PIN_MODE_ALTERNATE(GPIOH_FMC_SDNE1) | \
+                                     PIN_MODE_ALTERNATE(GPIOH_FMC_SDNWE) | \
                                      PIN_MODE_ANALOG(GPIOH_PIN6) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN7) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN8) |         \
@@ -1344,10 +1346,10 @@
                                      PIN_MODE_ANALOG(GPIOH_PIN15))
 #define VAL_GPIOH_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOH_PIN0) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN1) |       \
-                                     PIN_OTYPE_PUSHPULL(GPIOH_FMC_SDCKE1) |\
-                                     PIN_OTYPE_PUSHPULL(GPIOH_PIN3) |       \
+                                     PIN_OTYPE_PUSHPULL(GPIOH_FMC_SDCKE0) |\
+                                     PIN_OTYPE_PUSHPULL(GPIOH_FMC_SDNE0) | \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN4) |       \
-                                     PIN_OTYPE_PUSHPULL(GPIOH_FMC_SDNE1) | \
+                                     PIN_OTYPE_PUSHPULL(GPIOH_FMC_SDNWE) | \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN6) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN7) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN8) |       \
@@ -1360,10 +1362,10 @@
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN15))
 #define VAL_GPIOH_OSPEEDR           (PIN_OSPEED_VERYLOW(GPIOH_PIN0) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN1) |      \
-                                     PIN_OSPEED_HIGH(GPIOH_FMC_SDCKE1) |   \
-                                     PIN_OSPEED_VERYLOW(GPIOH_PIN3) |      \
+                                     PIN_OSPEED_HIGH(GPIOH_FMC_SDCKE0) |   \
+                                     PIN_OSPEED_HIGH(GPIOH_FMC_SDNE0) |    \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN4) |      \
-                                     PIN_OSPEED_HIGH(GPIOH_FMC_SDNE1) |    \
+                                     PIN_OSPEED_HIGH(GPIOH_FMC_SDNWE) |    \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN6) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN7) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN8) |      \
@@ -1376,10 +1378,10 @@
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN15))
 #define VAL_GPIOH_PUPDR             (PIN_PUPDR_FLOATING(GPIOH_PIN0) |      \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN1) |      \
-                                     PIN_PUPDR_FLOATING(GPIOH_FMC_SDCKE1) |\
-                                     PIN_PUPDR_FLOATING(GPIOH_PIN3) |      \
+                                     PIN_PUPDR_FLOATING(GPIOH_FMC_SDCKE0) |\
+                                     PIN_PUPDR_FLOATING(GPIOH_FMC_SDNE0) | \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN4) |      \
-                                     PIN_PUPDR_FLOATING(GPIOH_FMC_SDNE1) | \
+                                     PIN_PUPDR_FLOATING(GPIOH_FMC_SDNWE) | \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN6) |      \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN7) |      \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN8) |      \
@@ -1392,10 +1394,10 @@
                                      PIN_PUPDR_FLOATING(GPIOH_PIN15))
 #define VAL_GPIOH_ODR               (PIN_ODR_LOW(GPIOH_PIN0) |            \
                                      PIN_ODR_LOW(GPIOH_PIN1) |            \
-                                     PIN_ODR_LOW(GPIOH_FMC_SDCKE1) |       \
-                                     PIN_ODR_LOW(GPIOH_PIN3) |             \
+                                     PIN_ODR_LOW(GPIOH_FMC_SDCKE0) |       \
+                                     PIN_ODR_LOW(GPIOH_FMC_SDNE0) |        \
                                      PIN_ODR_LOW(GPIOH_PIN4) |             \
-                                     PIN_ODR_LOW(GPIOH_FMC_SDNE1) |        \
+                                     PIN_ODR_LOW(GPIOH_FMC_SDNWE) |        \
                                      PIN_ODR_LOW(GPIOH_PIN6) |             \
                                      PIN_ODR_LOW(GPIOH_PIN7) |             \
                                      PIN_ODR_LOW(GPIOH_PIN8) |             \
@@ -1408,10 +1410,10 @@
                                      PIN_ODR_LOW(GPIOH_PIN15))
 #define VAL_GPIOH_AFRL              (PIN_AFIO_AF(GPIOH_PIN0, 0U) |         \
                                      PIN_AFIO_AF(GPIOH_PIN1, 0U) |         \
-                                     PIN_AFIO_AF(GPIOH_FMC_SDCKE1, 12U) |  \
-                                     PIN_AFIO_AF(GPIOH_PIN3, 0U) |         \
+                                     PIN_AFIO_AF(GPIOH_FMC_SDCKE0, 12U) |  \
+                                     PIN_AFIO_AF(GPIOH_FMC_SDNE0, 12U) |   \
                                      PIN_AFIO_AF(GPIOH_PIN4, 0U) |         \
-                                     PIN_AFIO_AF(GPIOH_FMC_SDNE1, 12U) |   \
+                                     PIN_AFIO_AF(GPIOH_FMC_SDNWE, 12U) |   \
                                      PIN_AFIO_AF(GPIOH_PIN6, 0U) |         \
                                      PIN_AFIO_AF(GPIOH_PIN7, 0U))
 #define VAL_GPIOH_AFRH              (PIN_AFIO_AF(GPIOH_PIN8, 0U) |         \
