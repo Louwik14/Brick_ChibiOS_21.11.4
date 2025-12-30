@@ -31,6 +31,10 @@
 #define BOARD_STM32H743_LQFP176_CUSTOM
 #define BOARD_NAME                  "STM32H743 LQFP176 Custom"
 
+#if defined(STM32_I2C_USE_I2C3) && (STM32_I2C_USE_I2C3 == TRUE)
+#error "I2C3 uses PH7 (SCL) which conflicts with the LED on PH7."
+#endif
+
 /*
  * Board oscillators-related settings.
  */
@@ -1320,6 +1324,7 @@
  * PH6  - PIN6                      (analog).
  * PH7  - LED                       (output push-pull).
  *        (ancienne config: PIN7    (analog).)
+ *        NOTE: PH7 maps to I2C3_SCL (AF4). Keep I2C3 disabled or remap.
  * PH8  - PIN8                      (analog).
  * PH9  - PIN9                      (analog).
  * PH10 - PIN10                     (analog).
@@ -1400,7 +1405,7 @@
                                      PIN_ODR_LOW(GPIOH_PIN4) |             \
                                      PIN_ODR_LOW(GPIOH_FMC_SDNWE) |        \
                                      PIN_ODR_LOW(GPIOH_PIN6) |             \
-                                     PIN_ODR_LOW(GPIOH_PIN7) |             \
+                                     PIN_ODR_HIGH(GPIOH_PIN7) |            \
                                      PIN_ODR_LOW(GPIOH_PIN8) |             \
                                      PIN_ODR_LOW(GPIOH_PIN9) |             \
                                      PIN_ODR_LOW(GPIOH_PIN10) |            \
