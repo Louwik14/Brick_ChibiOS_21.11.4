@@ -104,16 +104,16 @@
 #define STM32_PLL2_DIVQ_VALUE               2      /* unused */
 #define STM32_PLL2_DIVR_VALUE               2      /* unused */
 
-/* PLL3: USB + ADC + SPI (integer-only, independent of audio/SYSCLK). */
+/* PLL3: ADC + SPI (integer-only, independent of audio/SYSCLK). */
 #define STM32_PLL3_ENABLED                  TRUE
 #define STM32_PLL3_P_ENABLED                TRUE
-#define STM32_PLL3_Q_ENABLED                TRUE
+#define STM32_PLL3_Q_ENABLED                FALSE
 #define STM32_PLL3_R_ENABLED                TRUE
 #define STM32_PLL3_DIVM_VALUE               25
 #define STM32_PLL3_DIVN_VALUE               288
 #define STM32_PLL3_FRACN_VALUE              0
 #define STM32_PLL3_DIVP_VALUE               4      /* SPI123 kernel = 72 MHz */
-#define STM32_PLL3_DIVQ_VALUE               6      /* USB clock = 48 MHz */
+#define STM32_PLL3_DIVQ_VALUE               6      /* unused */
 #define STM32_PLL3_DIVR_VALUE               8      /* ADC kernel = 36 MHz */
 
 /*
@@ -156,7 +156,7 @@
 #define STM32_SAI1SEL                       STM32_SAI1SEL_PLL1_Q_CK
 #define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_PCLK1
 #define STM32_CECSEL                        STM32_CECSEL_LSI_CK
-#define STM32_USBSEL                        STM32_USBSEL_PLL3_Q_CK
+#define STM32_USBSEL                        STM32_USBSEL_HSI48_CK
 #define STM32_I2C123SEL                     STM32_I2C123SEL_PCLK1
 #define STM32_RNGSEL                        STM32_RNGSEL_HSI48_CK
 #define STM32_USART16SEL                    STM32_USART16SEL_PCLK2
