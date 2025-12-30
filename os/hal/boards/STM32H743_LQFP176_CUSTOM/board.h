@@ -1318,7 +1318,8 @@
  * PH4  - PIN4                      (analog).
  * PH5  - FMC_SDNWE                 (alternate 12).
  * PH6  - PIN6                      (analog).
- * PH7  - PIN7                      (analog).
+ * PH7  - LED                       (output push-pull).
+ *        (ancienne config: PIN7    (analog).)
  * PH8  - PIN8                      (analog).
  * PH9  - PIN9                      (analog).
  * PH10 - PIN10                     (analog).
@@ -1335,7 +1336,7 @@
                                      PIN_MODE_ANALOG(GPIOH_PIN4) |         \
                                      PIN_MODE_ALTERNATE(GPIOH_FMC_SDNWE) | \
                                      PIN_MODE_ANALOG(GPIOH_PIN6) |         \
-                                     PIN_MODE_ANALOG(GPIOH_PIN7) |         \
+                                     PIN_MODE_OUTPUT(GPIOH_PIN7) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN8) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN9) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN10) |        \
@@ -1367,7 +1368,7 @@
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN4) |      \
                                      PIN_OSPEED_HIGH(GPIOH_FMC_SDNWE) |    \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN6) |      \
-                                     PIN_OSPEED_VERYLOW(GPIOH_PIN7) |      \
+                                     PIN_OSPEED_LOW(GPIOH_PIN7) |          \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN8) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN9) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN10) |     \
