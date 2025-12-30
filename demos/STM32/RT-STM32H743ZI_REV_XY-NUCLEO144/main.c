@@ -6,11 +6,13 @@ int main(void) {
   halInit();
   chSysInit();
 
-  /* PH7 as output */
+  /* PH7 : LED active-low
+     Forcer mode + état initial connu */
   palSetPadMode(GPIOH, 7, PAL_MODE_OUTPUT_PUSHPULL);
+  palSetPad(GPIOH, 7);   /* LED OFF */
 
   while (true) {
-    /* LED ON (cas active-low) */
+    /* LED ON */
     palClearPad(GPIOH, 7);
     chThdSleepMilliseconds(1000);
 
