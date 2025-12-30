@@ -101,7 +101,7 @@ include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.m
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
-include $(CHIBIOS)/os/hal/boards/ST_NUCLEO144_H743ZI/board.mk
+include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
