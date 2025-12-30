@@ -80,41 +80,41 @@
 #define STM32_PLLSRC                        STM32_PLLSRC_HSE_CK
 #define STM32_PLLCFGR_MASK                  ~0
 
-/* PLL1: SYSCLK = 480 MHz, USB = 48 MHz */
+/* PLL1: SYSCLK = 400 MHz (system only, within rev XY limits). */
 #define STM32_PLL1_ENABLED                  TRUE
 #define STM32_PLL1_P_ENABLED                TRUE
 #define STM32_PLL1_Q_ENABLED                TRUE
 #define STM32_PLL1_R_ENABLED                FALSE
 #define STM32_PLL1_DIVM_VALUE               5
-#define STM32_PLL1_DIVN_VALUE               192
+#define STM32_PLL1_DIVN_VALUE               160
 #define STM32_PLL1_FRACN_VALUE              0
 #define STM32_PLL1_DIVP_VALUE               2
-#define STM32_PLL1_DIVQ_VALUE               20
+#define STM32_PLL1_DIVQ_VALUE               10
 #define STM32_PLL1_DIVR_VALUE               2
 
-/* PLL2: SDMMC kernel = 160 MHz (HCLK * 0.7 compliant) */
+/* PLL2: SAI2 audio master clock (fractional only where required). */
 #define STM32_PLL2_ENABLED                  TRUE
-#define STM32_PLL2_P_ENABLED                FALSE
+#define STM32_PLL2_P_ENABLED                TRUE
 #define STM32_PLL2_Q_ENABLED                FALSE
-#define STM32_PLL2_R_ENABLED                TRUE
+#define STM32_PLL2_R_ENABLED                FALSE
 #define STM32_PLL2_DIVM_VALUE               5
-#define STM32_PLL2_DIVN_VALUE               160
-#define STM32_PLL2_FRACN_VALUE              0
-#define STM32_PLL2_DIVP_VALUE               40     /* unused */
-#define STM32_PLL2_DIVQ_VALUE               8      /* unused */
-#define STM32_PLL2_DIVR_VALUE               5      /* 800 / 5 = 160 MHz */
+#define STM32_PLL2_DIVN_VALUE               98
+#define STM32_PLL2_FRACN_VALUE              2494   /* 491.52 MHz VCO */
+#define STM32_PLL2_DIVP_VALUE               10     /* SAI kernel = 49.152 MHz */
+#define STM32_PLL2_DIVQ_VALUE               2      /* unused */
+#define STM32_PLL2_DIVR_VALUE               2      /* unused */
 
-/* PLL3: SAI (audio) + ADC */
+/* PLL3: USB + ADC + SPI (integer-only, independent of audio/SYSCLK). */
 #define STM32_PLL3_ENABLED                  TRUE
-#define STM32_PLL3_P_ENABLED                FALSE
+#define STM32_PLL3_P_ENABLED                TRUE
 #define STM32_PLL3_Q_ENABLED                TRUE
 #define STM32_PLL3_R_ENABLED                TRUE
-#define STM32_PLL3_DIVM_VALUE               5
-#define STM32_PLL3_DIVN_VALUE               393
-#define STM32_PLL3_FRACN_VALUE              5120
-#define STM32_PLL3_DIVP_VALUE               8      /* unused */
-#define STM32_PLL3_DIVQ_VALUE               16     /* MCLK = 12.288 MHz */
-#define STM32_PLL3_DIVR_VALUE               4      /* ADC clock */
+#define STM32_PLL3_DIVM_VALUE               25
+#define STM32_PLL3_DIVN_VALUE               288
+#define STM32_PLL3_FRACN_VALUE              0
+#define STM32_PLL3_DIVP_VALUE               4      /* SPI123 kernel = 72 MHz */
+#define STM32_PLL3_DIVQ_VALUE               6      /* USB clock = 48 MHz */
+#define STM32_PLL3_DIVR_VALUE               8      /* ADC kernel = 36 MHz */
 
 /*
  * Core clocks dynamic settings (can be changed at runtime).
@@ -143,7 +143,7 @@
 #define STM32_STOPWUCK                      0
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_CKPERSEL                      STM32_CKPERSEL_HSE_CK
-#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL2_R_CK
+#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL1_Q_CK
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
@@ -151,12 +151,12 @@
 #define STM32_DFSDM1SEL                     STM32_DFSDM1SEL_PCLK2
 #define STM32_SPDIFSEL                      STM32_SPDIFSEL_PLL1_Q_CK
 #define STM32_SPI45SEL                      STM32_SPI45SEL_PCLK2
-#define STM32_SPI123SEL                     STM32_SPI123SEL_PLL1_Q_CK
-#define STM32_SAI23SEL                      STM32_SAI23SEL_PLL3_P_CK
+#define STM32_SPI123SEL                     STM32_SPI123SEL_PLL3_P_CK
+#define STM32_SAI23SEL                      STM32_SAI23SEL_PLL2_P_CK
 #define STM32_SAI1SEL                       STM32_SAI1SEL_PLL1_Q_CK
 #define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_PCLK1
 #define STM32_CECSEL                        STM32_CECSEL_LSI_CK
-#define STM32_USBSEL                        STM32_USBSEL_PLL1_Q_CK
+#define STM32_USBSEL                        STM32_USBSEL_PLL3_Q_CK
 #define STM32_I2C123SEL                     STM32_I2C123SEL_PCLK1
 #define STM32_RNGSEL                        STM32_RNGSEL_HSI48_CK
 #define STM32_USART16SEL                    STM32_USART16SEL_PCLK2
@@ -238,8 +238,8 @@
 #define STM32_ADC_ADC3_DMA_PRIORITY         2
 #define STM32_ADC_ADC12_IRQ_PRIORITY        5
 #define STM32_ADC_ADC3_IRQ_PRIORITY         5
-#define STM32_ADC_ADC12_CLOCK_MODE          ADC_CCR_CKMODE_AHB_DIV4
-#define STM32_ADC_ADC3_CLOCK_MODE           ADC_CCR_CKMODE_AHB_DIV4
+#define STM32_ADC_ADC12_CLOCK_MODE          ADC_CCR_CKMODE_ADCCK
+#define STM32_ADC_ADC3_CLOCK_MODE           ADC_CCR_CKMODE_ADCCK
 
 /*
  * CAN driver system settings.
