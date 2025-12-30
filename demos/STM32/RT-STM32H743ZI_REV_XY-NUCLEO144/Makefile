@@ -100,6 +100,7 @@ include $(CHIBIOS)/os/license/license.mk
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
 # HAL-OSAL files (optional).
 include $(CHIBIOS)/os/hal/hal.mk
+include $(CHIBIOS)/os/various/chprintf/chprintf.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
 include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
@@ -156,7 +157,7 @@ UDEFS = -DSTM32_ENFORCE_H7_REV_XY    # Remove for non revision X or Y devices.
 UADEFS =
 
 # List all user directories here
-UINCDIR =
+UINCDIR += $(CHIBIOS)/os/various
 
 # List the user directory to look for the libraries here
 ULIBDIR =
