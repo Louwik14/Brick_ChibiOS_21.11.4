@@ -101,31 +101,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_st.h \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
- ../../../os/hal/include/hal_serial_usb.h \
- ../../../test/rt/source/test/rt_test_root.h \
- ../../../os/test/include/ch_test.h \
- ../../../test/rt/source/test/rt_test_sequence_001.h \
- ../../../test/rt/source/test/rt_test_sequence_002.h \
- ../../../test/rt/source/test/rt_test_sequence_003.h \
- ../../../test/rt/source/test/rt_test_sequence_004.h \
- ../../../test/rt/source/test/rt_test_sequence_005.h \
- ../../../test/rt/source/test/rt_test_sequence_006.h \
- ../../../test/rt/source/test/rt_test_sequence_007.h \
- ../../../test/rt/source/test/rt_test_sequence_008.h \
- ../../../test/rt/source/test/rt_test_sequence_009.h \
- ../../../test/rt/source/test/rt_test_sequence_010.h \
- ../../../test/rt/source/test/rt_test_sequence_011.h \
- ../../../test/rt/source/test/rt_test_sequence_012.h \
- ../../../test/oslib/source/test/oslib_test_root.h \
- ../../../test/oslib/source/test/oslib_test_sequence_001.h \
- ../../../test/oslib/source/test/oslib_test_sequence_002.h \
- ../../../test/oslib/source/test/oslib_test_sequence_003.h \
- ../../../test/oslib/source/test/oslib_test_sequence_004.h \
- ../../../test/oslib/source/test/oslib_test_sequence_005.h \
- ../../../test/oslib/source/test/oslib_test_sequence_006.h \
- ../../../test/oslib/source/test/oslib_test_sequence_007.h \
- ../../../test/oslib/source/test/oslib_test_sequence_008.h \
- ../../../test/oslib/source/test/oslib_test_sequence_009.h
+ ../../../os/hal/include/hal_serial_usb.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -258,27 +234,3 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h:
 ../../../os/hal/include/hal_mmc_spi.h:
 ../../../os/hal/include/hal_serial_usb.h:
-../../../test/rt/source/test/rt_test_root.h:
-../../../os/test/include/ch_test.h:
-../../../test/rt/source/test/rt_test_sequence_001.h:
-../../../test/rt/source/test/rt_test_sequence_002.h:
-../../../test/rt/source/test/rt_test_sequence_003.h:
-../../../test/rt/source/test/rt_test_sequence_004.h:
-../../../test/rt/source/test/rt_test_sequence_005.h:
-../../../test/rt/source/test/rt_test_sequence_006.h:
-../../../test/rt/source/test/rt_test_sequence_007.h:
-../../../test/rt/source/test/rt_test_sequence_008.h:
-../../../test/rt/source/test/rt_test_sequence_009.h:
-../../../test/rt/source/test/rt_test_sequence_010.h:
-../../../test/rt/source/test/rt_test_sequence_011.h:
-../../../test/rt/source/test/rt_test_sequence_012.h:
-../../../test/oslib/source/test/oslib_test_root.h:
-../../../test/oslib/source/test/oslib_test_sequence_001.h:
-../../../test/oslib/source/test/oslib_test_sequence_002.h:
-../../../test/oslib/source/test/oslib_test_sequence_003.h:
-../../../test/oslib/source/test/oslib_test_sequence_004.h:
-../../../test/oslib/source/test/oslib_test_sequence_005.h:
-../../../test/oslib/source/test/oslib_test_sequence_006.h:
-../../../test/oslib/source/test/oslib_test_sequence_007.h:
-../../../test/oslib/source/test/oslib_test_sequence_008.h:
-../../../test/oslib/source/test/oslib_test_sequence_009.h:
