@@ -86,6 +86,13 @@ void sdram_init(bool run_quick_bist) {
   chMtxUnlock(&sdram_ctx_mtx);
 }
 
+bool sdram_is_initialized(void) {
+  chMtxLock(&sdram_ctx_mtx);
+  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
+  chMtxUnlock(&sdram_ctx_mtx);
+  return initialized;
+}
+
 sdram_state_t sdram_status(void) {
   chMtxLock(&sdram_ctx_mtx);
   sdram_state_t state = sdram_ctx.state;

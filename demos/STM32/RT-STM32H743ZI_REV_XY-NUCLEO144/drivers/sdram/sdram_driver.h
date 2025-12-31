@@ -129,6 +129,13 @@ typedef struct {
 void sdram_init(bool run_quick_bist);
 
 /**
+ * @brief Return true if the SDRAM driver has been initialized.
+ *
+ * @return true if initialization has been started or completed.
+ */
+bool sdram_is_initialized(void);
+
+/**
  * @brief Retrieve the current global state of the SDRAM driver.
  *
  * This function is safe to call from any thread. Audio and other modules must
