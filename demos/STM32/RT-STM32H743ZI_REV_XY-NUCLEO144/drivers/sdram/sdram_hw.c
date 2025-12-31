@@ -13,14 +13,30 @@
 
 #define SDRAM_REFRESH_COUNT       (761u) /* Valid only for SDCLK = 100 MHz (W9825G6KH, 64 ms / 8192 rows). */
 #define SDRAM_TIMEOUT_CYCLES      (0x3FFFFu)
-#define SDRAM_MODE_REGISTER_VALUE (0x0032u)
 #define SDRAM_SDSR_BUSY           (1u << 5) /* RM0455: SDSR busy flag (bit 5) */
+
+/* W9825G6KH Mode Register: BL=1, sequential, CAS=3, standard op, single write. */
+#define SDRAM_MODE_BURST_LENGTH_1    (0x0u)
+#define SDRAM_MODE_BURST_TYPE_SEQ    (0x0u << 3)
+#define SDRAM_MODE_CAS_LATENCY_3     (0x3u << 4)
+#define SDRAM_MODE_STANDARD_OPERATION (0x0u << 7)
+#define SDRAM_MODE_WRITEBURST_SINGLE (0x1u << 9)
+#define SDRAM_MODE_REGISTER_VALUE    (SDRAM_MODE_BURST_LENGTH_1 |        \
+                                      SDRAM_MODE_BURST_TYPE_SEQ |        \
+                                      SDRAM_MODE_CAS_LATENCY_3 |         \
+                                      SDRAM_MODE_STANDARD_OPERATION |    \
+                                      SDRAM_MODE_WRITEBURST_SINGLE)
 
 #define SDRAM_CMD_NORMAL         (0u)
 #define SDRAM_CMD_CLK_ENABLE     (1u)
 #define SDRAM_CMD_PALL           (2u)
 #define SDRAM_CMD_AUTOREFRESH    (3u)
 #define SDRAM_CMD_LOAD_MODE      (4u)
+
+/* FMC Bank1 (SDNE0/SDCKE0) selection for this board. */
+#define SDRAM_FMC_TARGET_BANK    FMC_SDCMR_CTB1
+#define SDRAM_SDSR_MODE_MASK     FMC_SDSR_MODES1_Msk
+#define SDRAM_SDSR_MODE_SHIFT    FMC_SDSR_MODES1_Pos
 
 static uint32_t fmc_current_mode(void);
 
@@ -49,7 +65,7 @@ static bool fmc_wait_for_mode(uint32_t expected_mode, uint32_t timeout)
 static bool fmc_issue_command(uint32_t mode, uint32_t auto_refresh, uint32_t mode_reg)
 {
   const uint32_t command = ((mode << FMC_SDCMR_MODE_Pos) & FMC_SDCMR_MODE_Msk) |
-                           FMC_SDCMR_CTB1 |
+                           SDRAM_FMC_TARGET_BANK |
                            ((((auto_refresh > 0u) ? (auto_refresh - 1u) : 0u) << FMC_SDCMR_NRFS_Pos) &
                             FMC_SDCMR_NRFS_Msk) |
                            ((mode_reg << FMC_SDCMR_MRD_Pos) & FMC_SDCMR_MRD_Msk);
@@ -60,7 +76,7 @@ static bool fmc_issue_command(uint32_t mode, uint32_t auto_refresh, uint32_t mod
 
 static uint32_t fmc_current_mode(void)
 {
-  return (FMC_Bank5_6_R->SDSR & FMC_SDSR_MODES1_Msk) >> FMC_SDSR_MODES1_Pos;
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
 }
 
 bool sdram_hw_init_sequence(void)
