@@ -77,19 +77,11 @@ UART = **outil principal de validation logicielle** à ce stade.
 
 ## 3. FMC / SDRAM — ÉTAT ACTUEL
 
-- **FMC et SDRAM sont temporairement DÉSACTIVÉS**
+- **La SDRAM n’est plus initialisée au niveau board**
 - Raison : l’initialisation SDRAM dans `boardInit()` bloquait le CPU avant `main()`
-- Une option compile-time permet :
-```c
-BOARD_USE_FMC = 0 / 1
-````
-
-* Quand `BOARD_USE_FMC = 0` :
-
-  * FMC clock non activée
-  * Pins FMC en mode safe (analog)
-  * Aucun accès registre FMC
-  * Le système est stable
+- Les **pins FMC/SDRAM restent configurées en AF12** dans `board.h` (pinmux conservé)
+- **Aucun accès registre FMC** n’est effectué côté board
+- Le système reste stable
 
 👉 **Conclusion actuelle** :
 La SDRAM **ne doit pas être initialisée dans `boardInit()`**.
@@ -168,4 +160,3 @@ Ce main est la **base de confiance** du projet.
 > 🚀 Le projet peut continuer de manière structurée.
 
 ```
-

@@ -141,36 +141,6 @@ static const gpio_config_t gpio_default_config = {
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-#if BOARD_USE_FMC
-static uint32_t sdram_ns_to_cycles(uint32_t clock_hz, uint32_t time_ns) {
-  uint64_t cycles = ((uint64_t)clock_hz * (uint64_t)time_ns + 999999999ULL) /
-                    1000000000ULL;
-
-  if (cycles < 1U) {
-    cycles = 1U;
-  }
-  if (cycles > 16U) {
-    cycles = 16U;
-  }
-
-  return (uint32_t)cycles;
-}
-
-static void sdram_wait_ready(void) {
-  while (FMC_Bank5_6_R->SDSR & FMC_SDSR_MODES1) {
-  }
-}
-
-static void sdram_send_command(uint32_t mode, uint32_t refresh_count,
-                               uint32_t mode_register) {
-  FMC_Bank5_6_R->SDCMR = ((mode << FMC_SDCMR_MODE_Pos) & FMC_SDCMR_MODE) |
-                         FMC_SDCMR_CTB1 |
-                         ((refresh_count << FMC_SDCMR_NRFS_Pos) & FMC_SDCMR_NRFS) |
-                         ((mode_register << FMC_SDCMR_MRD_Pos) & FMC_SDCMR_MRD);
-  sdram_wait_ready();
-}
-#endif
-
 static void gpio_init(stm32_gpio_t *gpiop, const gpio_setup_t *config) {
 
   gpiop->OTYPER  = config->otyper;
@@ -293,50 +263,4 @@ bool mmc_lld_is_write_protected(MMCDriver *mmcp) {
  * @note    You can add your board-specific code here.
  */
 void boardInit(void) {
-#if BOARD_USE_FMC
-  /* Mode register: BL=1, sequential, CAS=3, single write. */
-  static const uint32_t sdram_mode = 0x230U;
-  const uint32_t sdram_clk_hz = STM32_FMCCLK / 2U;
-
-  /* Datasheet -6 grade timings (ns unless noted). */
-  const uint32_t t_rp = sdram_ns_to_cycles(sdram_clk_hz, 18U);
-  const uint32_t t_rcd = sdram_ns_to_cycles(sdram_clk_hz, 18U);
-  const uint32_t t_ras = sdram_ns_to_cycles(sdram_clk_hz, 42U);
-  const uint32_t t_rc = sdram_ns_to_cycles(sdram_clk_hz, 60U);
-  const uint32_t t_xsr = sdram_ns_to_cycles(sdram_clk_hz, 72U);
-  const uint32_t t_wr = 2U;
-  const uint32_t t_mrd = 2U;
-
-  uint64_t refresh_cycles = ((uint64_t)sdram_clk_hz * 64U) / 1000U / 8192U;
-  uint32_t refresh_count = (refresh_cycles > 20U) ? (uint32_t)(refresh_cycles - 20U) : 1U;
-
-  rccEnableFSMC(true);
-
-  FMC_Bank5_6_R->SDCR[0] = FMC_SDCRx_NC_0 |
-                           FMC_SDCRx_NR_1 |
-                           FMC_SDCRx_MWID_0 |
-                           FMC_SDCRx_NB |
-                           FMC_SDCRx_CAS_0 | FMC_SDCRx_CAS_1 |
-                           FMC_SDCRx_SDCLK_0 |
-                           FMC_SDCRx_RPIPE_0;
-
-  FMC_Bank5_6_R->SDTR[0] = ((t_mrd - 1U) << FMC_SDTRx_TMRD_Pos) |
-                           ((t_xsr - 1U) << FMC_SDTRx_TXSR_Pos) |
-                           ((t_ras - 1U) << FMC_SDTRx_TRAS_Pos) |
-                           ((t_rc - 1U) << FMC_SDTRx_TRC_Pos) |
-                           ((t_wr - 1U) << FMC_SDTRx_TWR_Pos) |
-                           ((t_rp - 1U) << FMC_SDTRx_TRP_Pos) |
-                           ((t_rcd - 1U) << FMC_SDTRx_TRCD_Pos);
-
-  sdram_send_command(1U, 0U, 0U);
-  osalSysPolledDelayX(OSAL_US2RTC(STM32_HCLK, 200U));
-
-  sdram_send_command(2U, 0U, 0U);
-
-  sdram_send_command(3U, 8U, 0U);
-
-  sdram_send_command(4U, 0U, sdram_mode);
-
-  FMC_Bank5_6_R->SDRTR = (refresh_count << FMC_SDRTR_COUNT_Pos);
-#endif
 }

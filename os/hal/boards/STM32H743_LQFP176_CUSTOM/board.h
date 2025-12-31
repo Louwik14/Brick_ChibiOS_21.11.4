@@ -31,25 +31,12 @@
 #define BOARD_STM32H743_LQFP176_CUSTOM
 #define BOARD_NAME                  "STM32H743 LQFP176 Custom"
 
-#ifndef BOARD_USE_FMC
-#define BOARD_USE_FMC               0
-#endif
-
-#if BOARD_USE_FMC
 #define FMC_PIN_MODE(pin)           PIN_MODE_ALTERNATE(pin)
 #define FMC_PIN_OTYPE(pin)          PIN_OTYPE_PUSHPULL(pin)
 #define FMC_PIN_OSPEED(pin)         PIN_OSPEED_HIGH(pin)
 #define FMC_PIN_PUPDR(pin)          PIN_PUPDR_FLOATING(pin)
 #define FMC_PIN_ODR(pin)            PIN_ODR_LOW(pin)
 #define FMC_PIN_AF(pin)             PIN_AFIO_AF(pin, 12U)
-#else
-#define FMC_PIN_MODE(pin)           PIN_MODE_ANALOG(pin)
-#define FMC_PIN_OTYPE(pin)          PIN_OTYPE_PUSHPULL(pin)
-#define FMC_PIN_OSPEED(pin)         PIN_OSPEED_VERYLOW(pin)
-#define FMC_PIN_PUPDR(pin)          PIN_PUPDR_FLOATING(pin)
-#define FMC_PIN_ODR(pin)            PIN_ODR_LOW(pin)
-#define FMC_PIN_AF(pin)             PIN_AFIO_AF(pin, 0U)
-#endif
 
 #if defined(STM32_I2C_USE_I2C3) && (STM32_I2C_USE_I2C3 == TRUE)
 #error "I2C3 uses PH7 (SCL) which conflicts with the LED on PH7."
