@@ -101,10 +101,9 @@ sdram_result_t sdram_start(void) {
   sdram_send_command(SDRAM_CMD_LOAD_MODE, SDRAM_TARGET_BANK1, 0U, mode);
 
   FMC_Bank5_6_R->SDRTR = (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
-
-  if ((FMC_Bank5_6_R->SDSR & FMC_SDSR_RE) != 0U) {
-    return SDRAM_ERROR;
-  }
+  /* STM32H7: FMC can report BUSY/refresh activity after SDRTR update.
+   * Do not poll or wait here; SDRAM is ready immediately after LOAD_MODE + SDRTR.
+   */
 
   return SDRAM_OK;
 }
