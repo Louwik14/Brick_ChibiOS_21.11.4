@@ -396,7 +396,7 @@ _crt0_entry:
                 ldr     r1, =__process_stack_base__
  8000390:	20000400 	.word	0x20000400
                 ldr     r1, =__textdata_base__
- 8000394:	08006174 	.word	0x08006174
+ 8000394:	080068bc 	.word	0x080068bc
                 ldr     r2, =__data_base__
  8000398:	24000000 	.word	0x24000000
                 ldr     r3, =__data_end__
@@ -790,7 +790,7 @@ void __init_ram_areas(void) {
  80005f8:	1a3f      	subs	r7, r7, r0
  80005fa:	f027 0203 	bic.w	r2, r7, #3
  80005fe:	3204      	adds	r2, #4
- 8000600:	f005 fa28 	bl	8005a54 <memset>
+ 8000600:	f005 fb22 	bl	8005c48 <memset>
       p++;
     }
     rap++;
@@ -874,11 +874,11 @@ void __init_ram_areas(void) {
 }
  800066c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
  800066e:	bf00      	nop
- 8000670:	08005af8 	.word	0x08005af8
+ 8000670:	08005cec 	.word	0x08005cec
  8000674:	24000e9c 	.word	0x24000e9c
  8000678:	24000e9c 	.word	0x24000e9c
  800067c:	24000e9c 	.word	0x24000e9c
- 8000680:	08006184 	.word	0x08006184
+ 8000680:	080068cc 	.word	0x080068cc
  8000684:	e000ed00 	.word	0xe000ed00
 	...
 
@@ -2669,7 +2669,7 @@ static bool _sdc_wait_for_transfer_state_internal(SDCDriver *sdcp,
 }
  8000ff0:	4770      	bx	lr
  8000ff2:	bf00      	nop
- 8000ff4:	08005b78 	.word	0x08005b78
+ 8000ff4:	08005d6c 	.word	0x08005d6c
 	...
 
 08001000 <_readt>:
@@ -2785,7 +2785,7 @@ static inline void chEvtObjectInit(event_source_t *esp) {
  80010ac:	6043      	str	r3, [r0, #4]
 }
  80010ae:	4770      	bx	lr
- 80010b0:	08005b9c 	.word	0x08005b9c
+ 80010b0:	08005d90 	.word	0x08005d90
 	...
 
 080010c0 <sdStart>:
@@ -2931,7 +2931,7 @@ void usbObjectInit(USBDriver *usbp) {
   usbp->state        = USB_STOP;
  800116a:	f800 3b30 	strb.w	r3, [r0], #48
     usbp->in_params[i]  = NULL;
- 800116e:	f004 fc71 	bl	8005a54 <memset>
+ 800116e:	f004 fd6b 	bl	8005c48 <memset>
   usbp->config       = NULL;
  8001172:	2300      	movs	r3, #0
     usbp->out_params[i] = NULL;
@@ -2982,7 +2982,7 @@ void _usb_reset(USBDriver *usbp) {
   usbp->transmitting  = 0;
  8001194:	f840 5c04 	str.w	r5, [r0, #-4]
     usbp->epc[i] = NULL;
- 8001198:	f004 fc5c 	bl	8005a54 <memset>
+ 8001198:	f004 fd56 	bl	8005c48 <memset>
 
   /* EP0 state machine initialization.*/
   usbp->ep0state = USB_EP0_STP_WAITING;
@@ -3495,7 +3495,7 @@ void _usb_ep0setup(USBDriver *usbp, usbep_t ep) {
  8001496:	f003 1301 	and.w	r3, r3, #65537	; 0x10001
  800149a:	60a3      	str	r3, [r4, #8]
     usbp->epc[i] = NULL;
- 800149c:	f004 fada 	bl	8005a54 <memset>
+ 800149c:	f004 fbd4 	bl	8005c48 <memset>
   usb_lld_disable_endpoints(usbp);
  80014a0:	4620      	mov	r0, r4
  80014a2:	f001 fa3d 	bl	8002920 <usb_lld_disable_endpoints>
@@ -3620,9 +3620,9 @@ void _usb_ep0setup(USBDriver *usbp, usbep_t ep) {
  800157c:	f894 0080 	ldrb.w	r0, [r4, #128]	; 0x80
  8001580:	e7bf      	b.n	8001502 <_usb_ep0setup+0x2f2>
  8001582:	bf00      	nop
- 8001584:	08005bc4 	.word	0x08005bc4
- 8001588:	08005bcc 	.word	0x08005bcc
- 800158c:	08005bc8 	.word	0x08005bc8
+ 8001584:	08005db8 	.word	0x08005db8
+ 8001588:	08005dc0 	.word	0x08005dc0
+ 800158c:	08005dbc 	.word	0x08005dbc
 
 08001590 <_usb_ep0in>:
  * @param[in] usbp      pointer to the @p USBDriver object
@@ -4471,7 +4471,7 @@ int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
  8001b2a:	f04f 35ff 	mov.w	r5, #4294967295
  8001b2e:	e74d      	b.n	80019cc <chvprintf+0x2dc>
  8001b30:	cccccccd 	.word	0xcccccccd
- 8001b34:	08005bd0 	.word	0x08005bd0
+ 8001b34:	08005dc4 	.word	0x08005dc4
 	...
 
 08001b40 <chprintf>:
@@ -4573,7 +4573,7 @@ OSAL_IRQ_HANDLER(STM32_SDMMC1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001baa:	f003 ba81 	b.w	80050b0 <__port_irq_epilogue>
  8001bae:	bf00      	nop
- 8001bb0:	08005bfc 	.word	0x08005bfc
+ 8001bb0:	08005df0 	.word	0x08005df0
  8001bb4:	240001c4 	.word	0x240001c4
 	...
 
@@ -4609,7 +4609,7 @@ OSAL_IRQ_HANDLER(STM32_USART1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001bda:	f003 ba69 	b.w	80050b0 <__port_irq_epilogue>
  8001bde:	bf00      	nop
- 8001be0:	08005bf0 	.word	0x08005bf0
+ 8001be0:	08005de4 	.word	0x08005de4
  8001be4:	24000340 	.word	0x24000340
 	...
 
@@ -4645,7 +4645,7 @@ OSAL_IRQ_HANDLER(STM32_UART5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001c0a:	f003 ba51 	b.w	80050b0 <__port_irq_epilogue>
  8001c0e:	bf00      	nop
- 8001c10:	08005be4 	.word	0x08005be4
+ 8001c10:	08005dd8 	.word	0x08005dd8
  8001c14:	240003a0 	.word	0x240003a0
 	...
 
@@ -4679,7 +4679,7 @@ OSAL_IRQ_HANDLER(STM32_TIM2_HANDLER) {
  8001c34:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   OSAL_IRQ_EPILOGUE();
  8001c38:	f003 ba3a 	b.w	80050b0 <__port_irq_epilogue>
- 8001c3c:	08005bd8 	.word	0x08005bd8
+ 8001c3c:	08005dcc 	.word	0x08005dcc
 
 08001c40 <irqInit>:
 /**
@@ -5486,7 +5486,7 @@ OSAL_IRQ_HANDLER(STM32_ADC12_HANDLER) {
  80020a6:	702a      	strb	r2, [r5, #0]
  80020a8:	612b      	str	r3, [r5, #16]
  80020aa:	e7dd      	b.n	8002068 <Vector88+0x58>
- 80020ac:	08005c08 	.word	0x08005c08
+ 80020ac:	08005dfc 	.word	0x08005dfc
  80020b0:	24000010 	.word	0x24000010
  80020b4:	40022000 	.word	0x40022000
  80020b8:	24000024 	.word	0x24000024
@@ -5532,7 +5532,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80020e6:	f002 bfe3 	b.w	80050b0 <__port_irq_epilogue>
  80020ea:	bf00      	nop
- 80020ec:	08005c68 	.word	0x08005c68
+ 80020ec:	08005e5c 	.word	0x08005e5c
  80020f0:	58025400 	.word	0x58025400
  80020f4:	24000048 	.word	0x24000048
 	...
@@ -5579,7 +5579,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800212a:	f002 bfc1 	b.w	80050b0 <__port_irq_epilogue>
  800212e:	bf00      	nop
- 8002130:	08005c5c 	.word	0x08005c5c
+ 8002130:	08005e50 	.word	0x08005e50
  8002134:	58025400 	.word	0x58025400
  8002138:	24000048 	.word	0x24000048
  800213c:	00000000 	.word	0x00000000
@@ -5626,7 +5626,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800216a:	f002 bfa1 	b.w	80050b0 <__port_irq_epilogue>
  800216e:	bf00      	nop
- 8002170:	08005c50 	.word	0x08005c50
+ 8002170:	08005e44 	.word	0x08005e44
  8002174:	58025400 	.word	0x58025400
  8002178:	24000048 	.word	0x24000048
  800217c:	00000000 	.word	0x00000000
@@ -5673,7 +5673,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80021aa:	f002 bf81 	b.w	80050b0 <__port_irq_epilogue>
  80021ae:	bf00      	nop
- 80021b0:	08005c44 	.word	0x08005c44
+ 80021b0:	08005e38 	.word	0x08005e38
  80021b4:	58025400 	.word	0x58025400
  80021b8:	24000048 	.word	0x24000048
  80021bc:	00000000 	.word	0x00000000
@@ -5720,7 +5720,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80021ea:	f002 bf61 	b.w	80050b0 <__port_irq_epilogue>
  80021ee:	bf00      	nop
- 80021f0:	08005c38 	.word	0x08005c38
+ 80021f0:	08005e2c 	.word	0x08005e2c
  80021f4:	58025400 	.word	0x58025400
  80021f8:	24000048 	.word	0x24000048
  80021fc:	00000000 	.word	0x00000000
@@ -5767,7 +5767,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800222a:	f002 bf41 	b.w	80050b0 <__port_irq_epilogue>
  800222e:	bf00      	nop
- 8002230:	08005c2c 	.word	0x08005c2c
+ 8002230:	08005e20 	.word	0x08005e20
  8002234:	58025400 	.word	0x58025400
  8002238:	24000048 	.word	0x24000048
  800223c:	00000000 	.word	0x00000000
@@ -5814,7 +5814,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800226a:	f002 bf21 	b.w	80050b0 <__port_irq_epilogue>
  800226e:	bf00      	nop
- 8002270:	08005c20 	.word	0x08005c20
+ 8002270:	08005e14 	.word	0x08005e14
  8002274:	58025400 	.word	0x58025400
  8002278:	24000048 	.word	0x24000048
  800227c:	00000000 	.word	0x00000000
@@ -5861,7 +5861,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH7_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80022aa:	f002 bf01 	b.w	80050b0 <__port_irq_epilogue>
  80022ae:	bf00      	nop
- 80022b0:	08005c14 	.word	0x08005c14
+ 80022b0:	08005e08 	.word	0x08005e08
  80022b4:	58025400 	.word	0x58025400
  80022b8:	24000048 	.word	0x24000048
  80022bc:	00000000 	.word	0x00000000
@@ -5906,7 +5906,7 @@ void bdmaInit(void) {
  80022ec:	4770      	bx	lr
  80022ee:	bf00      	nop
  80022f0:	24000048 	.word	0x24000048
- 80022f4:	08005c8c 	.word	0x08005c8c
+ 80022f4:	08005e80 	.word	0x08005e80
  80022f8:	58025408 	.word	0x58025408
  80022fc:	58025400 	.word	0x58025400
 
@@ -5950,7 +5950,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002326:	f002 bec3 	b.w	80050b0 <__port_irq_epilogue>
  800232a:	bf00      	nop
- 800232c:	08005d68 	.word	0x08005d68
+ 800232c:	08005f5c 	.word	0x08005f5c
  8002330:	40020000 	.word	0x40020000
  8002334:	2400008c 	.word	0x2400008c
 	...
@@ -5997,7 +5997,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800236a:	f002 bea1 	b.w	80050b0 <__port_irq_epilogue>
  800236e:	bf00      	nop
- 8002370:	08005d5c 	.word	0x08005d5c
+ 8002370:	08005f50 	.word	0x08005f50
  8002374:	40020000 	.word	0x40020000
  8002378:	2400008c 	.word	0x2400008c
  800237c:	00000000 	.word	0x00000000
@@ -6044,7 +6044,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80023aa:	f002 be81 	b.w	80050b0 <__port_irq_epilogue>
  80023ae:	bf00      	nop
- 80023b0:	08005d50 	.word	0x08005d50
+ 80023b0:	08005f44 	.word	0x08005f44
  80023b4:	40020000 	.word	0x40020000
  80023b8:	2400008c 	.word	0x2400008c
  80023bc:	00000000 	.word	0x00000000
@@ -6091,7 +6091,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80023ea:	f002 be61 	b.w	80050b0 <__port_irq_epilogue>
  80023ee:	bf00      	nop
- 80023f0:	08005d44 	.word	0x08005d44
+ 80023f0:	08005f38 	.word	0x08005f38
  80023f4:	40020000 	.word	0x40020000
  80023f8:	2400008c 	.word	0x2400008c
  80023fc:	00000000 	.word	0x00000000
@@ -6136,7 +6136,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002426:	f002 be43 	b.w	80050b0 <__port_irq_epilogue>
  800242a:	bf00      	nop
- 800242c:	08005d38 	.word	0x08005d38
+ 800242c:	08005f2c 	.word	0x08005f2c
  8002430:	40020000 	.word	0x40020000
  8002434:	2400008c 	.word	0x2400008c
 	...
@@ -6183,7 +6183,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800246a:	f002 be21 	b.w	80050b0 <__port_irq_epilogue>
  800246e:	bf00      	nop
- 8002470:	08005d2c 	.word	0x08005d2c
+ 8002470:	08005f20 	.word	0x08005f20
  8002474:	40020000 	.word	0x40020000
  8002478:	2400008c 	.word	0x2400008c
  800247c:	00000000 	.word	0x00000000
@@ -6230,7 +6230,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80024aa:	f002 be01 	b.w	80050b0 <__port_irq_epilogue>
  80024ae:	bf00      	nop
- 80024b0:	08005dc8 	.word	0x08005dc8
+ 80024b0:	08005fbc 	.word	0x08005fbc
  80024b4:	40020000 	.word	0x40020000
  80024b8:	2400008c 	.word	0x2400008c
  80024bc:	00000000 	.word	0x00000000
@@ -6277,7 +6277,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH7_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80024ea:	f002 bde1 	b.w	80050b0 <__port_irq_epilogue>
  80024ee:	bf00      	nop
- 80024f0:	08005dbc 	.word	0x08005dbc
+ 80024f0:	08005fb0 	.word	0x08005fb0
  80024f4:	40020000 	.word	0x40020000
  80024f8:	2400008c 	.word	0x2400008c
  80024fc:	00000000 	.word	0x00000000
@@ -6322,7 +6322,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002526:	f002 bdc3 	b.w	80050b0 <__port_irq_epilogue>
  800252a:	bf00      	nop
- 800252c:	08005db0 	.word	0x08005db0
+ 800252c:	08005fa4 	.word	0x08005fa4
  8002530:	40020400 	.word	0x40020400
  8002534:	2400008c 	.word	0x2400008c
 	...
@@ -6369,7 +6369,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800256a:	f002 bda1 	b.w	80050b0 <__port_irq_epilogue>
  800256e:	bf00      	nop
- 8002570:	08005da4 	.word	0x08005da4
+ 8002570:	08005f98 	.word	0x08005f98
  8002574:	40020400 	.word	0x40020400
  8002578:	2400008c 	.word	0x2400008c
  800257c:	00000000 	.word	0x00000000
@@ -6416,7 +6416,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80025aa:	f002 bd81 	b.w	80050b0 <__port_irq_epilogue>
  80025ae:	bf00      	nop
- 80025b0:	08005d98 	.word	0x08005d98
+ 80025b0:	08005f8c 	.word	0x08005f8c
  80025b4:	40020400 	.word	0x40020400
  80025b8:	2400008c 	.word	0x2400008c
  80025bc:	00000000 	.word	0x00000000
@@ -6463,7 +6463,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80025ea:	f002 bd61 	b.w	80050b0 <__port_irq_epilogue>
  80025ee:	bf00      	nop
- 80025f0:	08005d8c 	.word	0x08005d8c
+ 80025f0:	08005f80 	.word	0x08005f80
  80025f4:	40020400 	.word	0x40020400
  80025f8:	2400008c 	.word	0x2400008c
  80025fc:	00000000 	.word	0x00000000
@@ -6508,7 +6508,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002626:	f002 bd43 	b.w	80050b0 <__port_irq_epilogue>
  800262a:	bf00      	nop
- 800262c:	08005d80 	.word	0x08005d80
+ 800262c:	08005f74 	.word	0x08005f74
  8002630:	40020400 	.word	0x40020400
  8002634:	2400008c 	.word	0x2400008c
 	...
@@ -6555,7 +6555,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800266a:	f002 bd21 	b.w	80050b0 <__port_irq_epilogue>
  800266e:	bf00      	nop
- 8002670:	08005d74 	.word	0x08005d74
+ 8002670:	08005f68 	.word	0x08005f68
  8002674:	40020400 	.word	0x40020400
  8002678:	2400008c 	.word	0x2400008c
  800267c:	00000000 	.word	0x00000000
@@ -6602,7 +6602,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80026aa:	f002 bd01 	b.w	80050b0 <__port_irq_epilogue>
  80026ae:	bf00      	nop
- 80026b0:	08005d20 	.word	0x08005d20
+ 80026b0:	08005f14 	.word	0x08005f14
  80026b4:	40020400 	.word	0x40020400
  80026b8:	2400008c 	.word	0x2400008c
  80026bc:	00000000 	.word	0x00000000
@@ -6648,7 +6648,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH7_HANDLER) {
  80026e8:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   OSAL_IRQ_EPILOGUE();
  80026ec:	f002 bce0 	b.w	80050b0 <__port_irq_epilogue>
- 80026f0:	08005d14 	.word	0x08005d14
+ 80026f0:	08005f08 	.word	0x08005f08
  80026f4:	40020400 	.word	0x40020400
  80026f8:	2400008c 	.word	0x2400008c
  80026fc:	00000000 	.word	0x00000000
@@ -6709,7 +6709,7 @@ void dmaInit(void) {
  8002736:	bf00      	nop
  8002738:	40020010 	.word	0x40020010
  800273c:	2400008c 	.word	0x2400008c
- 8002740:	08005dd4 	.word	0x08005dd4
+ 8002740:	08005fc8 	.word	0x08005fc8
  8002744:	40020000 	.word	0x40020000
  8002748:	40020400 	.word	0x40020400
  800274c:	00000000 	.word	0x00000000
@@ -6866,7 +6866,7 @@ void usb_lld_init(void) {
  8002822:	bd10      	pop	{r4, pc}
  8002824:	24000110 	.word	0x24000110
  8002828:	40080000 	.word	0x40080000
- 800282c:	08005f04 	.word	0x08005f04
+ 800282c:	080060f8 	.word	0x080060f8
 
 08002830 <usb_lld_reset>:
  *
@@ -7013,7 +7013,7 @@ void usb_lld_reset(USBDriver *usbp) {
  80028ec:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
  80028ee:	bf00      	nop
  80028f0:	000c0010 	.word	0x000c0010
- 80028f4:	08005ee0 	.word	0x08005ee0
+ 80028f4:	080060d4 	.word	0x080060d4
  80028f8:	10008040 	.word	0x10008040
  80028fc:	00000000 	.word	0x00000000
 
@@ -7919,7 +7919,7 @@ OSAL_IRQ_HANDLER(STM32_OTG1_HANDLER) {
  8002f4c:	e6db      	b.n	8002d06 <Vector1D4+0x86>
  8002f4e:	bf00      	nop
  8002f50:	24000110 	.word	0x24000110
- 8002f54:	08005ed4 	.word	0x08005ed4
+ 8002f54:	080060c8 	.word	0x080060c8
  8002f58:	04000030 	.word	0x04000030
       otg_epout_handler(usbp, 2);
  8002f5c:	2002      	movs	r0, #2
@@ -8056,7 +8056,7 @@ OSAL_IRQ_HANDLER(STM32_OTG1_HANDLER) {
  8003052:	f002 b82d 	b.w	80050b0 <__port_irq_epilogue>
  8003056:	bf00      	nop
  8003058:	24000110 	.word	0x24000110
- 800305c:	08005ed4 	.word	0x08005ed4
+ 800305c:	080060c8 	.word	0x080060c8
 
 08003060 <usb_lld_stall_out>:
  *
@@ -9823,7 +9823,7 @@ OSAL_IRQ_HANDLER(STM32_SPI1_HANDLER) {
  8003a96:	f001 bb0b 	b.w	80050b0 <__port_irq_epilogue>
  8003a9a:	bf00      	nop
  8003a9c:	24000214 	.word	0x24000214
- 8003aa0:	08005f40 	.word	0x08005f40
+ 8003aa0:	08006134 	.word	0x08006134
  8003aa4:	2400021c 	.word	0x2400021c
 	...
 
@@ -9886,7 +9886,7 @@ OSAL_IRQ_HANDLER(STM32_SPI2_HANDLER) {
  8003b06:	f001 bad3 	b.w	80050b0 <__port_irq_epilogue>
  8003b0a:	bf00      	nop
  8003b0c:	24000250 	.word	0x24000250
- 8003b10:	08005f34 	.word	0x08005f34
+ 8003b10:	08006128 	.word	0x08006128
  8003b14:	24000258 	.word	0x24000258
 	...
 
@@ -9949,7 +9949,7 @@ OSAL_IRQ_HANDLER(STM32_SPI3_HANDLER) {
  8003b76:	f001 ba9b 	b.w	80050b0 <__port_irq_epilogue>
  8003b7a:	bf00      	nop
  8003b7c:	2400028c 	.word	0x2400028c
- 8003b80:	08005f28 	.word	0x08005f28
+ 8003b80:	0800611c 	.word	0x0800611c
  8003b84:	24000294 	.word	0x24000294
 	...
 
@@ -10012,7 +10012,7 @@ OSAL_IRQ_HANDLER(STM32_SPI5_HANDLER) {
  8003be6:	f001 ba63 	b.w	80050b0 <__port_irq_epilogue>
  8003bea:	bf00      	nop
  8003bec:	240002c8 	.word	0x240002c8
- 8003bf0:	08005f1c 	.word	0x08005f1c
+ 8003bf0:	08006110 	.word	0x08006110
  8003bf4:	240002d0 	.word	0x240002d0
 	...
 
@@ -10075,7 +10075,7 @@ OSAL_IRQ_HANDLER(STM32_SPI6_HANDLER) {
  8003c56:	f001 ba2b 	b.w	80050b0 <__port_irq_epilogue>
  8003c5a:	bf00      	nop
  8003c5c:	24000304 	.word	0x24000304
- 8003c60:	08005f10 	.word	0x08005f10
+ 8003c60:	08006104 	.word	0x08006104
  8003c64:	2400030c 	.word	0x2400030c
 	...
 
@@ -11324,7 +11324,7 @@ static inline void __oslib_init(void) {
  80043b8:	b007      	add	sp, #28
  80043ba:	bd30      	pop	{r4, r5, pc}
  80043bc:	24000e00 	.word	0x24000e00
- 80043c0:	08005f50 	.word	0x08005f50
+ 80043c0:	08006144 	.word	0x08006144
  80043c4:	24000440 	.word	0x24000440
 	...
 
@@ -12829,8 +12829,8 @@ static inline void __dbg_object_init(system_debug_t *sdp) {
  8004aa4:	b006      	add	sp, #24
  8004aa6:	bd70      	pop	{r4, r5, r6, pc}
  8004aa8:	24000e00 	.word	0x24000e00
- 8004aac:	08005f6c 	.word	0x08005f6c
- 8004ab0:	08005f64 	.word	0x08005f64
+ 8004aac:	08006160 	.word	0x08006160
+ 8004ab0:	08006158 	.word	0x08006158
  8004ab4:	08004a11 	.word	0x08004a11
 	...
 
@@ -14213,7 +14213,7 @@ int main(void) {
  8005136:	f000 fb2b 	bl	8005790 <sdram_init>
 
             sdram_state_t state = sdram_status();
- 800513a:	f000 fba9 	bl	8005890 <sdram_status>
+ 800513a:	f000 fbc1 	bl	80058c0 <sdram_status>
  800513e:	4603      	mov	r3, r0
             if ((state != SDRAM_READY) && (state != SDRAM_DEGRADED)) {
                 chprintf(chp, "[ERR ] SDRAM init FAILED\r\n");
@@ -14294,7 +14294,7 @@ int main(void) {
  80051c0:	4620      	mov	r0, r4
  80051c2:	f7fc fcbd 	bl	8001b40 <chprintf>
         if (!sdram_is_initialized()) {
- 80051c6:	f000 fb4b 	bl	8005860 <sdram_is_initialized>
+ 80051c6:	f000 fb63 	bl	8005890 <sdram_is_initialized>
  80051ca:	4606      	mov	r6, r0
             chprintf(chp, "\r\n[INFO] SDRAM not initialized, starting init...\r\n");
  80051cc:	491a      	ldr	r1, [pc, #104]	; (8005238 <main+0x138>)
@@ -14311,7 +14311,7 @@ int main(void) {
                 if (!sdram_run_bist(SDRAM_BIST_MODE_QUICK, NULL)) {
  80051de:	4631      	mov	r1, r6
  80051e0:	4630      	mov	r0, r6
- 80051e2:	f000 fb65 	bl	80058b0 <sdram_run_bist>
+ 80051e2:	f000 fb7d 	bl	80058e0 <sdram_run_bist>
  80051e6:	4603      	mov	r3, r0
                     chprintf(chp, "[ERR ] SDRAM QUICK_BIST FAILED\r\n");
  80051e8:	4916      	ldr	r1, [pc, #88]	; (8005244 <main+0x144>)
@@ -14324,26 +14324,26 @@ int main(void) {
  80051f2:	f7fc fca5 	bl	8001b40 <chprintf>
  80051f6:	e7ab      	b.n	8005150 <main+0x50>
  80051f8:	24000340 	.word	0x24000340
- 80051fc:	08006164 	.word	0x08006164
- 8005200:	080060bc 	.word	0x080060bc
- 8005204:	08005f98 	.word	0x08005f98
+ 80051fc:	08006358 	.word	0x08006358
+ 8005200:	080064f0 	.word	0x080064f0
+ 8005204:	0800618c 	.word	0x0800618c
  8005208:	17d78400 	.word	0x17d78400
  800520c:	0bebc200 	.word	0x0bebc200
  8005210:	05f5e100 	.word	0x05f5e100
- 8005214:	080060c0 	.word	0x080060c0
- 8005218:	08005fc4 	.word	0x08005fc4
- 800521c:	08005fe8 	.word	0x08005fe8
- 8005220:	08005ffc 	.word	0x08005ffc
- 8005224:	08006010 	.word	0x08006010
- 8005228:	08006024 	.word	0x08006024
- 800522c:	08006038 	.word	0x08006038
- 8005230:	0800604c 	.word	0x0800604c
- 8005234:	08006060 	.word	0x08006060
- 8005238:	0800608c 	.word	0x0800608c
- 800523c:	0800613c 	.word	0x0800613c
- 8005240:	080060dc 	.word	0x080060dc
- 8005244:	080060f4 	.word	0x080060f4
- 8005248:	08006118 	.word	0x08006118
+ 8005214:	080062b4 	.word	0x080062b4
+ 8005218:	080061b8 	.word	0x080061b8
+ 800521c:	080061dc 	.word	0x080061dc
+ 8005220:	080061f0 	.word	0x080061f0
+ 8005224:	08006204 	.word	0x08006204
+ 8005228:	08006218 	.word	0x08006218
+ 800522c:	0800622c 	.word	0x0800622c
+ 8005230:	08006240 	.word	0x08006240
+ 8005234:	08006254 	.word	0x08006254
+ 8005238:	08006280 	.word	0x08006280
+ 800523c:	08006330 	.word	0x08006330
+ 8005240:	080062d0 	.word	0x080062d0
+ 8005244:	080062e8 	.word	0x080062e8
+ 8005248:	0800630c 	.word	0x0800630c
  800524c:	00000000 	.word	0x00000000
 
 08005250 <bist_verify_constant.constprop.0>:
@@ -15211,573 +15211,855 @@ bool sdram_bist_start(sdram_bist_context_t *ctx) {
 
 void sdram_init(bool run_quick_bist) {
  8005790:	b5f0      	push	{r4, r5, r6, r7, lr}
-  // Ensure single initialization sequence.
-  chMtxLock(&sdram_ctx_mtx);
-  if (sdram_ctx.state != SDRAM_NOT_INITIALIZED) {
- 8005792:	4c30      	ldr	r4, [pc, #192]	; (8005854 <sdram_init+0xc4>)
+  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+
+  chprintf(chp, "[SDRAM] sdram_init(): start\r\n");
+ 8005792:	4936      	ldr	r1, [pc, #216]	; (800586c <sdram_init+0xdc>)
 void sdram_init(bool run_quick_bist) {
  8005794:	b08d      	sub	sp, #52	; 0x34
  8005796:	4605      	mov	r5, r0
+  // Ensure single initialization sequence.
   chMtxLock(&sdram_ctx_mtx);
- 8005798:	482f      	ldr	r0, [pc, #188]	; (8005858 <sdram_init+0xc8>)
- 800579a:	f7ff fb39 	bl	8004e10 <chMtxLock>
   if (sdram_ctx.state != SDRAM_NOT_INITIALIZED) {
- 800579e:	7826      	ldrb	r6, [r4, #0]
- 80057a0:	bba6      	cbnz	r6, 800580c <sdram_init+0x7c>
+ 8005798:	4c35      	ldr	r4, [pc, #212]	; (8005870 <sdram_init+0xe0>)
+  chprintf(chp, "[SDRAM] sdram_init(): start\r\n");
+ 800579a:	4836      	ldr	r0, [pc, #216]	; (8005874 <sdram_init+0xe4>)
+ 800579c:	f7fc f9d0 	bl	8001b40 <chprintf>
+  chMtxLock(&sdram_ctx_mtx);
+ 80057a0:	4835      	ldr	r0, [pc, #212]	; (8005878 <sdram_init+0xe8>)
+ 80057a2:	f7ff fb35 	bl	8004e10 <chMtxLock>
+  if (sdram_ctx.state != SDRAM_NOT_INITIALIZED) {
+ 80057a6:	7826      	ldrb	r6, [r4, #0]
+ 80057a8:	bba6      	cbnz	r6, 8005814 <sdram_init+0x84>
     chMtxUnlock(&sdram_ctx_mtx);
+    chprintf(chp, "[SDRAM] sdram_init(): already initialized\r\n");
     return;
   }
 
   sdram_ctx.state = SDRAM_INITIALIZING;
- 80057a2:	2701      	movs	r7, #1
+ 80057aa:	2701      	movs	r7, #1
   sdram_ctx.last_error = SDRAM_ERR_NONE;
   sdram_ctx.bist_running = false;
   chMtxUnlock(&sdram_ctx_mtx);
- 80057a4:	482c      	ldr	r0, [pc, #176]	; (8005858 <sdram_init+0xc8>)
+ 80057ac:	4832      	ldr	r0, [pc, #200]	; (8005878 <sdram_init+0xe8>)
   sdram_ctx.bist_running = false;
- 80057a6:	70a6      	strb	r6, [r4, #2]
+ 80057ae:	70a6      	strb	r6, [r4, #2]
   sdram_ctx.state = SDRAM_INITIALIZING;
- 80057a8:	8027      	strh	r7, [r4, #0]
+ 80057b0:	8027      	strh	r7, [r4, #0]
   chMtxUnlock(&sdram_ctx_mtx);
- 80057aa:	f7ff fb41 	bl	8004e30 <chMtxUnlock>
+ 80057b2:	f7ff fb3d 	bl	8004e30 <chMtxUnlock>
 
   // Hardware/FMC initialization sequence.
   if (!sdram_hw_init_sequence()) {
- 80057ae:	f000 f8e7 	bl	8005980 <sdram_hw_init_sequence>
- 80057b2:	2800      	cmp	r0, #0
- 80057b4:	d041      	beq.n	800583a <sdram_init+0xaa>
-    sdram_set_fault_locked(SDRAM_ERR_FMC_TIMEOUT);
+ 80057b6:	f000 f8fb 	bl	80059b0 <sdram_hw_init_sequence>
+ 80057ba:	2800      	cmp	r0, #0
+ 80057bc:	d045      	beq.n	800584a <sdram_init+0xba>
     chMtxUnlock(&sdram_ctx_mtx);
+    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
     return;
   }
 
   if (!run_quick_bist) {
- 80057b6:	b37d      	cbz	r5, 8005818 <sdram_init+0x88>
+ 80057be:	b39d      	cbz	r5, 8005828 <sdram_init+0x98>
     chMtxUnlock(&sdram_ctx_mtx);
     return;
   }
 
   // Quick BIST at boot (synchronous or quasi-synchronous).
   sdram_bist_context_t bist_ctx = {0};
- 80057b8:	2230      	movs	r2, #48	; 0x30
- 80057ba:	4631      	mov	r1, r6
- 80057bc:	4668      	mov	r0, sp
- 80057be:	f000 f949 	bl	8005a54 <memset>
+ 80057c0:	2230      	movs	r2, #48	; 0x30
+ 80057c2:	4631      	mov	r1, r6
+ 80057c4:	4668      	mov	r0, sp
+ 80057c6:	f000 fa3f 	bl	8005c48 <memset>
   bist_ctx.mode = SDRAM_BIST_MODE_QUICK;
   bist_ctx.abort_flag = NULL;
 
   chMtxLock(&sdram_ctx_mtx);
- 80057c2:	4825      	ldr	r0, [pc, #148]	; (8005858 <sdram_init+0xc8>)
- 80057c4:	f7ff fb24 	bl	8004e10 <chMtxLock>
+ 80057ca:	482b      	ldr	r0, [pc, #172]	; (8005878 <sdram_init+0xe8>)
+ 80057cc:	f7ff fb20 	bl	8004e10 <chMtxLock>
   sdram_ctx.bist_running = true;
   chMtxUnlock(&sdram_ctx_mtx);
- 80057c8:	4823      	ldr	r0, [pc, #140]	; (8005858 <sdram_init+0xc8>)
+ 80057d0:	4829      	ldr	r0, [pc, #164]	; (8005878 <sdram_init+0xe8>)
   sdram_ctx.bist_running = true;
- 80057ca:	70a7      	strb	r7, [r4, #2]
+ 80057d2:	70a7      	strb	r7, [r4, #2]
   chMtxUnlock(&sdram_ctx_mtx);
- 80057cc:	f7ff fb30 	bl	8004e30 <chMtxUnlock>
+ 80057d4:	f7ff fb2c 	bl	8004e30 <chMtxUnlock>
 
   bool bist_ok = sdram_bist_start(&bist_ctx);
- 80057d0:	4668      	mov	r0, sp
- 80057d2:	f7ff fe75 	bl	80054c0 <sdram_bist_start>
- 80057d6:	4605      	mov	r5, r0
+ 80057d8:	4668      	mov	r0, sp
+ 80057da:	f7ff fe71 	bl	80054c0 <sdram_bist_start>
+ 80057de:	4605      	mov	r5, r0
 
   chMtxLock(&sdram_ctx_mtx);
- 80057d8:	481f      	ldr	r0, [pc, #124]	; (8005858 <sdram_init+0xc8>)
- 80057da:	f7ff fb19 	bl	8004e10 <chMtxLock>
+ 80057e0:	4825      	ldr	r0, [pc, #148]	; (8005878 <sdram_init+0xe8>)
+ 80057e2:	f7ff fb15 	bl	8004e10 <chMtxLock>
   sdram_ctx.bist_running = false;
   sdram_ctx.last_bist_result = bist_ctx.result;
- 80057de:	f10d 0e0c 	add.w	lr, sp, #12
- 80057e2:	f104 0c04 	add.w	ip, r4, #4
+ 80057e6:	f10d 0e0c 	add.w	lr, sp, #12
+ 80057ea:	f104 0c04 	add.w	ip, r4, #4
   sdram_ctx.bist_running = false;
- 80057e6:	70a6      	strb	r6, [r4, #2]
+ 80057ee:	70a6      	strb	r6, [r4, #2]
   sdram_ctx.last_bist_result = bist_ctx.result;
- 80057e8:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
- 80057ec:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
- 80057f0:	e89e 000f 	ldmia.w	lr, {r0, r1, r2, r3}
- 80057f4:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
+ 80057f0:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
+ 80057f4:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 80057f8:	e89e 000f 	ldmia.w	lr, {r0, r1, r2, r3}
+ 80057fc:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
 
   if (!bist_ok || bist_ctx.result.status != SDRAM_BIST_PASS) {
- 80057f8:	b9cd      	cbnz	r5, 800582e <sdram_init+0x9e>
- 80057fa:	2203      	movs	r2, #3
- 80057fc:	2304      	movs	r3, #4
+ 8005800:	b9ed      	cbnz	r5, 800583e <sdram_init+0xae>
+ 8005802:	2203      	movs	r2, #3
+ 8005804:	2304      	movs	r3, #4
   } else {
     sdram_ctx.state = SDRAM_READY;
     sdram_ctx.last_error = SDRAM_ERR_NONE;
   }
 
   chMtxUnlock(&sdram_ctx_mtx);
- 80057fe:	4816      	ldr	r0, [pc, #88]	; (8005858 <sdram_init+0xc8>)
+ 8005806:	481c      	ldr	r0, [pc, #112]	; (8005878 <sdram_init+0xe8>)
     sdram_ctx.state = SDRAM_DEGRADED;
- 8005800:	7022      	strb	r2, [r4, #0]
+ 8005808:	7022      	strb	r2, [r4, #0]
     sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
- 8005802:	7063      	strb	r3, [r4, #1]
+ 800580a:	7063      	strb	r3, [r4, #1]
   chMtxUnlock(&sdram_ctx_mtx);
- 8005804:	f7ff fb14 	bl	8004e30 <chMtxUnlock>
+ 800580c:	f7ff fb10 	bl	8004e30 <chMtxUnlock>
 }
- 8005808:	b00d      	add	sp, #52	; 0x34
- 800580a:	bdf0      	pop	{r4, r5, r6, r7, pc}
+ 8005810:	b00d      	add	sp, #52	; 0x34
+ 8005812:	bdf0      	pop	{r4, r5, r6, r7, pc}
     chMtxUnlock(&sdram_ctx_mtx);
- 800580c:	4812      	ldr	r0, [pc, #72]	; (8005858 <sdram_init+0xc8>)
+ 8005814:	4818      	ldr	r0, [pc, #96]	; (8005878 <sdram_init+0xe8>)
+ 8005816:	f7ff fb0b 	bl	8004e30 <chMtxUnlock>
+    chprintf(chp, "[SDRAM] sdram_init(): already initialized\r\n");
+ 800581a:	4918      	ldr	r1, [pc, #96]	; (800587c <sdram_init+0xec>)
+    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
+ 800581c:	4815      	ldr	r0, [pc, #84]	; (8005874 <sdram_init+0xe4>)
 }
- 800580e:	b00d      	add	sp, #52	; 0x34
- 8005810:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
-    chMtxUnlock(&sdram_ctx_mtx);
- 8005814:	f7ff bb0c 	b.w	8004e30 <chMtxUnlock>
+ 800581e:	b00d      	add	sp, #52	; 0x34
+ 8005820:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
+    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
+ 8005824:	f7fc b98c 	b.w	8001b40 <chprintf>
     chMtxLock(&sdram_ctx_mtx);
- 8005818:	480f      	ldr	r0, [pc, #60]	; (8005858 <sdram_init+0xc8>)
- 800581a:	f7ff faf9 	bl	8004e10 <chMtxLock>
+ 8005828:	4813      	ldr	r0, [pc, #76]	; (8005878 <sdram_init+0xe8>)
+ 800582a:	f7ff faf1 	bl	8004e10 <chMtxLock>
     sdram_ctx.state = SDRAM_READY;
- 800581e:	2302      	movs	r3, #2
+ 800582e:	2302      	movs	r3, #2
     chMtxUnlock(&sdram_ctx_mtx);
- 8005820:	480d      	ldr	r0, [pc, #52]	; (8005858 <sdram_init+0xc8>)
+ 8005830:	4811      	ldr	r0, [pc, #68]	; (8005878 <sdram_init+0xe8>)
     sdram_ctx.state = SDRAM_READY;
- 8005822:	7023      	strb	r3, [r4, #0]
+ 8005832:	7023      	strb	r3, [r4, #0]
 }
- 8005824:	b00d      	add	sp, #52	; 0x34
- 8005826:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
+ 8005834:	b00d      	add	sp, #52	; 0x34
+ 8005836:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
     chMtxUnlock(&sdram_ctx_mtx);
- 800582a:	f7ff bb01 	b.w	8004e30 <chMtxUnlock>
+ 800583a:	f7ff baf9 	b.w	8004e30 <chMtxUnlock>
   if (!bist_ok || bist_ctx.result.status != SDRAM_BIST_PASS) {
- 800582e:	f89d 300c 	ldrb.w	r3, [sp, #12]
- 8005832:	2b00      	cmp	r3, #0
- 8005834:	d1e1      	bne.n	80057fa <sdram_init+0x6a>
- 8005836:	2202      	movs	r2, #2
- 8005838:	e7e1      	b.n	80057fe <sdram_init+0x6e>
+ 800583e:	f89d 300c 	ldrb.w	r3, [sp, #12]
+ 8005842:	2b00      	cmp	r3, #0
+ 8005844:	d1dd      	bne.n	8005802 <sdram_init+0x72>
+ 8005846:	2202      	movs	r2, #2
+ 8005848:	e7dd      	b.n	8005806 <sdram_init+0x76>
     chMtxLock(&sdram_ctx_mtx);
- 800583a:	4807      	ldr	r0, [pc, #28]	; (8005858 <sdram_init+0xc8>)
- 800583c:	f7ff fae8 	bl	8004e10 <chMtxLock>
+ 800584a:	480b      	ldr	r0, [pc, #44]	; (8005878 <sdram_init+0xe8>)
+ 800584c:	f7ff fae0 	bl	8004e10 <chMtxLock>
   sdram_ctx.state = SDRAM_FAULT;
- 8005840:	f44f 7382 	mov.w	r3, #260	; 0x104
+ 8005850:	f44f 7382 	mov.w	r3, #260	; 0x104
     chMtxUnlock(&sdram_ctx_mtx);
- 8005844:	4804      	ldr	r0, [pc, #16]	; (8005858 <sdram_init+0xc8>)
+ 8005854:	4808      	ldr	r0, [pc, #32]	; (8005878 <sdram_init+0xe8>)
   sdram_ctx.state = SDRAM_FAULT;
- 8005846:	8023      	strh	r3, [r4, #0]
-}
- 8005848:	b00d      	add	sp, #52	; 0x34
- 800584a:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
+ 8005856:	8023      	strh	r3, [r4, #0]
     chMtxUnlock(&sdram_ctx_mtx);
- 800584e:	f7ff baef 	b.w	8004e30 <chMtxUnlock>
- 8005852:	bf00      	nop
- 8005854:	24000e78 	.word	0x24000e78
- 8005858:	24000000 	.word	0x24000000
- 800585c:	00000000 	.word	0x00000000
-
-08005860 <sdram_is_initialized>:
-
-bool sdram_is_initialized(void) {
- 8005860:	b510      	push	{r4, lr}
-  chMtxLock(&sdram_ctx_mtx);
- 8005862:	4c07      	ldr	r4, [pc, #28]	; (8005880 <sdram_is_initialized+0x20>)
- 8005864:	4620      	mov	r0, r4
- 8005866:	f7ff fad3 	bl	8004e10 <chMtxLock>
-  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
- 800586a:	4b06      	ldr	r3, [pc, #24]	; (8005884 <sdram_is_initialized+0x24>)
-  chMtxUnlock(&sdram_ctx_mtx);
- 800586c:	4620      	mov	r0, r4
-  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
- 800586e:	781c      	ldrb	r4, [r3, #0]
- 8005870:	3c00      	subs	r4, #0
- 8005872:	bf18      	it	ne
- 8005874:	2401      	movne	r4, #1
-  chMtxUnlock(&sdram_ctx_mtx);
- 8005876:	f7ff fadb 	bl	8004e30 <chMtxUnlock>
-  return initialized;
+ 8005858:	f7ff faea 	bl	8004e30 <chMtxUnlock>
+    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
+ 800585c:	4908      	ldr	r1, [pc, #32]	; (8005880 <sdram_init+0xf0>)
+ 800585e:	4805      	ldr	r0, [pc, #20]	; (8005874 <sdram_init+0xe4>)
 }
- 800587a:	4620      	mov	r0, r4
- 800587c:	bd10      	pop	{r4, pc}
- 800587e:	bf00      	nop
- 8005880:	24000000 	.word	0x24000000
- 8005884:	24000e78 	.word	0x24000e78
+ 8005860:	b00d      	add	sp, #52	; 0x34
+ 8005862:	e8bd 40f0 	ldmia.w	sp!, {r4, r5, r6, r7, lr}
+    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
+ 8005866:	f7fc b96b 	b.w	8001b40 <chprintf>
+ 800586a:	bf00      	nop
+ 800586c:	08006368 	.word	0x08006368
+ 8005870:	24000e78 	.word	0x24000e78
+ 8005874:	24000340 	.word	0x24000340
+ 8005878:	24000000 	.word	0x24000000
+ 800587c:	08006388 	.word	0x08006388
+ 8005880:	080063b4 	.word	0x080063b4
 	...
 
-08005890 <sdram_status>:
+08005890 <sdram_is_initialized>:
 
-sdram_state_t sdram_status(void) {
+bool sdram_is_initialized(void) {
  8005890:	b510      	push	{r4, lr}
   chMtxLock(&sdram_ctx_mtx);
- 8005892:	4c05      	ldr	r4, [pc, #20]	; (80058a8 <sdram_status+0x18>)
+ 8005892:	4c07      	ldr	r4, [pc, #28]	; (80058b0 <sdram_is_initialized+0x20>)
  8005894:	4620      	mov	r0, r4
  8005896:	f7ff fabb 	bl	8004e10 <chMtxLock>
-  sdram_state_t state = sdram_ctx.state;
- 800589a:	4b04      	ldr	r3, [pc, #16]	; (80058ac <sdram_status+0x1c>)
+  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
+ 800589a:	4b06      	ldr	r3, [pc, #24]	; (80058b4 <sdram_is_initialized+0x24>)
   chMtxUnlock(&sdram_ctx_mtx);
  800589c:	4620      	mov	r0, r4
-  sdram_state_t state = sdram_ctx.state;
+  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
  800589e:	781c      	ldrb	r4, [r3, #0]
+ 80058a0:	3c00      	subs	r4, #0
+ 80058a2:	bf18      	it	ne
+ 80058a4:	2401      	movne	r4, #1
   chMtxUnlock(&sdram_ctx_mtx);
- 80058a0:	f7ff fac6 	bl	8004e30 <chMtxUnlock>
+ 80058a6:	f7ff fac3 	bl	8004e30 <chMtxUnlock>
+  return initialized;
+}
+ 80058aa:	4620      	mov	r0, r4
+ 80058ac:	bd10      	pop	{r4, pc}
+ 80058ae:	bf00      	nop
+ 80058b0:	24000000 	.word	0x24000000
+ 80058b4:	24000e78 	.word	0x24000e78
+	...
+
+080058c0 <sdram_status>:
+
+sdram_state_t sdram_status(void) {
+ 80058c0:	b510      	push	{r4, lr}
+  chMtxLock(&sdram_ctx_mtx);
+ 80058c2:	4c05      	ldr	r4, [pc, #20]	; (80058d8 <sdram_status+0x18>)
+ 80058c4:	4620      	mov	r0, r4
+ 80058c6:	f7ff faa3 	bl	8004e10 <chMtxLock>
+  sdram_state_t state = sdram_ctx.state;
+ 80058ca:	4b04      	ldr	r3, [pc, #16]	; (80058dc <sdram_status+0x1c>)
+  chMtxUnlock(&sdram_ctx_mtx);
+ 80058cc:	4620      	mov	r0, r4
+  sdram_state_t state = sdram_ctx.state;
+ 80058ce:	781c      	ldrb	r4, [r3, #0]
+  chMtxUnlock(&sdram_ctx_mtx);
+ 80058d0:	f7ff faae 	bl	8004e30 <chMtxUnlock>
   return state;
 }
- 80058a4:	4620      	mov	r0, r4
- 80058a6:	bd10      	pop	{r4, pc}
- 80058a8:	24000000 	.word	0x24000000
- 80058ac:	24000e78 	.word	0x24000e78
+ 80058d4:	4620      	mov	r0, r4
+ 80058d6:	bd10      	pop	{r4, pc}
+ 80058d8:	24000000 	.word	0x24000000
+ 80058dc:	24000e78 	.word	0x24000e78
 
-080058b0 <sdram_run_bist>:
+080058e0 <sdram_run_bist>:
   sdram_error_t error = sdram_ctx.last_error;
   chMtxUnlock(&sdram_ctx_mtx);
   return error;
 }
 
 bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
- 80058b0:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
+ 80058e0:	e92d 43f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, lr}
   sdram_state_t entry_state;
 
   chMtxLock(&sdram_ctx_mtx);
   entry_state = sdram_ctx.state;
- 80058b4:	4d2f      	ldr	r5, [pc, #188]	; (8005974 <sdram_run_bist+0xc4>)
+ 80058e4:	4d2f      	ldr	r5, [pc, #188]	; (80059a4 <sdram_run_bist+0xc4>)
 bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
- 80058b6:	b08d      	sub	sp, #52	; 0x34
- 80058b8:	4606      	mov	r6, r0
+ 80058e6:	b08d      	sub	sp, #52	; 0x34
+ 80058e8:	4606      	mov	r6, r0
   chMtxLock(&sdram_ctx_mtx);
- 80058ba:	482f      	ldr	r0, [pc, #188]	; (8005978 <sdram_run_bist+0xc8>)
+ 80058ea:	482f      	ldr	r0, [pc, #188]	; (80059a8 <sdram_run_bist+0xc8>)
 bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
- 80058bc:	460c      	mov	r4, r1
+ 80058ec:	460c      	mov	r4, r1
   chMtxLock(&sdram_ctx_mtx);
- 80058be:	f7ff faa7 	bl	8004e10 <chMtxLock>
+ 80058ee:	f7ff fa8f 	bl	8004e10 <chMtxLock>
   entry_state = sdram_ctx.state;
- 80058c2:	f895 9000 	ldrb.w	r9, [r5]
+ 80058f2:	f895 9000 	ldrb.w	r9, [r5]
 
   if ((entry_state == SDRAM_NOT_INITIALIZED) || (entry_state == SDRAM_INITIALIZING) || sdram_ctx.bist_running) {
- 80058c6:	f1b9 0f01 	cmp.w	r9, #1
- 80058ca:	d904      	bls.n	80058d6 <sdram_run_bist+0x26>
- 80058cc:	f895 8002 	ldrb.w	r8, [r5, #2]
- 80058d0:	f1b8 0f00 	cmp.w	r8, #0
- 80058d4:	d007      	beq.n	80058e6 <sdram_run_bist+0x36>
+ 80058f6:	f1b9 0f01 	cmp.w	r9, #1
+ 80058fa:	d904      	bls.n	8005906 <sdram_run_bist+0x26>
+ 80058fc:	f895 8002 	ldrb.w	r8, [r5, #2]
+ 8005900:	f1b8 0f00 	cmp.w	r8, #0
+ 8005904:	d007      	beq.n	8005916 <sdram_run_bist+0x36>
     chMtxUnlock(&sdram_ctx_mtx);
     return false;
- 80058d6:	2700      	movs	r7, #0
+ 8005906:	2700      	movs	r7, #0
     chMtxUnlock(&sdram_ctx_mtx);
- 80058d8:	4827      	ldr	r0, [pc, #156]	; (8005978 <sdram_run_bist+0xc8>)
- 80058da:	f7ff faa9 	bl	8004e30 <chMtxUnlock>
+ 8005908:	4827      	ldr	r0, [pc, #156]	; (80059a8 <sdram_run_bist+0xc8>)
+ 800590a:	f7ff fa91 	bl	8004e30 <chMtxUnlock>
     *out_result = sdram_ctx.last_bist_result;
   }
 
   chMtxUnlock(&sdram_ctx_mtx);
   return started;
 }
- 80058de:	4638      	mov	r0, r7
- 80058e0:	b00d      	add	sp, #52	; 0x34
- 80058e2:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
+ 800590e:	4638      	mov	r0, r7
+ 8005910:	b00d      	add	sp, #52	; 0x34
+ 8005912:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
   sdram_ctx.bist_running = true;
- 80058e6:	2301      	movs	r3, #1
+ 8005916:	2301      	movs	r3, #1
   chMtxUnlock(&sdram_ctx_mtx);
- 80058e8:	4823      	ldr	r0, [pc, #140]	; (8005978 <sdram_run_bist+0xc8>)
+ 8005918:	4823      	ldr	r0, [pc, #140]	; (80059a8 <sdram_run_bist+0xc8>)
   sdram_ctx.bist_running = true;
- 80058ea:	70ab      	strb	r3, [r5, #2]
+ 800591a:	70ab      	strb	r3, [r5, #2]
   chMtxUnlock(&sdram_ctx_mtx);
- 80058ec:	f7ff faa0 	bl	8004e30 <chMtxUnlock>
+ 800591c:	f7ff fa88 	bl	8004e30 <chMtxUnlock>
   sdram_bist_context_t ctx = {0};
- 80058f0:	2230      	movs	r2, #48	; 0x30
- 80058f2:	4641      	mov	r1, r8
- 80058f4:	4668      	mov	r0, sp
- 80058f6:	f000 f8ad 	bl	8005a54 <memset>
+ 8005920:	2230      	movs	r2, #48	; 0x30
+ 8005922:	4641      	mov	r1, r8
+ 8005924:	4668      	mov	r0, sp
+ 8005926:	f000 f98f 	bl	8005c48 <memset>
   bool started = sdram_bist_start(&ctx);
- 80058fa:	4668      	mov	r0, sp
+ 800592a:	4668      	mov	r0, sp
   ctx.mode = mode;
- 80058fc:	f88d 6000 	strb.w	r6, [sp]
+ 800592c:	f88d 6000 	strb.w	r6, [sp]
   bool started = sdram_bist_start(&ctx);
- 8005900:	f7ff fdde 	bl	80054c0 <sdram_bist_start>
- 8005904:	4607      	mov	r7, r0
+ 8005930:	f7ff fdc6 	bl	80054c0 <sdram_bist_start>
+ 8005934:	4607      	mov	r7, r0
   chMtxLock(&sdram_ctx_mtx);
- 8005906:	481c      	ldr	r0, [pc, #112]	; (8005978 <sdram_run_bist+0xc8>)
- 8005908:	f7ff fa82 	bl	8004e10 <chMtxLock>
+ 8005936:	481c      	ldr	r0, [pc, #112]	; (80059a8 <sdram_run_bist+0xc8>)
+ 8005938:	f7ff fa6a 	bl	8004e10 <chMtxLock>
   sdram_ctx.bist_running = false;
- 800590c:	f885 8002 	strb.w	r8, [r5, #2]
+ 800593c:	f885 8002 	strb.w	r8, [r5, #2]
   if (started) {
- 8005910:	b1bf      	cbz	r7, 8005942 <sdram_run_bist+0x92>
+ 8005940:	b1bf      	cbz	r7, 8005972 <sdram_run_bist+0x92>
     sdram_ctx.last_bist_result = ctx.result;
- 8005912:	f10d 0e0c 	add.w	lr, sp, #12
- 8005916:	f105 0c04 	add.w	ip, r5, #4
+ 8005942:	f10d 0e0c 	add.w	lr, sp, #12
+ 8005946:	f105 0c04 	add.w	ip, r5, #4
     if (ctx.result.status == SDRAM_BIST_PASS) {
- 800591a:	f89d 800c 	ldrb.w	r8, [sp, #12]
+ 800594a:	f89d 800c 	ldrb.w	r8, [sp, #12]
     sdram_ctx.last_bist_result = ctx.result;
- 800591e:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
- 8005922:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
- 8005926:	e89e 000f 	ldmia.w	lr, {r0, r1, r2, r3}
- 800592a:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
+ 800594e:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
+ 8005952:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 8005956:	e89e 000f 	ldmia.w	lr, {r0, r1, r2, r3}
+ 800595a:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
     if (ctx.result.status == SDRAM_BIST_PASS) {
- 800592e:	f1b8 0f00 	cmp.w	r8, #0
- 8005932:	d117      	bne.n	8005964 <sdram_run_bist+0xb4>
+ 800595e:	f1b8 0f00 	cmp.w	r8, #0
+ 8005962:	d117      	bne.n	8005994 <sdram_run_bist+0xb4>
       if ((entry_state == SDRAM_DEGRADED) && (mode == SDRAM_BIST_MODE_FULL)) {
- 8005934:	f1b9 0f03 	cmp.w	r9, #3
- 8005938:	d103      	bne.n	8005942 <sdram_run_bist+0x92>
- 800593a:	2e01      	cmp	r6, #1
- 800593c:	d101      	bne.n	8005942 <sdram_run_bist+0x92>
+ 8005964:	f1b9 0f03 	cmp.w	r9, #3
+ 8005968:	d103      	bne.n	8005972 <sdram_run_bist+0x92>
+ 800596a:	2e01      	cmp	r6, #1
+ 800596c:	d101      	bne.n	8005972 <sdram_run_bist+0x92>
         sdram_ctx.state = SDRAM_READY;
- 800593e:	2302      	movs	r3, #2
- 8005940:	802b      	strh	r3, [r5, #0]
+ 800596e:	2302      	movs	r3, #2
+ 8005970:	802b      	strh	r3, [r5, #0]
   if (out_result != NULL) {
- 8005942:	b144      	cbz	r4, 8005956 <sdram_run_bist+0xa6>
+ 8005972:	b144      	cbz	r4, 8005986 <sdram_run_bist+0xa6>
     *out_result = sdram_ctx.last_bist_result;
- 8005944:	4d0d      	ldr	r5, [pc, #52]	; (800597c <sdram_run_bist+0xcc>)
- 8005946:	46a4      	mov	ip, r4
- 8005948:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
- 800594a:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
- 800594e:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
- 8005952:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
+ 8005974:	4d0d      	ldr	r5, [pc, #52]	; (80059ac <sdram_run_bist+0xcc>)
+ 8005976:	46a4      	mov	ip, r4
+ 8005978:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800597a:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 800597e:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
+ 8005982:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
   chMtxUnlock(&sdram_ctx_mtx);
- 8005956:	4808      	ldr	r0, [pc, #32]	; (8005978 <sdram_run_bist+0xc8>)
- 8005958:	f7ff fa6a 	bl	8004e30 <chMtxUnlock>
+ 8005986:	4808      	ldr	r0, [pc, #32]	; (80059a8 <sdram_run_bist+0xc8>)
+ 8005988:	f7ff fa52 	bl	8004e30 <chMtxUnlock>
 }
- 800595c:	4638      	mov	r0, r7
- 800595e:	b00d      	add	sp, #52	; 0x34
- 8005960:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
+ 800598c:	4638      	mov	r0, r7
+ 800598e:	b00d      	add	sp, #52	; 0x34
+ 8005990:	e8bd 83f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, pc}
       sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
- 8005964:	2304      	movs	r3, #4
+ 8005994:	2304      	movs	r3, #4
       if (mode == SDRAM_BIST_MODE_FULL) {
- 8005966:	2e01      	cmp	r6, #1
+ 8005996:	2e01      	cmp	r6, #1
       sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
- 8005968:	706b      	strb	r3, [r5, #1]
+ 8005998:	706b      	strb	r3, [r5, #1]
         sdram_ctx.state = SDRAM_DEGRADED;
- 800596a:	bf18      	it	ne
- 800596c:	2303      	movne	r3, #3
- 800596e:	702b      	strb	r3, [r5, #0]
- 8005970:	e7e7      	b.n	8005942 <sdram_run_bist+0x92>
- 8005972:	bf00      	nop
- 8005974:	24000e78 	.word	0x24000e78
- 8005978:	24000000 	.word	0x24000000
- 800597c:	24000e7c 	.word	0x24000e7c
+ 800599a:	bf18      	it	ne
+ 800599c:	2303      	movne	r3, #3
+ 800599e:	702b      	strb	r3, [r5, #0]
+ 80059a0:	e7e7      	b.n	8005972 <sdram_run_bist+0x92>
+ 80059a2:	bf00      	nop
+ 80059a4:	24000e78 	.word	0x24000e78
+ 80059a8:	24000000 	.word	0x24000000
+ 80059ac:	24000e7c 	.word	0x24000e7c
 
-08005980 <sdram_hw_init_sequence>:
-  return (FMC_Bank5_6_R->SDSR & FMC_SDSR_MODES1_Msk) >> FMC_SDSR_MODES1_Pos;
-}
+080059b0 <sdram_hw_init_sequence>:
 
 bool sdram_hw_init_sequence(void)
 {
-  if ((RCC->AHB3ENR & RCC_AHB3ENR_FMCEN) == 0u) {
- 8005980:	4b30      	ldr	r3, [pc, #192]	; (8005a44 <sdram_hw_init_sequence+0xc4>)
- 8005982:	f8d3 20d4 	ldr.w	r2, [r3, #212]	; 0xd4
- 8005986:	04d0      	lsls	r0, r2, #19
+  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+
+  chprintf(chp, "[SDRAM] INIT: FMC/SDRAM sequence start\r\n");
+ 80059b0:	4981      	ldr	r1, [pc, #516]	; (8005bb8 <sdram_hw_init_sequence+0x208>)
+ 80059b2:	4882      	ldr	r0, [pc, #520]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
 {
- 8005988:	b510      	push	{r4, lr}
+ 80059b4:	b570      	push	{r4, r5, r6, lr}
+  chprintf(chp, "[SDRAM] INIT: FMC/SDRAM sequence start\r\n");
+ 80059b6:	f7fc f8c3 	bl	8001b40 <chprintf>
+
+  chprintf(chp, "[SDRAM] STEP: FMC clock enable\r\n");
+ 80059ba:	4981      	ldr	r1, [pc, #516]	; (8005bc0 <sdram_hw_init_sequence+0x210>)
+ 80059bc:	487f      	ldr	r0, [pc, #508]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 80059be:	f7fc f8bf 	bl	8001b40 <chprintf>
   if ((RCC->AHB3ENR & RCC_AHB3ENR_FMCEN) == 0u) {
- 800598a:	d407      	bmi.n	800599c <sdram_hw_init_sequence+0x1c>
+ 80059c2:	4b80      	ldr	r3, [pc, #512]	; (8005bc4 <sdram_hw_init_sequence+0x214>)
+ 80059c4:	f8d3 20d4 	ldr.w	r2, [r3, #212]	; 0xd4
+ 80059c8:	04d1      	lsls	r1, r2, #19
+ 80059ca:	d407      	bmi.n	80059dc <sdram_hw_init_sequence+0x2c>
     RCC->AHB3ENR |= RCC_AHB3ENR_FMCEN;
- 800598c:	f8d3 20d4 	ldr.w	r2, [r3, #212]	; 0xd4
- 8005990:	f442 5280 	orr.w	r2, r2, #4096	; 0x1000
- 8005994:	f8c3 20d4 	str.w	r2, [r3, #212]	; 0xd4
+ 80059cc:	f8d3 20d4 	ldr.w	r2, [r3, #212]	; 0xd4
+ 80059d0:	f442 5280 	orr.w	r2, r2, #4096	; 0x1000
+ 80059d4:	f8c3 20d4 	str.w	r2, [r3, #212]	; 0xd4
     (void)RCC->AHB3ENR;
- 8005998:	f8d3 30d4 	ldr.w	r3, [r3, #212]	; 0xd4
+ 80059d8:	f8d3 30d4 	ldr.w	r3, [r3, #212]	; 0xd4
+  }
+  chprintf(chp, "[SDRAM] STEP: FMC clock enable done\r\n");
+ 80059dc:	497a      	ldr	r1, [pc, #488]	; (8005bc8 <sdram_hw_init_sequence+0x218>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 80059de:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] STEP: FMC clock enable done\r\n");
+ 80059e2:	4876      	ldr	r0, [pc, #472]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 80059e4:	f7fc f8ac 	bl	8001b40 <chprintf>
                         ((6u - 1u) << FMC_SDTRx_TRC_Pos) |   /* tRC  */
                         ((3u - 1u) << FMC_SDTRx_TWR_Pos) |   /* tWR  */
                         ((3u - 1u) << FMC_SDTRx_TRP_Pos) |   /* tRP  */
                         ((3u - 1u) << FMC_SDTRx_TRCD_Pos);   /* tRCD */
 
+  chprintf(chp, "[SDRAM] STEP: Configure SDCR/SDTR\r\n");
+ 80059e8:	4978      	ldr	r1, [pc, #480]	; (8005bcc <sdram_hw_init_sequence+0x21c>)
+ 80059ea:	4874      	ldr	r0, [pc, #464]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 80059ec:	f7fc f8a8 	bl	8001b40 <chprintf>
   FMC_Bank5_6_R->SDCR[0] = sdcr;
- 800599c:	4c2a      	ldr	r4, [pc, #168]	; (8005a48 <sdram_hw_init_sequence+0xc8>)
- 800599e:	f641 1259 	movw	r2, #6489	; 0x1959
+ 80059f0:	4d77      	ldr	r5, [pc, #476]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
   FMC_Bank5_6_R->SDTR[0] = sdtr;
- 80059a2:	4b2a      	ldr	r3, [pc, #168]	; (8005a4c <sdram_hw_init_sequence+0xcc>)
+ 80059f2:	4b78      	ldr	r3, [pc, #480]	; (8005bd4 <sdram_hw_init_sequence+0x224>)
+  FMC_Bank5_6_R->SDCR[0] = sdcr;
+ 80059f4:	f641 1259 	movw	r2, #6489	; 0x1959
+  chprintf(chp, "[SDRAM] STEP: SDCR/SDTR configured\r\n");
+ 80059f8:	4977      	ldr	r1, [pc, #476]	; (8005bd8 <sdram_hw_init_sequence+0x228>)
+  FMC_Bank5_6_R->SDCR[0] = sdcr;
+ 80059fa:	642a      	str	r2, [r5, #64]	; 0x40
+  chprintf(chp, "[SDRAM] STEP: SDCR/SDTR configured\r\n");
+ 80059fc:	486f      	ldr	r0, [pc, #444]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+  FMC_Bank5_6_R->SDTR[0] = sdtr;
+ 80059fe:	64ab      	str	r3, [r5, #72]	; 0x48
+  chprintf(chp, "[SDRAM] STEP: SDCR/SDTR configured\r\n");
+ 8005a00:	f7fc f89e 	bl	8001b40 <chprintf>
 
   chThdSleepMicroseconds(200u);
- 80059a4:	2002      	movs	r0, #2
-  FMC_Bank5_6_R->SDCR[0] = sdcr;
- 80059a6:	6422      	str	r2, [r4, #64]	; 0x40
-  FMC_Bank5_6_R->SDTR[0] = sdtr;
- 80059a8:	64a3      	str	r3, [r4, #72]	; 0x48
-  chThdSleepMicroseconds(200u);
- 80059aa:	f7ff f929 	bl	8004c00 <chThdSleep>
+ 8005a04:	2002      	movs	r0, #2
+ 8005a06:	f7ff f8fb 	bl	8004c00 <chThdSleep>
+
+  chprintf(chp, "[SDRAM] CMD: CLK_ENABLE\r\n");
+ 8005a0a:	4974      	ldr	r1, [pc, #464]	; (8005bdc <sdram_hw_init_sequence+0x22c>)
+ 8005a0c:	486b      	ldr	r0, [pc, #428]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a0e:	f7fc f897 	bl	8001b40 <chprintf>
   FMC_Bank5_6_R->SDCMR = command;
- 80059ae:	2211      	movs	r2, #17
+ 8005a12:	2311      	movs	r3, #17
+ 8005a14:	652b      	str	r3, [r5, #80]	; 0x50
   while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059b0:	f44f 2380 	mov.w	r3, #262144	; 0x40000
-  FMC_Bank5_6_R->SDCMR = command;
- 80059b4:	6522      	str	r2, [r4, #80]	; 0x50
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059b6:	e001      	b.n	80059bc <sdram_hw_init_sequence+0x3c>
+ 8005a16:	e002      	b.n	8005a1e <sdram_hw_init_sequence+0x6e>
     if (timeout-- == 0u) {
- 80059b8:	3b01      	subs	r3, #1
- 80059ba:	d041      	beq.n	8005a40 <sdram_hw_init_sequence+0xc0>
+ 8005a18:	3c01      	subs	r4, #1
+ 8005a1a:	f000 8097 	beq.w	8005b4c <sdram_hw_init_sequence+0x19c>
   while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059bc:	6da2      	ldr	r2, [r4, #88]	; 0x58
- 80059be:	0691      	lsls	r1, r2, #26
- 80059c0:	d4fa      	bmi.n	80059b8 <sdram_hw_init_sequence+0x38>
-
+ 8005a1e:	6dab      	ldr	r3, [r5, #88]	; 0x58
+ 8005a20:	069a      	lsls	r2, r3, #26
+ 8005a22:	d4f9      	bmi.n	8005a18 <sdram_hw_init_sequence+0x68>
   if (!fmc_issue_command(SDRAM_CMD_CLK_ENABLE, 1u, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: CLK_ENABLE (FMC busy)\r\n");
     return false;
   }
+  chprintf(chp, "[SDRAM] WAIT: CLK_ENABLE done (FMC not busy)\r\n");
+ 8005a24:	496e      	ldr	r1, [pc, #440]	; (8005be0 <sdram_hw_init_sequence+0x230>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a26:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] WAIT: CLK_ENABLE done (FMC not busy)\r\n");
+ 8005a2a:	4864      	ldr	r0, [pc, #400]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a2c:	f7fc f888 	bl	8001b40 <chprintf>
 
   chThdSleepMilliseconds(1);
- 80059c2:	200a      	movs	r0, #10
- 80059c4:	f7ff f91c 	bl	8004c00 <chThdSleep>
-  FMC_Bank5_6_R->SDCMR = command;
- 80059c8:	2212      	movs	r2, #18
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059ca:	f44f 2380 	mov.w	r3, #262144	; 0x40000
- 80059ce:	491e      	ldr	r1, [pc, #120]	; (8005a48 <sdram_hw_init_sequence+0xc8>)
-  FMC_Bank5_6_R->SDCMR = command;
- 80059d0:	6522      	str	r2, [r4, #80]	; 0x50
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059d2:	e001      	b.n	80059d8 <sdram_hw_init_sequence+0x58>
-    if (timeout-- == 0u) {
- 80059d4:	3b01      	subs	r3, #1
- 80059d6:	d033      	beq.n	8005a40 <sdram_hw_init_sequence+0xc0>
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059d8:	6d8a      	ldr	r2, [r1, #88]	; 0x58
- 80059da:	0692      	lsls	r2, r2, #26
- 80059dc:	d4fa      	bmi.n	80059d4 <sdram_hw_init_sequence+0x54>
-  FMC_Bank5_6_R->SDCMR = command;
- 80059de:	22f3      	movs	r2, #243	; 0xf3
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059e0:	f44f 2380 	mov.w	r3, #262144	; 0x40000
- 80059e4:	4818      	ldr	r0, [pc, #96]	; (8005a48 <sdram_hw_init_sequence+0xc8>)
-  FMC_Bank5_6_R->SDCMR = command;
- 80059e6:	650a      	str	r2, [r1, #80]	; 0x50
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059e8:	e001      	b.n	80059ee <sdram_hw_init_sequence+0x6e>
-    if (timeout-- == 0u) {
- 80059ea:	3b01      	subs	r3, #1
- 80059ec:	d028      	beq.n	8005a40 <sdram_hw_init_sequence+0xc0>
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059ee:	6d82      	ldr	r2, [r0, #88]	; 0x58
- 80059f0:	0694      	lsls	r4, r2, #26
- 80059f2:	d4fa      	bmi.n	80059ea <sdram_hw_init_sequence+0x6a>
-  FMC_Bank5_6_R->SDCMR = command;
- 80059f4:	f246 4214 	movw	r2, #25620	; 0x6414
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 80059f8:	f44f 2380 	mov.w	r3, #262144	; 0x40000
- 80059fc:	4912      	ldr	r1, [pc, #72]	; (8005a48 <sdram_hw_init_sequence+0xc8>)
-  FMC_Bank5_6_R->SDCMR = command;
- 80059fe:	6502      	str	r2, [r0, #80]	; 0x50
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a00:	e001      	b.n	8005a06 <sdram_hw_init_sequence+0x86>
-    if (timeout-- == 0u) {
- 8005a02:	3b01      	subs	r3, #1
- 8005a04:	d01c      	beq.n	8005a40 <sdram_hw_init_sequence+0xc0>
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a06:	6d8a      	ldr	r2, [r1, #88]	; 0x58
- 8005a08:	0690      	lsls	r0, r2, #26
- 8005a0a:	d4fa      	bmi.n	8005a02 <sdram_hw_init_sequence+0x82>
+ 8005a30:	200a      	movs	r0, #10
+ 8005a32:	f7ff f8e5 	bl	8004c00 <chThdSleep>
 
+  chprintf(chp, "[SDRAM] CMD: PALL\r\n");
+ 8005a36:	496b      	ldr	r1, [pc, #428]	; (8005be4 <sdram_hw_init_sequence+0x234>)
+ 8005a38:	4860      	ldr	r0, [pc, #384]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a3a:	f7fc f881 	bl	8001b40 <chprintf>
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a3e:	2312      	movs	r3, #18
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a40:	4e63      	ldr	r6, [pc, #396]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a42:	652b      	str	r3, [r5, #80]	; 0x50
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a44:	e002      	b.n	8005a4c <sdram_hw_init_sequence+0x9c>
+    if (timeout-- == 0u) {
+ 8005a46:	3c01      	subs	r4, #1
+ 8005a48:	f000 8086 	beq.w	8005b58 <sdram_hw_init_sequence+0x1a8>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a4c:	6db3      	ldr	r3, [r6, #88]	; 0x58
+ 8005a4e:	069b      	lsls	r3, r3, #26
+ 8005a50:	d4f9      	bmi.n	8005a46 <sdram_hw_init_sequence+0x96>
+  if (!fmc_issue_command(SDRAM_CMD_PALL, 1u, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: PALL (FMC busy)\r\n");
+    return false;
+  }
+  chprintf(chp, "[SDRAM] WAIT: PALL done (FMC not busy)\r\n");
+ 8005a52:	4965      	ldr	r1, [pc, #404]	; (8005be8 <sdram_hw_init_sequence+0x238>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a54:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] WAIT: PALL done (FMC not busy)\r\n");
+ 8005a58:	4858      	ldr	r0, [pc, #352]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a5a:	f7fc f871 	bl	8001b40 <chprintf>
+
+  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH\r\n");
+ 8005a5e:	4963      	ldr	r1, [pc, #396]	; (8005bec <sdram_hw_init_sequence+0x23c>)
+ 8005a60:	4856      	ldr	r0, [pc, #344]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a62:	f7fc f86d 	bl	8001b40 <chprintf>
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a66:	23f3      	movs	r3, #243	; 0xf3
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a68:	4d59      	ldr	r5, [pc, #356]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a6a:	6533      	str	r3, [r6, #80]	; 0x50
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a6c:	e001      	b.n	8005a72 <sdram_hw_init_sequence+0xc2>
+    if (timeout-- == 0u) {
+ 8005a6e:	3c01      	subs	r4, #1
+ 8005a70:	d078      	beq.n	8005b64 <sdram_hw_init_sequence+0x1b4>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a72:	6dab      	ldr	r3, [r5, #88]	; 0x58
+ 8005a74:	069e      	lsls	r6, r3, #26
+ 8005a76:	d4fa      	bmi.n	8005a6e <sdram_hw_init_sequence+0xbe>
+  if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, 8u, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
+    return false;
+  }
+  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH done (FMC not busy)\r\n");
+ 8005a78:	495d      	ldr	r1, [pc, #372]	; (8005bf0 <sdram_hw_init_sequence+0x240>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a7a:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH done (FMC not busy)\r\n");
+ 8005a7e:	484f      	ldr	r0, [pc, #316]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a80:	f7fc f85e 	bl	8001b40 <chprintf>
+
+  chprintf(chp, "[SDRAM] CMD: LOAD_MODE\r\n");
+ 8005a84:	495b      	ldr	r1, [pc, #364]	; (8005bf4 <sdram_hw_init_sequence+0x244>)
+ 8005a86:	484d      	ldr	r0, [pc, #308]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005a88:	f7fc f85a 	bl	8001b40 <chprintf>
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a8c:	4b5a      	ldr	r3, [pc, #360]	; (8005bf8 <sdram_hw_init_sequence+0x248>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a8e:	4e50      	ldr	r6, [pc, #320]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005a90:	652b      	str	r3, [r5, #80]	; 0x50
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a92:	e001      	b.n	8005a98 <sdram_hw_init_sequence+0xe8>
+    if (timeout-- == 0u) {
+ 8005a94:	3c01      	subs	r4, #1
+ 8005a96:	d06b      	beq.n	8005b70 <sdram_hw_init_sequence+0x1c0>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005a98:	6db3      	ldr	r3, [r6, #88]	; 0x58
+ 8005a9a:	0698      	lsls	r0, r3, #26
+ 8005a9c:	d4fa      	bmi.n	8005a94 <sdram_hw_init_sequence+0xe4>
   if (!fmc_issue_command(SDRAM_CMD_LOAD_MODE, 1u, SDRAM_MODE_REGISTER_VALUE)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: LOAD_MODE (FMC busy)\r\n");
     return false;
   }
+  chprintf(chp, "[SDRAM] WAIT: LOAD_MODE done (FMC not busy)\r\n");
+ 8005a9e:	4957      	ldr	r1, [pc, #348]	; (8005bfc <sdram_hw_init_sequence+0x24c>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005aa0:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] WAIT: LOAD_MODE done (FMC not busy)\r\n");
+ 8005aa4:	4845      	ldr	r0, [pc, #276]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005aa6:	f7fc f84b 	bl	8001b40 <chprintf>
 
+  chprintf(chp, "[SDRAM] STEP: Refresh counter set\r\n");
+ 8005aaa:	4955      	ldr	r1, [pc, #340]	; (8005c00 <sdram_hw_init_sequence+0x250>)
+ 8005aac:	4843      	ldr	r0, [pc, #268]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005aae:	f7fc f847 	bl	8001b40 <chprintf>
   uint32_t sdrtr = FMC_Bank5_6_R->SDRTR;
- 8005a0c:	6d4c      	ldr	r4, [r1, #84]	; 0x54
+ 8005ab2:	6d71      	ldr	r1, [r6, #84]	; 0x54
   sdrtr &= ~FMC_SDRTR_COUNT_Msk;
+ 8005ab4:	4a53      	ldr	r2, [pc, #332]	; (8005c04 <sdram_hw_init_sequence+0x254>)
   sdrtr |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
- 8005a0e:	f240 52f2 	movw	r2, #1522	; 0x5f2
-  sdrtr &= ~FMC_SDRTR_COUNT_Msk;
- 8005a12:	480f      	ldr	r0, [pc, #60]	; (8005a50 <sdram_hw_init_sequence+0xd0>)
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a14:	f44f 2380 	mov.w	r3, #262144	; 0x40000
-  sdrtr &= ~FMC_SDRTR_COUNT_Msk;
- 8005a18:	4020      	ands	r0, r4
-  sdrtr |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
- 8005a1a:	4302      	orrs	r2, r0
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a1c:	480a      	ldr	r0, [pc, #40]	; (8005a48 <sdram_hw_init_sequence+0xc8>)
+ 8005ab6:	f240 53f2 	movw	r3, #1522	; 0x5f2
   FMC_Bank5_6_R->SDRTR = sdrtr;
- 8005a1e:	654a      	str	r2, [r1, #84]	; 0x54
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a20:	e001      	b.n	8005a26 <sdram_hw_init_sequence+0xa6>
-    if (timeout-- == 0u) {
- 8005a22:	3b01      	subs	r3, #1
- 8005a24:	d00c      	beq.n	8005a40 <sdram_hw_init_sequence+0xc0>
-  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
- 8005a26:	6d82      	ldr	r2, [r0, #88]	; 0x58
- 8005a28:	0692      	lsls	r2, r2, #26
- 8005a2a:	d4fa      	bmi.n	8005a22 <sdram_hw_init_sequence+0xa2>
+  chprintf(chp, "[SDRAM] STEP: Refresh counter set done\r\n");
+ 8005aba:	4840      	ldr	r0, [pc, #256]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+  sdrtr &= ~FMC_SDRTR_COUNT_Msk;
+ 8005abc:	400a      	ands	r2, r1
+  chprintf(chp, "[SDRAM] STEP: Refresh counter set done\r\n");
+ 8005abe:	4952      	ldr	r1, [pc, #328]	; (8005c08 <sdram_hw_init_sequence+0x258>)
+  sdrtr |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
+ 8005ac0:	4313      	orrs	r3, r2
+  FMC_Bank5_6_R->SDRTR = sdrtr;
+ 8005ac2:	6573      	str	r3, [r6, #84]	; 0x54
+  chprintf(chp, "[SDRAM] STEP: Refresh counter set done\r\n");
+ 8005ac4:	f7fc f83c 	bl	8001b40 <chprintf>
 
+  chprintf(chp, "[SDRAM] WAIT: FMC not busy after refresh update\r\n");
+ 8005ac8:	4950      	ldr	r1, [pc, #320]	; (8005c0c <sdram_hw_init_sequence+0x25c>)
+ 8005aca:	483c      	ldr	r0, [pc, #240]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005acc:	4e40      	ldr	r6, [pc, #256]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  chprintf(chp, "[SDRAM] WAIT: FMC not busy after refresh update\r\n");
+ 8005ace:	f7fc f837 	bl	8001b40 <chprintf>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005ad2:	e001      	b.n	8005ad8 <sdram_hw_init_sequence+0x128>
+    if (timeout-- == 0u) {
+ 8005ad4:	3c01      	subs	r4, #1
+ 8005ad6:	d051      	beq.n	8005b7c <sdram_hw_init_sequence+0x1cc>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005ad8:	6db5      	ldr	r5, [r6, #88]	; 0x58
+ 8005ada:	f015 0520 	ands.w	r5, r5, #32
+ 8005ade:	d1f9      	bne.n	8005ad4 <sdram_hw_init_sequence+0x124>
   if (!fmc_wait_while_busy(SDRAM_TIMEOUT_CYCLES)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: Refresh update (FMC busy)\r\n");
     return false;
   }
+  chprintf(chp, "[SDRAM] WAIT: FMC not busy (refresh update done)\r\n");
+ 8005ae0:	494b      	ldr	r1, [pc, #300]	; (8005c10 <sdram_hw_init_sequence+0x260>)
+ 8005ae2:	4836      	ldr	r0, [pc, #216]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005ae4:	f7fc f82c 	bl	8001b40 <chprintf>
 
   const uint32_t status = FMC_Bank5_6_R->SDSR;
- 8005a2c:	6d83      	ldr	r3, [r0, #88]	; 0x58
+ 8005ae8:	6db3      	ldr	r3, [r6, #88]	; 0x58
   if ((status & FMC_SDSR_RE) != 0u) {
- 8005a2e:	07db      	lsls	r3, r3, #31
- 8005a30:	d406      	bmi.n	8005a40 <sdram_hw_init_sequence+0xc0>
-  return (FMC_Bank5_6_R->SDSR & FMC_SDSR_MODES1_Msk) >> FMC_SDSR_MODES1_Pos;
- 8005a32:	6d83      	ldr	r3, [r0, #88]	; 0x58
+ 8005aea:	07db      	lsls	r3, r3, #31
+ 8005aec:	d44c      	bmi.n	8005b88 <sdram_hw_init_sequence+0x1d8>
+    chprintf(chp, "[SDRAM][ERR] Refresh error flagged (SDSR.RE)\r\n");
     return false;
   }
 
-  const uint32_t mode = fmc_current_mode();
-  if (mode != 0u) {
- 8005a34:	f013 0f06 	tst.w	r3, #6
- 8005a38:	bf0c      	ite	eq
- 8005a3a:	2001      	moveq	r0, #1
- 8005a3c:	2000      	movne	r0, #0
+  chprintf(chp, "[SDRAM] CMD: NORMAL\r\n");
+ 8005aee:	4949      	ldr	r1, [pc, #292]	; (8005c14 <sdram_hw_init_sequence+0x264>)
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005af0:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] CMD: NORMAL\r\n");
+ 8005af4:	4831      	ldr	r0, [pc, #196]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005af6:	f7fc f823 	bl	8001b40 <chprintf>
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005afa:	2310      	movs	r3, #16
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005afc:	4a34      	ldr	r2, [pc, #208]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  FMC_Bank5_6_R->SDCMR = command;
+ 8005afe:	6533      	str	r3, [r6, #80]	; 0x50
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005b00:	e001      	b.n	8005b06 <sdram_hw_init_sequence+0x156>
+    if (timeout-- == 0u) {
+ 8005b02:	3c01      	subs	r4, #1
+ 8005b04:	d046      	beq.n	8005b94 <sdram_hw_init_sequence+0x1e4>
+  while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
+ 8005b06:	6d93      	ldr	r3, [r2, #88]	; 0x58
+ 8005b08:	0699      	lsls	r1, r3, #26
+ 8005b0a:	d4fa      	bmi.n	8005b02 <sdram_hw_init_sequence+0x152>
+  if (!fmc_issue_command(SDRAM_CMD_NORMAL, 0u, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL (FMC busy)\r\n");
     return false;
   }
+  chprintf(chp, "[SDRAM] WAIT: NORMAL command done (FMC not busy)\r\n");
+ 8005b0c:	4942      	ldr	r1, [pc, #264]	; (8005c18 <sdram_hw_init_sequence+0x268>)
+  while (fmc_current_mode() != expected_mode) {
+ 8005b0e:	f44f 2480 	mov.w	r4, #262144	; 0x40000
+  chprintf(chp, "[SDRAM] WAIT: NORMAL command done (FMC not busy)\r\n");
+ 8005b12:	482a      	ldr	r0, [pc, #168]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b14:	f7fc f814 	bl	8001b40 <chprintf>
+
+  chprintf(chp, "[SDRAM] WAIT: NORMAL mode\r\n");
+ 8005b18:	4940      	ldr	r1, [pc, #256]	; (8005c1c <sdram_hw_init_sequence+0x26c>)
+ 8005b1a:	4828      	ldr	r0, [pc, #160]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b1c:	f7fc f810 	bl	8001b40 <chprintf>
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
+ 8005b20:	4a2b      	ldr	r2, [pc, #172]	; (8005bd0 <sdram_hw_init_sequence+0x220>)
+  while (fmc_current_mode() != expected_mode) {
+ 8005b22:	e001      	b.n	8005b28 <sdram_hw_init_sequence+0x178>
+    if (timeout-- == 0u) {
+ 8005b24:	3c01      	subs	r4, #1
+ 8005b26:	d041      	beq.n	8005bac <sdram_hw_init_sequence+0x1fc>
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
+ 8005b28:	6d93      	ldr	r3, [r2, #88]	; 0x58
+  while (fmc_current_mode() != expected_mode) {
+ 8005b2a:	f013 0f06 	tst.w	r3, #6
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
+ 8005b2e:	f3c3 0541 	ubfx	r5, r3, #1, #2
+  while (fmc_current_mode() != expected_mode) {
+ 8005b32:	d1f7      	bne.n	8005b24 <sdram_hw_init_sequence+0x174>
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
+ 8005b34:	6d93      	ldr	r3, [r2, #88]	; 0x58
+  if (!fmc_wait_for_mode(SDRAM_CMD_NORMAL, SDRAM_TIMEOUT_CYCLES)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL mode (SDSR.MODE)\r\n");
+    return false;
+  }
+  const uint32_t mode = fmc_current_mode();
+  if (mode != SDRAM_CMD_NORMAL) {
+ 8005b36:	f013 0f06 	tst.w	r3, #6
+  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
+ 8005b3a:	f3c3 0241 	ubfx	r2, r3, #1, #2
+  if (mode != SDRAM_CMD_NORMAL) {
+ 8005b3e:	d12f      	bne.n	8005ba0 <sdram_hw_init_sequence+0x1f0>
+    chprintf(chp, "[SDRAM][ERR] Mode mismatch after init: %lu\r\n", (unsigned long)mode);
+    return false;
+  }
+  chprintf(chp, "[SDRAM] STEP: NORMAL mode active\r\n");
+ 8005b40:	4937      	ldr	r1, [pc, #220]	; (8005c20 <sdram_hw_init_sequence+0x270>)
+ 8005b42:	481e      	ldr	r0, [pc, #120]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b44:	f7fb fffc 	bl	8001b40 <chprintf>
 
   return true;
+ 8005b48:	2001      	movs	r0, #1
 }
- 8005a3e:	bd10      	pop	{r4, pc}
+ 8005b4a:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: CLK_ENABLE (FMC busy)\r\n");
+ 8005b4c:	4935      	ldr	r1, [pc, #212]	; (8005c24 <sdram_hw_init_sequence+0x274>)
+ 8005b4e:	481b      	ldr	r0, [pc, #108]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b50:	f7fb fff6 	bl	8001b40 <chprintf>
     return false;
- 8005a40:	2000      	movs	r0, #0
+ 8005b54:	4620      	mov	r0, r4
 }
- 8005a42:	bd10      	pop	{r4, pc}
- 8005a44:	58024400 	.word	0x58024400
- 8005a48:	52004100 	.word	0x52004100
- 8005a4c:	02225571 	.word	0x02225571
- 8005a50:	ffffc001 	.word	0xffffc001
+ 8005b56:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: PALL (FMC busy)\r\n");
+ 8005b58:	4933      	ldr	r1, [pc, #204]	; (8005c28 <sdram_hw_init_sequence+0x278>)
+ 8005b5a:	4818      	ldr	r0, [pc, #96]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b5c:	f7fb fff0 	bl	8001b40 <chprintf>
+    return false;
+ 8005b60:	4620      	mov	r0, r4
+}
+ 8005b62:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
+ 8005b64:	4931      	ldr	r1, [pc, #196]	; (8005c2c <sdram_hw_init_sequence+0x27c>)
+ 8005b66:	4815      	ldr	r0, [pc, #84]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b68:	f7fb ffea 	bl	8001b40 <chprintf>
+    return false;
+ 8005b6c:	4620      	mov	r0, r4
+}
+ 8005b6e:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: LOAD_MODE (FMC busy)\r\n");
+ 8005b70:	492f      	ldr	r1, [pc, #188]	; (8005c30 <sdram_hw_init_sequence+0x280>)
+ 8005b72:	4812      	ldr	r0, [pc, #72]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b74:	f7fb ffe4 	bl	8001b40 <chprintf>
+    return false;
+ 8005b78:	4620      	mov	r0, r4
+}
+ 8005b7a:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: Refresh update (FMC busy)\r\n");
+ 8005b7c:	492d      	ldr	r1, [pc, #180]	; (8005c34 <sdram_hw_init_sequence+0x284>)
+ 8005b7e:	480f      	ldr	r0, [pc, #60]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b80:	f7fb ffde 	bl	8001b40 <chprintf>
+    return false;
+ 8005b84:	4620      	mov	r0, r4
+}
+ 8005b86:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] Refresh error flagged (SDSR.RE)\r\n");
+ 8005b88:	492b      	ldr	r1, [pc, #172]	; (8005c38 <sdram_hw_init_sequence+0x288>)
+ 8005b8a:	480c      	ldr	r0, [pc, #48]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b8c:	f7fb ffd8 	bl	8001b40 <chprintf>
+    return false;
+ 8005b90:	4628      	mov	r0, r5
+}
+ 8005b92:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL (FMC busy)\r\n");
+ 8005b94:	4929      	ldr	r1, [pc, #164]	; (8005c3c <sdram_hw_init_sequence+0x28c>)
+ 8005b96:	4809      	ldr	r0, [pc, #36]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005b98:	f7fb ffd2 	bl	8001b40 <chprintf>
+    return false;
+ 8005b9c:	4620      	mov	r0, r4
+}
+ 8005b9e:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] Mode mismatch after init: %lu\r\n", (unsigned long)mode);
+ 8005ba0:	4927      	ldr	r1, [pc, #156]	; (8005c40 <sdram_hw_init_sequence+0x290>)
+ 8005ba2:	4806      	ldr	r0, [pc, #24]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005ba4:	f7fb ffcc 	bl	8001b40 <chprintf>
+    return false;
+ 8005ba8:	4628      	mov	r0, r5
+}
+ 8005baa:	bd70      	pop	{r4, r5, r6, pc}
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL mode (SDSR.MODE)\r\n");
+ 8005bac:	4925      	ldr	r1, [pc, #148]	; (8005c44 <sdram_hw_init_sequence+0x294>)
+ 8005bae:	4803      	ldr	r0, [pc, #12]	; (8005bbc <sdram_hw_init_sequence+0x20c>)
+ 8005bb0:	f7fb ffc6 	bl	8001b40 <chprintf>
+    return false;
+ 8005bb4:	4620      	mov	r0, r4
+}
+ 8005bb6:	bd70      	pop	{r4, r5, r6, pc}
+ 8005bb8:	080063e4 	.word	0x080063e4
+ 8005bbc:	24000340 	.word	0x24000340
+ 8005bc0:	08006410 	.word	0x08006410
+ 8005bc4:	58024400 	.word	0x58024400
+ 8005bc8:	08006434 	.word	0x08006434
+ 8005bcc:	0800645c 	.word	0x0800645c
+ 8005bd0:	52004100 	.word	0x52004100
+ 8005bd4:	02225571 	.word	0x02225571
+ 8005bd8:	08006480 	.word	0x08006480
+ 8005bdc:	080064a8 	.word	0x080064a8
+ 8005be0:	08006878 	.word	0x08006878
+ 8005be4:	080068a8 	.word	0x080068a8
+ 8005be8:	080067d8 	.word	0x080067d8
+ 8005bec:	08006804 	.word	0x08006804
+ 8005bf0:	08006788 	.word	0x08006788
+ 8005bf4:	080067bc 	.word	0x080067bc
+ 8005bf8:	00046014 	.word	0x00046014
+ 8005bfc:	080066a4 	.word	0x080066a4
+ 8005c00:	080066d4 	.word	0x080066d4
+ 8005c04:	ffffc001 	.word	0xffffc001
+ 8005c08:	080066f8 	.word	0x080066f8
+ 8005c0c:	08006724 	.word	0x08006724
+ 8005c10:	08006640 	.word	0x08006640
+ 8005c14:	080064f4 	.word	0x080064f4
+ 8005c18:	080065bc 	.word	0x080065bc
+ 8005c1c:	080065f0 	.word	0x080065f0
+ 8005c20:	0800653c 	.word	0x0800653c
+ 8005c24:	08006848 	.word	0x08006848
+ 8005c28:	08006820 	.word	0x08006820
+ 8005c2c:	08006758 	.word	0x08006758
+ 8005c30:	08006674 	.word	0x08006674
+ 8005c34:	0800660c 	.word	0x0800660c
+ 8005c38:	080064c4 	.word	0x080064c4
+ 8005c3c:	08006590 	.word	0x08006590
+ 8005c40:	0800650c 	.word	0x0800650c
+ 8005c44:	08006560 	.word	0x08006560
 
-08005a54 <memset>:
- 8005a54:	0783      	lsls	r3, r0, #30
- 8005a56:	b530      	push	{r4, r5, lr}
- 8005a58:	d048      	beq.n	8005aec <memset+0x98>
- 8005a5a:	1e54      	subs	r4, r2, #1
- 8005a5c:	2a00      	cmp	r2, #0
- 8005a5e:	d03f      	beq.n	8005ae0 <memset+0x8c>
- 8005a60:	b2ca      	uxtb	r2, r1
- 8005a62:	4603      	mov	r3, r0
- 8005a64:	e001      	b.n	8005a6a <memset+0x16>
- 8005a66:	3c01      	subs	r4, #1
- 8005a68:	d33a      	bcc.n	8005ae0 <memset+0x8c>
- 8005a6a:	f803 2b01 	strb.w	r2, [r3], #1
- 8005a6e:	079d      	lsls	r5, r3, #30
- 8005a70:	d1f9      	bne.n	8005a66 <memset+0x12>
- 8005a72:	2c03      	cmp	r4, #3
- 8005a74:	d92d      	bls.n	8005ad2 <memset+0x7e>
- 8005a76:	b2cd      	uxtb	r5, r1
- 8005a78:	ea45 2505 	orr.w	r5, r5, r5, lsl #8
- 8005a7c:	2c0f      	cmp	r4, #15
- 8005a7e:	ea45 4505 	orr.w	r5, r5, r5, lsl #16
- 8005a82:	d936      	bls.n	8005af2 <memset+0x9e>
- 8005a84:	f1a4 0210 	sub.w	r2, r4, #16
- 8005a88:	f022 0c0f 	bic.w	ip, r2, #15
- 8005a8c:	f103 0e20 	add.w	lr, r3, #32
- 8005a90:	44e6      	add	lr, ip
- 8005a92:	ea4f 1c12 	mov.w	ip, r2, lsr #4
- 8005a96:	f103 0210 	add.w	r2, r3, #16
- 8005a9a:	e942 5504 	strd	r5, r5, [r2, #-16]
- 8005a9e:	e942 5502 	strd	r5, r5, [r2, #-8]
- 8005aa2:	3210      	adds	r2, #16
- 8005aa4:	4572      	cmp	r2, lr
- 8005aa6:	d1f8      	bne.n	8005a9a <memset+0x46>
- 8005aa8:	f10c 0201 	add.w	r2, ip, #1
- 8005aac:	f014 0f0c 	tst.w	r4, #12
- 8005ab0:	eb03 1202 	add.w	r2, r3, r2, lsl #4
- 8005ab4:	f004 0c0f 	and.w	ip, r4, #15
- 8005ab8:	d013      	beq.n	8005ae2 <memset+0x8e>
- 8005aba:	f1ac 0304 	sub.w	r3, ip, #4
- 8005abe:	f023 0303 	bic.w	r3, r3, #3
- 8005ac2:	3304      	adds	r3, #4
- 8005ac4:	4413      	add	r3, r2
- 8005ac6:	f842 5b04 	str.w	r5, [r2], #4
- 8005aca:	4293      	cmp	r3, r2
- 8005acc:	d1fb      	bne.n	8005ac6 <memset+0x72>
- 8005ace:	f00c 0403 	and.w	r4, ip, #3
- 8005ad2:	b12c      	cbz	r4, 8005ae0 <memset+0x8c>
- 8005ad4:	b2c9      	uxtb	r1, r1
- 8005ad6:	441c      	add	r4, r3
- 8005ad8:	f803 1b01 	strb.w	r1, [r3], #1
- 8005adc:	429c      	cmp	r4, r3
- 8005ade:	d1fb      	bne.n	8005ad8 <memset+0x84>
- 8005ae0:	bd30      	pop	{r4, r5, pc}
- 8005ae2:	4664      	mov	r4, ip
- 8005ae4:	4613      	mov	r3, r2
- 8005ae6:	2c00      	cmp	r4, #0
- 8005ae8:	d1f4      	bne.n	8005ad4 <memset+0x80>
- 8005aea:	e7f9      	b.n	8005ae0 <memset+0x8c>
- 8005aec:	4603      	mov	r3, r0
- 8005aee:	4614      	mov	r4, r2
- 8005af0:	e7bf      	b.n	8005a72 <memset+0x1e>
- 8005af2:	461a      	mov	r2, r3
- 8005af4:	46a4      	mov	ip, r4
- 8005af6:	e7e0      	b.n	8005aba <memset+0x66>
+08005c48 <memset>:
+ 8005c48:	0783      	lsls	r3, r0, #30
+ 8005c4a:	b530      	push	{r4, r5, lr}
+ 8005c4c:	d048      	beq.n	8005ce0 <memset+0x98>
+ 8005c4e:	1e54      	subs	r4, r2, #1
+ 8005c50:	2a00      	cmp	r2, #0
+ 8005c52:	d03f      	beq.n	8005cd4 <memset+0x8c>
+ 8005c54:	b2ca      	uxtb	r2, r1
+ 8005c56:	4603      	mov	r3, r0
+ 8005c58:	e001      	b.n	8005c5e <memset+0x16>
+ 8005c5a:	3c01      	subs	r4, #1
+ 8005c5c:	d33a      	bcc.n	8005cd4 <memset+0x8c>
+ 8005c5e:	f803 2b01 	strb.w	r2, [r3], #1
+ 8005c62:	079d      	lsls	r5, r3, #30
+ 8005c64:	d1f9      	bne.n	8005c5a <memset+0x12>
+ 8005c66:	2c03      	cmp	r4, #3
+ 8005c68:	d92d      	bls.n	8005cc6 <memset+0x7e>
+ 8005c6a:	b2cd      	uxtb	r5, r1
+ 8005c6c:	ea45 2505 	orr.w	r5, r5, r5, lsl #8
+ 8005c70:	2c0f      	cmp	r4, #15
+ 8005c72:	ea45 4505 	orr.w	r5, r5, r5, lsl #16
+ 8005c76:	d936      	bls.n	8005ce6 <memset+0x9e>
+ 8005c78:	f1a4 0210 	sub.w	r2, r4, #16
+ 8005c7c:	f022 0c0f 	bic.w	ip, r2, #15
+ 8005c80:	f103 0e20 	add.w	lr, r3, #32
+ 8005c84:	44e6      	add	lr, ip
+ 8005c86:	ea4f 1c12 	mov.w	ip, r2, lsr #4
+ 8005c8a:	f103 0210 	add.w	r2, r3, #16
+ 8005c8e:	e942 5504 	strd	r5, r5, [r2, #-16]
+ 8005c92:	e942 5502 	strd	r5, r5, [r2, #-8]
+ 8005c96:	3210      	adds	r2, #16
+ 8005c98:	4572      	cmp	r2, lr
+ 8005c9a:	d1f8      	bne.n	8005c8e <memset+0x46>
+ 8005c9c:	f10c 0201 	add.w	r2, ip, #1
+ 8005ca0:	f014 0f0c 	tst.w	r4, #12
+ 8005ca4:	eb03 1202 	add.w	r2, r3, r2, lsl #4
+ 8005ca8:	f004 0c0f 	and.w	ip, r4, #15
+ 8005cac:	d013      	beq.n	8005cd6 <memset+0x8e>
+ 8005cae:	f1ac 0304 	sub.w	r3, ip, #4
+ 8005cb2:	f023 0303 	bic.w	r3, r3, #3
+ 8005cb6:	3304      	adds	r3, #4
+ 8005cb8:	4413      	add	r3, r2
+ 8005cba:	f842 5b04 	str.w	r5, [r2], #4
+ 8005cbe:	4293      	cmp	r3, r2
+ 8005cc0:	d1fb      	bne.n	8005cba <memset+0x72>
+ 8005cc2:	f00c 0403 	and.w	r4, ip, #3
+ 8005cc6:	b12c      	cbz	r4, 8005cd4 <memset+0x8c>
+ 8005cc8:	b2c9      	uxtb	r1, r1
+ 8005cca:	441c      	add	r4, r3
+ 8005ccc:	f803 1b01 	strb.w	r1, [r3], #1
+ 8005cd0:	429c      	cmp	r4, r3
+ 8005cd2:	d1fb      	bne.n	8005ccc <memset+0x84>
+ 8005cd4:	bd30      	pop	{r4, r5, pc}
+ 8005cd6:	4664      	mov	r4, ip
+ 8005cd8:	4613      	mov	r3, r2
+ 8005cda:	2c00      	cmp	r4, #0
+ 8005cdc:	d1f4      	bne.n	8005cc8 <memset+0x80>
+ 8005cde:	e7f9      	b.n	8005cd4 <memset+0x8c>
+ 8005ce0:	4603      	mov	r3, r0
+ 8005ce2:	4614      	mov	r4, r2
+ 8005ce4:	e7bf      	b.n	8005c66 <memset+0x1e>
+ 8005ce6:	461a      	mov	r2, r3
+ 8005ce8:	46a4      	mov	ip, r4
+ 8005cea:	e7e0      	b.n	8005cae <memset+0x66>

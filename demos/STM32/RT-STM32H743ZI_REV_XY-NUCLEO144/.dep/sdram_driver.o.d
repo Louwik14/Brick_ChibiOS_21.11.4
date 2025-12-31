@@ -102,7 +102,8 @@ build/obj/sdram_driver.o: drivers/sdram/sdram_driver.c \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
  ../../../os/hal/include/hal_serial_usb.h drivers/sdram/sdram_driver.h \
- drivers/sdram/sdram_driver_priv.h drivers/sdram/sdram_layout.h
+ drivers/sdram/sdram_driver_priv.h drivers/sdram/sdram_layout.h \
+ ../../../os/hal/lib/streams/chprintf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -238,3 +239,4 @@ cfg/mcuconf.h:
 drivers/sdram/sdram_driver.h:
 drivers/sdram/sdram_driver_priv.h:
 drivers/sdram/sdram_layout.h:
+../../../os/hal/lib/streams/chprintf.h:
