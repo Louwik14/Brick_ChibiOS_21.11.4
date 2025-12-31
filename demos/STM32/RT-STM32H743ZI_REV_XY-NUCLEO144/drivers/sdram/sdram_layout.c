@@ -23,6 +23,10 @@
 #error "SDRAM base address is not aligned to audio alignment"
 #endif
 
+#if (SDRAM_AUDIO_ALIGNMENT_BYTES < 32u)
+#error "SDRAM audio alignment must be at least 32 bytes for DMA"
+#endif
+
 #if (((SDRAM_LOOP_BYTES % SDRAM_AUDIO_ALIGNMENT_BYTES) != 0) || \
      ((SDRAM_DELAY_BYTES % SDRAM_AUDIO_ALIGNMENT_BYTES) != 0) || \
      ((SDRAM_FX_BYTES % SDRAM_AUDIO_ALIGNMENT_BYTES) != 0))
@@ -127,4 +131,3 @@ bool sdram_query_region_descriptor(sdram_region_id_t id, sdram_region_info_t *ou
 
   return true;
 }
-

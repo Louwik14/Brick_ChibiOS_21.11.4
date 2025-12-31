@@ -53,14 +53,6 @@ void sdram_init(bool run_quick_bist) {
     return;
   }
 
-  // MPU region configuration for cache attributes.
-  if (!sdram_configure_mpu_regions()) {
-    chMtxLock(&sdram_ctx_mtx);
-    sdram_set_fault_locked(SDRAM_ERR_PARAM);
-    chMtxUnlock(&sdram_ctx_mtx);
-    return;
-  }
-
   if (!run_quick_bist) {
     chMtxLock(&sdram_ctx_mtx);
     sdram_ctx.state = SDRAM_READY;
@@ -71,6 +63,7 @@ void sdram_init(bool run_quick_bist) {
   // Quick BIST at boot (synchronous or quasi-synchronous).
   sdram_bist_context_t bist_ctx = {0};
   bist_ctx.mode = SDRAM_BIST_MODE_QUICK;
+  bist_ctx.abort_flag = NULL;
 
   chMtxLock(&sdram_ctx_mtx);
   sdram_ctx.bist_running = true;
@@ -123,6 +116,7 @@ bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
 
   sdram_bist_context_t ctx = {0};
   ctx.mode = mode;
+  ctx.abort_flag = NULL;
 
   bool started = sdram_bist_start(&ctx);
 
@@ -183,4 +177,3 @@ bool sdram_get_region(sdram_region_id_t region_id, sdram_region_info_t *out_info
 
   return true;
 }
-

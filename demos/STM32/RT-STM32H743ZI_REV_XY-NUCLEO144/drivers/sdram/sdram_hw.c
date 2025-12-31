@@ -1,12 +1,15 @@
+/*
+ * NOTE:
+ * - SDRAM timings/refresh are calibrated for SDCLK = 100 MHz (HCLK = 200 MHz)
+ *   on W9825G6KH.
+ * - MPU and cache configuration are intentionally disabled at this project stage.
+ */
 #include "ch.h"
 #include "stm32h7xx.h"
 #include "stm32h743xx.h"
-#include "core_cm7.h"
 #include "sdram_driver_priv.h"
-#include "sdram_layout.h"
-#include "mpu_map.h"
 
-#define SDRAM_REFRESH_COUNT       (761u)
+#define SDRAM_REFRESH_COUNT       (761u) /* Valid only for SDCLK = 100 MHz (W9825G6KH, 64 ms / 8192 rows). */
 #define SDRAM_TIMEOUT_CYCLES      (0x3FFFFu)
 #define SDRAM_MODE_REGISTER_VALUE (0x0032u)
 #define SDRAM_SDSR_BUSY           (1u << 5) /* RM0455: SDSR busy flag (bit 5) */
@@ -60,6 +63,7 @@ bool sdram_hw_init_sequence(void)
                         FMC_SDCRx_SDCLK_1 | /* 2 HCLK period */
                         FMC_SDCRx_RBURST; /* enable read burst */
 
+  /* Timing values below are calibrated for W9825G6KH at SDCLK = 100 MHz. */
   const uint32_t sdtr = ((2u - 1u) << FMC_SDTRx_TMRD_Pos) |  /* tMRD */
                         ((8u - 1u) << FMC_SDTRx_TXSR_Pos) |  /* tXSR */
                         ((6u - 1u) << FMC_SDTRx_TRAS_Pos) |  /* tRAS */
@@ -112,64 +116,3 @@ bool sdram_hw_init_sequence(void)
 
   return true;
 }
-
-bool sdram_configure_mpu_regions(void)
-{
-  const uintptr_t sdram_end = SDRAM_BASE_ADDRESS + SDRAM_TOTAL_SIZE_BYTES;
-
-#if (SDRAM_ENABLE_CACHE_RESIDUAL == 1)
-  const uintptr_t residual_base = SDRAM_BASE_ADDRESS + (31u * 1024u * 1024u);
-  const uintptr_t residual_end = residual_base + (1u * 1024u * 1024u);
-
-  if ((residual_base < SDRAM_BASE_ADDRESS) || (residual_end > sdram_end)) {
-    return false;
-  }
-#endif
-
-  ARM_MPU_Disable();
-  __DSB();
-  __ISB();
-
-  /*
-   * Main SDRAM: Normal memory, non-cacheable, shareable (TEX=1,C=0,B=0,S=1)
-   * so that DMA/audio transfers remain deterministic with D-Cache enabled.
-   */
-  ARM_MPU_SetRegion(ARM_MPU_RBAR(MPU_REGION_SDRAM_MAIN, SDRAM_BASE_ADDRESS),
-                    ARM_MPU_RASR(0u,
-                                 ARM_MPU_AP_FULL,
-                                 1u,
-                                 1u,
-                                 0u,
-                                 0u,
-                                 0u,
-                                 ARM_MPU_REGION_SIZE_32MB));
-
-#if (SDRAM_ENABLE_CACHE_RESIDUAL == 1)
-  /*
-   * CPU-only residual: Normal cacheable (non-shareable) for scratch use.
-   * DMA is explicitly forbidden on this window.
-   */
-  ARM_MPU_SetRegion(ARM_MPU_RBAR(MPU_REGION_SDRAM_RESIDUAL, residual_base),
-                    ARM_MPU_RASR(0u,
-                                 ARM_MPU_AP_FULL,
-                                 0u,
-                                 0u,
-                                 1u,
-                                 0u,
-                                 0u,
-                                 ARM_MPU_REGION_SIZE_1MB));
-#endif
-
-  __DSB();
-  __ISB();
-
-  SCB_InvalidateDCache();
-  __DSB();
-  __ISB();
-  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
-  __DSB();
-  __ISB();
-
-  return true;
-}
-

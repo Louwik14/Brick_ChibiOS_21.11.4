@@ -33,24 +33,16 @@ typedef struct {
   uint32_t patterns_executed;
   uint32_t words_target;
   sdram_bist_result_t result;
+  volatile const bool *abort_flag;
 } sdram_bist_context_t;
 
 /**
- * @brief Initialize FMC + MPU mapping (internal helper).
+ * @brief Initialize FMC SDRAM sequence (internal helper).
  *
  * Executes the JEDEC-compliant SDRAM sequence and programs the refresh counter.
  * Returns false if the FMC reports a timeout or if refresh remains inactive.
  */
 bool sdram_hw_init_sequence(void);
-
-/**
- * @brief Configure/enable MPU regions for SDRAM logical layout.
- *
- * Should map audio regions as non-cacheable, shareable and the optional residual
- * region as cacheable CPU-only. Returns false on misconfiguration or parameter
- * mismatch.
- */
-bool sdram_configure_mpu_regions(void);
 
 /**
  * @brief Populate the public region info structure from the static descriptors.
