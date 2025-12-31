@@ -21,6 +21,7 @@
 
 #include "hal.h"
 #include "stm32_gpio.h"
+#include "board.h"
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
@@ -140,6 +141,7 @@ static const gpio_config_t gpio_default_config = {
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
+#if BOARD_USE_FMC
 static uint32_t sdram_ns_to_cycles(uint32_t clock_hz, uint32_t time_ns) {
   uint64_t cycles = ((uint64_t)clock_hz * (uint64_t)time_ns + 999999999ULL) /
                     1000000000ULL;
@@ -167,6 +169,7 @@ static void sdram_send_command(uint32_t mode, uint32_t refresh_count,
                          ((mode_register << FMC_SDCMR_MRD_Pos) & FMC_SDCMR_MRD);
   sdram_wait_ready();
 }
+#endif
 
 static void gpio_init(stm32_gpio_t *gpiop, const gpio_setup_t *config) {
 
@@ -290,7 +293,7 @@ bool mmc_lld_is_write_protected(MMCDriver *mmcp) {
  * @note    You can add your board-specific code here.
  */
 void boardInit(void) {
-
+#if BOARD_USE_FMC
   /* Mode register: BL=1, sequential, CAS=3, single write. */
   static const uint32_t sdram_mode = 0x230U;
   const uint32_t sdram_clk_hz = STM32_FMCCLK / 2U;
@@ -335,4 +338,5 @@ void boardInit(void) {
   sdram_send_command(4U, 0U, sdram_mode);
 
   FMC_Bank5_6_R->SDRTR = (refresh_count << FMC_SDRTR_COUNT_Pos);
+#endif
 }
