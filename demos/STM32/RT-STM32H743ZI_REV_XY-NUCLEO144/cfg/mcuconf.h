@@ -65,7 +65,7 @@
  * Clock tree static settings.
  * Reading STM32 Reference Manual is required.
  */
-#define USE_HSI_ONLY_FOR_DEBUG              TRUE
+#define USE_HSI_ONLY_FOR_DEBUG              FALSE
 
 #define STM32_HSI_ENABLED                   TRUE
 #define STM32_LSI_ENABLED                   FALSE

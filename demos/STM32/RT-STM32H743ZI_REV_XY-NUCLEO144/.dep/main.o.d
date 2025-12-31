@@ -101,7 +101,8 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_st.h \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
- ../../../os/hal/include/hal_serial_usb.h
+ ../../../os/hal/include/hal_serial_usb.h \
+ ../../../os/hal/lib/streams/chprintf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -234,3 +235,4 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h:
 ../../../os/hal/include/hal_mmc_spi.h:
 ../../../os/hal/include/hal_serial_usb.h:
+../../../os/hal/lib/streams/chprintf.h:

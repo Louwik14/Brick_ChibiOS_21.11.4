@@ -104,7 +104,8 @@ build/obj/board.o: \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
  ../../../os/hal/include/hal_serial_usb.h \
- ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h
+ ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h
 ../../../os/hal/include/hal.h:
 ../../../os/common/portability/GCC/ccportab.h:
 ../../../os/hal/osal/rt-nil/osal.h:
@@ -238,3 +239,4 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_mmc_spi.h:
 ../../../os/hal/include/hal_serial_usb.h:
 ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
