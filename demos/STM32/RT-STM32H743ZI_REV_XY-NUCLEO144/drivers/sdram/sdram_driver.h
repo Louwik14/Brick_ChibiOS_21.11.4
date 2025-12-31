@@ -118,7 +118,7 @@ typedef struct {
 /**
  * @brief Initialize the SDRAM controller and memory map.
  *
- * - Must be invoked from a ChibiOS thread during boot, after clocks/MPU setup
+ * - Must be invoked from a ChibiOS thread during boot, after clocks setup
  *   and before starting any audio processing.
  * - Optionally triggers a quick BIST (mode SDRAM_BIST_MODE_QUICK) depending on
  *   the implementation and parameter.
