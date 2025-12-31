@@ -65,7 +65,7 @@
  * Clock tree static settings.
  * Reading STM32 Reference Manual is required.
  */
-#define USE_HSI_ONLY_FOR_DEBUG              FALSE
+#define USE_HSI_ONLY_FOR_DEBUG              TRUE
 
 #define STM32_HSI_ENABLED                   TRUE
 #define STM32_LSI_ENABLED                   FALSE
@@ -107,8 +107,8 @@
 #define STM32_PLL2_P_ENABLED                FALSE
 #define STM32_PLL2_Q_ENABLED                FALSE
 #define STM32_PLL2_R_ENABLED                FALSE
-#define STM32_PLL2_DIVM_VALUE               1
-#define STM32_PLL2_DIVN_VALUE               1
+#define STM32_PLL2_DIVM_VALUE               4
+#define STM32_PLL2_DIVN_VALUE               20
 #define STM32_PLL2_FRACN_VALUE              0
 #define STM32_PLL2_DIVP_VALUE               2
 #define STM32_PLL2_DIVQ_VALUE               2
@@ -118,8 +118,8 @@
 #define STM32_PLL3_P_ENABLED                FALSE
 #define STM32_PLL3_Q_ENABLED                FALSE
 #define STM32_PLL3_R_ENABLED                FALSE
-#define STM32_PLL3_DIVM_VALUE               1
-#define STM32_PLL3_DIVN_VALUE               1
+#define STM32_PLL3_DIVM_VALUE               4
+#define STM32_PLL3_DIVN_VALUE               20
 #define STM32_PLL3_FRACN_VALUE              0
 #define STM32_PLL3_DIVP_VALUE               2
 #define STM32_PLL3_DIVQ_VALUE               2
@@ -188,17 +188,17 @@
 #define STM32_STOPKERWUCK                   0
 #define STM32_STOPWUCK                      0
 #define STM32_RTCPRE_VALUE                  8
-#define STM32_CKPERSEL                      STM32_CKPERSEL_HSE_CK
+#define STM32_CKPERSEL                      STM32_CKPERSEL_HSI_CK
 #define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL1_Q_CK
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
-#define STM32_FDCANSEL                      STM32_FDCANSEL_HSE_CK
+#define STM32_FDCANSEL                      STM32_FDCANSEL_PLL1_Q_CK
 #define STM32_DFSDM1SEL                     STM32_DFSDM1SEL_PCLK2
 #define STM32_SPDIFSEL                      STM32_SPDIFSEL_PLL1_Q_CK
 #define STM32_SPI45SEL                      STM32_SPI45SEL_PCLK2
-#define STM32_SPI123SEL                     STM32_SPI123SEL_PLL3_P_CK
-#define STM32_SAI23SEL                      STM32_SAI23SEL_PLL2_P_CK
+#define STM32_SPI123SEL                     STM32_SPI123SEL_PLL1_Q_CK
+#define STM32_SAI23SEL                      STM32_SAI23SEL_PLL1_Q_CK
 #define STM32_SAI1SEL                       STM32_SAI1SEL_PLL1_Q_CK
 #define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_PCLK1
 #define STM32_CECSEL                        STM32_CECSEL_LSI_CK
@@ -210,7 +210,7 @@
 #define STM32_SPI6SEL                       STM32_SPI6SEL_PCLK4
 #define STM32_SAI4BSEL                      STM32_SAI4BSEL_PLL1_Q_CK
 #define STM32_SAI4ASEL                      STM32_SAI4ASEL_PLL1_Q_CK
-#define STM32_ADCSEL                        STM32_ADCSEL_PLL3_R_CK
+#define STM32_ADCSEL                        STM32_ADCSEL_DISABLE
 #define STM32_LPTIM345SEL                   STM32_LPTIM345SEL_PCLK4
 #define STM32_LPTIM2SEL                     STM32_LPTIM2SEL_PCLK4
 #define STM32_I2C4SEL                       STM32_I2C4SEL_PCLK4
