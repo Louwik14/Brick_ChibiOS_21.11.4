@@ -33,6 +33,7 @@ static void bist_record_error(sdram_bist_result_t *res,
                               uint16_t expected,
                               uint16_t observed,
                               sdram_bist_error_t classification) {
+  (void)observed;
   res->error_count++;
   if (res->first_error == SDRAM_BIST_ERR_NONE) {
     res->first_error_address = addr;

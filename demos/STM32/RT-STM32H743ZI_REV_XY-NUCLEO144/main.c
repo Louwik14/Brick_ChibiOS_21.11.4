@@ -46,12 +46,15 @@ int main(void) {
         if (!sdram_is_initialized()) {
             chprintf(chp, "\r\n[INFO] SDRAM not initialized, starting init...\r\n");
 
-            if (!sdram_init()) {
+            sdram_init(true);
+
+            sdram_state_t state = sdram_status();
+            if ((state != SDRAM_READY) && (state != SDRAM_DEGRADED)) {
                 chprintf(chp, "[ERR ] SDRAM init FAILED\r\n");
             } else {
                 chprintf(chp, "[OK  ] SDRAM init OK\r\n");
 
-                if (!sdram_quick_bist()) {
+                if (!sdram_run_bist(SDRAM_BIST_MODE_QUICK, NULL)) {
                     chprintf(chp, "[ERR ] SDRAM QUICK_BIST FAILED\r\n");
                 } else {
                     chprintf(chp, "[OK  ] SDRAM QUICK_BIST PASSED\r\n");
