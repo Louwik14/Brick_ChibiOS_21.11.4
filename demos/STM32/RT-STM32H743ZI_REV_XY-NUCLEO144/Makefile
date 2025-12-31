@@ -121,7 +121,10 @@ LDSCRIPT= $(STARTUPLD)/STM32H743xI.ld
 # setting.
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
-       main.c
+       main.c \
+       $(wildcard drivers/*.c) \
+       $(wildcard drivers/sdram/*.c) \
+       
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -164,6 +167,8 @@ ULIBDIR =
 
 # List all user libraries here
 ULIBS =
+INCDIR += drivers
+INCDIR += drivers/sdram
 
 #
 # End of user section
