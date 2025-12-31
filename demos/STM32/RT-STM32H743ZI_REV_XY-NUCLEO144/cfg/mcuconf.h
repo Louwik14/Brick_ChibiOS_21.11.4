@@ -65,11 +65,17 @@
  * Clock tree static settings.
  * Reading STM32 Reference Manual is required.
  */
+#define USE_HSI_ONLY_FOR_DEBUG              FALSE
+
 #define STM32_HSI_ENABLED                   TRUE
 #define STM32_LSI_ENABLED                   FALSE
 #define STM32_CSI_ENABLED                   FALSE
 #define STM32_HSI48_ENABLED                 TRUE
+#if USE_HSI_ONLY_FOR_DEBUG
+#define STM32_HSE_ENABLED                   FALSE
+#else
 #define STM32_HSE_ENABLED                   TRUE
+#endif
 #define STM32_LSE_ENABLED                   FALSE
 #define STM32_HSIDIV                        STM32_HSIDIV_DIV1
 
@@ -77,9 +83,48 @@
  * PLLs static settings.
  * Reading STM32 Reference Manual is required.
  */
+#if USE_HSI_ONLY_FOR_DEBUG
+#define STM32_PLLSRC                        STM32_PLLSRC_HSI_CK
+#else
 #define STM32_PLLSRC                        STM32_PLLSRC_HSE_CK
+#endif
 #define STM32_PLLCFGR_MASK                  ~0
 
+#if USE_HSI_ONLY_FOR_DEBUG
+/* PLL1: SYSCLK = 400 MHz from HSI (debug-only, PLL1 only). */
+#define STM32_PLL1_ENABLED                  TRUE
+#define STM32_PLL1_P_ENABLED                TRUE
+#define STM32_PLL1_Q_ENABLED                TRUE
+#define STM32_PLL1_R_ENABLED                FALSE
+#define STM32_PLL1_DIVM_VALUE               4
+#define STM32_PLL1_DIVN_VALUE               50
+#define STM32_PLL1_FRACN_VALUE              0
+#define STM32_PLL1_DIVP_VALUE               2
+#define STM32_PLL1_DIVQ_VALUE               10
+#define STM32_PLL1_DIVR_VALUE               2
+
+#define STM32_PLL2_ENABLED                  FALSE
+#define STM32_PLL2_P_ENABLED                FALSE
+#define STM32_PLL2_Q_ENABLED                FALSE
+#define STM32_PLL2_R_ENABLED                FALSE
+#define STM32_PLL2_DIVM_VALUE               1
+#define STM32_PLL2_DIVN_VALUE               1
+#define STM32_PLL2_FRACN_VALUE              0
+#define STM32_PLL2_DIVP_VALUE               2
+#define STM32_PLL2_DIVQ_VALUE               2
+#define STM32_PLL2_DIVR_VALUE               2
+
+#define STM32_PLL3_ENABLED                  FALSE
+#define STM32_PLL3_P_ENABLED                FALSE
+#define STM32_PLL3_Q_ENABLED                FALSE
+#define STM32_PLL3_R_ENABLED                FALSE
+#define STM32_PLL3_DIVM_VALUE               1
+#define STM32_PLL3_DIVN_VALUE               1
+#define STM32_PLL3_FRACN_VALUE              0
+#define STM32_PLL3_DIVP_VALUE               2
+#define STM32_PLL3_DIVQ_VALUE               2
+#define STM32_PLL3_DIVR_VALUE               2
+#else
 /* PLL1: SYSCLK = 400 MHz (system only, within rev XY limits). */
 #define STM32_PLL1_ENABLED                  TRUE
 #define STM32_PLL1_P_ENABLED                TRUE
@@ -115,6 +160,7 @@
 #define STM32_PLL3_DIVP_VALUE               4      /* SPI123 kernel = 72 MHz */
 #define STM32_PLL3_DIVQ_VALUE               6      /* unused */
 #define STM32_PLL3_DIVR_VALUE               8      /* ADC kernel = 36 MHz */
+#endif
 
 /*
  * Core clocks dynamic settings (can be changed at runtime).
