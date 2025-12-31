@@ -27,7 +27,6 @@
                                       SDRAM_MODE_STANDARD_OPERATION |    \
                                       SDRAM_MODE_WRITEBURST_SINGLE)
 
-#define SDRAM_CMD_NORMAL         (0u)
 #define SDRAM_CMD_CLK_ENABLE     (1u)
 #define SDRAM_CMD_PALL           (2u)
 #define SDRAM_CMD_AUTOREFRESH    (3u)
@@ -35,25 +34,11 @@
 
 /* FMC Bank1 (SDNE0/SDCKE0) selection for this board. */
 #define SDRAM_FMC_TARGET_BANK    FMC_SDCMR_CTB1
-#define SDRAM_SDSR_MODE_MASK     FMC_SDSR_MODES1_Msk
-#define SDRAM_SDSR_MODE_SHIFT    FMC_SDSR_MODES1_Pos
-
-static uint32_t fmc_current_mode(void);
+#define SDRAM_AUTOREFRESH_CYCLES (4u)
 
 static bool fmc_wait_while_busy(uint32_t timeout)
 {
   while ((FMC_Bank5_6_R->SDSR & SDRAM_SDSR_BUSY) != 0u) {
-    if (timeout-- == 0u) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-static bool fmc_wait_for_mode(uint32_t expected_mode, uint32_t timeout)
-{
-  while (fmc_current_mode() != expected_mode) {
     if (timeout-- == 0u) {
       return false;
     }
@@ -70,18 +55,25 @@ static bool fmc_issue_command(uint32_t mode, uint32_t auto_refresh, uint32_t mod
                             FMC_SDCMR_NRFS_Msk) |
                            ((mode_reg << FMC_SDCMR_MRD_Pos) & FMC_SDCMR_MRD_Msk);
 
+  if (!fmc_wait_while_busy(SDRAM_TIMEOUT_CYCLES)) {
+    return false;
+  }
+
   FMC_Bank5_6_R->SDCMR = command;
   return fmc_wait_while_busy(SDRAM_TIMEOUT_CYCLES);
-}
-
-static uint32_t fmc_current_mode(void)
-{
-  return (FMC_Bank5_6_R->SDSR & SDRAM_SDSR_MODE_MASK) >> SDRAM_SDSR_MODE_SHIFT;
 }
 
 bool sdram_hw_init_sequence(void)
 {
   BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+
+  /*
+   * Minimal JEDEC init sequence inspired by the STM32F4 Ksoloti driver:
+   * - Only poll FMC busy, no reliance on MODE/NORMAL status reporting.
+   * - Avoid extra synchronization (NORMAL command + MODE polling) that can
+   *   stall init on H7 even when command sequencing is correct.
+   * - Program refresh right after LOAD MODE and exit.
+   */
 
   chprintf(chp, "[SDRAM] INIT: FMC/SDRAM sequence start\r\n");
 
@@ -117,7 +109,7 @@ bool sdram_hw_init_sequence(void)
   chThdSleepMicroseconds(200u);
 
   chprintf(chp, "[SDRAM] CMD: CLK_ENABLE\r\n");
-  if (!fmc_issue_command(SDRAM_CMD_CLK_ENABLE, 1u, 0u)) {
+  if (!fmc_issue_command(SDRAM_CMD_CLK_ENABLE, 0u, 0u)) {
     chprintf(chp, "[SDRAM][ERR] TIMEOUT: CLK_ENABLE (FMC busy)\r\n");
     return false;
   }
@@ -126,21 +118,28 @@ bool sdram_hw_init_sequence(void)
   chThdSleepMilliseconds(1);
 
   chprintf(chp, "[SDRAM] CMD: PALL\r\n");
-  if (!fmc_issue_command(SDRAM_CMD_PALL, 1u, 0u)) {
+  if (!fmc_issue_command(SDRAM_CMD_PALL, 0u, 0u)) {
     chprintf(chp, "[SDRAM][ERR] TIMEOUT: PALL (FMC busy)\r\n");
     return false;
   }
   chprintf(chp, "[SDRAM] WAIT: PALL done (FMC not busy)\r\n");
 
-  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH\r\n");
-  if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, 8u, 0u)) {
+  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH (1/2)\r\n");
+  if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, SDRAM_AUTOREFRESH_CYCLES, 0u)) {
     chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH done (FMC not busy)\r\n");
+  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH (1/2) done (FMC not busy)\r\n");
+
+  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH (2/2)\r\n");
+  if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, SDRAM_AUTOREFRESH_CYCLES, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
+    return false;
+  }
+  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH (2/2) done (FMC not busy)\r\n");
 
   chprintf(chp, "[SDRAM] CMD: LOAD_MODE\r\n");
-  if (!fmc_issue_command(SDRAM_CMD_LOAD_MODE, 1u, SDRAM_MODE_REGISTER_VALUE)) {
+  if (!fmc_issue_command(SDRAM_CMD_LOAD_MODE, 0u, SDRAM_MODE_REGISTER_VALUE)) {
     chprintf(chp, "[SDRAM][ERR] TIMEOUT: LOAD_MODE (FMC busy)\r\n");
     return false;
   }
@@ -159,31 +158,6 @@ bool sdram_hw_init_sequence(void)
     return false;
   }
   chprintf(chp, "[SDRAM] WAIT: FMC not busy (refresh update done)\r\n");
-
-  const uint32_t status = FMC_Bank5_6_R->SDSR;
-  if ((status & FMC_SDSR_RE) != 0u) {
-    chprintf(chp, "[SDRAM][ERR] Refresh error flagged (SDSR.RE)\r\n");
-    return false;
-  }
-
-  chprintf(chp, "[SDRAM] CMD: NORMAL\r\n");
-  if (!fmc_issue_command(SDRAM_CMD_NORMAL, 0u, 0u)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL (FMC busy)\r\n");
-    return false;
-  }
-  chprintf(chp, "[SDRAM] WAIT: NORMAL command done (FMC not busy)\r\n");
-
-  chprintf(chp, "[SDRAM] WAIT: NORMAL mode\r\n");
-  if (!fmc_wait_for_mode(SDRAM_CMD_NORMAL, SDRAM_TIMEOUT_CYCLES)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL mode (SDSR.MODE)\r\n");
-    return false;
-  }
-  const uint32_t mode = fmc_current_mode();
-  if (mode != SDRAM_CMD_NORMAL) {
-    chprintf(chp, "[SDRAM][ERR] Mode mismatch after init: %lu\r\n", (unsigned long)mode);
-    return false;
-  }
-  chprintf(chp, "[SDRAM] STEP: NORMAL mode active\r\n");
 
   return true;
 }
