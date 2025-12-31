@@ -166,6 +166,13 @@ bool sdram_hw_init_sequence(void)
     return false;
   }
 
+  chprintf(chp, "[SDRAM] CMD: NORMAL\r\n");
+  if (!fmc_issue_command(SDRAM_CMD_NORMAL, 0u, 0u)) {
+    chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL (FMC busy)\r\n");
+    return false;
+  }
+  chprintf(chp, "[SDRAM] WAIT: NORMAL command done (FMC not busy)\r\n");
+
   chprintf(chp, "[SDRAM] WAIT: NORMAL mode\r\n");
   if (!fmc_wait_for_mode(SDRAM_CMD_NORMAL, SDRAM_TIMEOUT_CYCLES)) {
     chprintf(chp, "[SDRAM][ERR] TIMEOUT: NORMAL mode (SDSR.MODE)\r\n");
