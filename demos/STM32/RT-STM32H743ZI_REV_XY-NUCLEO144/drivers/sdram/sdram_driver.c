@@ -5,7 +5,7 @@
 #include "sdram_driver_priv.h"
 #include "sdram_layout.h"
 
-// Global driver context and mutex protecting state/error/BIST fields.
+/* Global driver context */
 sdram_driver_ctx_t sdram_ctx = {
   .state = SDRAM_NOT_INITIALIZED,
   .last_error = SDRAM_ERR_NONE,
@@ -15,16 +15,15 @@ sdram_driver_ctx_t sdram_ctx = {
 
 MUTEX_DECL(sdram_ctx_mtx);
 
+/* ---- internal helpers --------------------------------------------------- */
+
 static void sdram_set_fault_locked(sdram_error_t error) {
   sdram_ctx.state = SDRAM_FAULT;
   sdram_ctx.last_error = error;
 }
 
 static void sdram_clear_region_info(sdram_region_info_t *info) {
-  if (info == NULL) {
-    return;
-  }
-
+  if (!info) return;
   info->id = SDRAM_REGION_INVALID;
   info->base = 0u;
   info->size_bytes = 0u;
@@ -32,20 +31,22 @@ static void sdram_clear_region_info(sdram_region_info_t *info) {
   info->alignment_bytes = 0u;
 }
 
+/* ---- public API ---------------------------------------------------------- */
+
 void sdram_init(bool run_quick_bist) {
-  // Ensure single initialization sequence.
+
+  /* Single init guard */
   chMtxLock(&sdram_ctx_mtx);
   if (sdram_ctx.state != SDRAM_NOT_INITIALIZED) {
     chMtxUnlock(&sdram_ctx_mtx);
     return;
   }
-
   sdram_ctx.state = SDRAM_INITIALIZING;
   sdram_ctx.last_error = SDRAM_ERR_NONE;
   sdram_ctx.bist_running = false;
   chMtxUnlock(&sdram_ctx_mtx);
 
-  // Hardware/FMC initialization sequence.
+  /* ---- FMC / SDRAM HW init ---- */
   if (!sdram_hw_init_sequence()) {
     chMtxLock(&sdram_ctx_mtx);
     sdram_set_fault_locked(SDRAM_ERR_FMC_TIMEOUT);
@@ -53,14 +54,19 @@ void sdram_init(bool run_quick_bist) {
     return;
   }
 
+  /* ✅ IMPORTANT :
+   * SDRAM is USABLE immediately after HW init on STM32H7
+   */
+  chMtxLock(&sdram_ctx_mtx);
+  sdram_ctx.state = SDRAM_READY;
+  sdram_ctx.last_error = SDRAM_ERR_NONE;
+  chMtxUnlock(&sdram_ctx_mtx);
+
+  /* ---- Optional QUICK BIST ---- */
   if (!run_quick_bist) {
-    chMtxLock(&sdram_ctx_mtx);
-    sdram_ctx.state = SDRAM_READY;
-    chMtxUnlock(&sdram_ctx_mtx);
     return;
   }
 
-  // Quick BIST at boot (synchronous or quasi-synchronous).
   sdram_bist_context_t bist_ctx = {0};
   bist_ctx.mode = SDRAM_BIST_MODE_QUICK;
   bist_ctx.abort_flag = NULL;
@@ -69,55 +75,48 @@ void sdram_init(bool run_quick_bist) {
   sdram_ctx.bist_running = true;
   chMtxUnlock(&sdram_ctx_mtx);
 
-  bool bist_ok = sdram_bist_start(&bist_ctx);
+  bool ok = sdram_bist_start(&bist_ctx);
 
   chMtxLock(&sdram_ctx_mtx);
   sdram_ctx.bist_running = false;
   sdram_ctx.last_bist_result = bist_ctx.result;
 
-  if (!bist_ok || bist_ctx.result.status != SDRAM_BIST_PASS) {
-    sdram_ctx.state = SDRAM_DEGRADED;
+  if (!ok || bist_ctx.result.status != SDRAM_BIST_PASS) {
+    sdram_ctx.state = SDRAM_DEGRADED;     /* ⚠️ usable but warn */
     sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
-  } else {
-    sdram_ctx.state = SDRAM_READY;
-    sdram_ctx.last_error = SDRAM_ERR_NONE;
   }
-
   chMtxUnlock(&sdram_ctx_mtx);
 }
 
 bool sdram_is_initialized(void) {
   chMtxLock(&sdram_ctx_mtx);
-  bool initialized = (sdram_ctx.state != SDRAM_NOT_INITIALIZED);
+  bool ok = (sdram_ctx.state == SDRAM_READY ||
+             sdram_ctx.state == SDRAM_DEGRADED);
   chMtxUnlock(&sdram_ctx_mtx);
-  return initialized;
+  return ok;
 }
 
 sdram_state_t sdram_status(void) {
   chMtxLock(&sdram_ctx_mtx);
-  sdram_state_t state = sdram_ctx.state;
+  sdram_state_t st = sdram_ctx.state;
   chMtxUnlock(&sdram_ctx_mtx);
-  return state;
+  return st;
 }
 
 sdram_error_t sdram_get_error(void) {
   chMtxLock(&sdram_ctx_mtx);
-  sdram_error_t error = sdram_ctx.last_error;
+  sdram_error_t err = sdram_ctx.last_error;
   chMtxUnlock(&sdram_ctx_mtx);
-  return error;
+  return err;
 }
 
 bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
-  sdram_state_t entry_state;
 
   chMtxLock(&sdram_ctx_mtx);
-  entry_state = sdram_ctx.state;
-
-  if ((entry_state == SDRAM_NOT_INITIALIZED) || (entry_state == SDRAM_INITIALIZING) || sdram_ctx.bist_running) {
+  if (sdram_ctx.bist_running || sdram_ctx.state == SDRAM_NOT_INITIALIZED) {
     chMtxUnlock(&sdram_ctx_mtx);
     return false;
   }
-
   sdram_ctx.bist_running = true;
   chMtxUnlock(&sdram_ctx_mtx);
 
@@ -125,57 +124,39 @@ bool sdram_run_bist(sdram_bist_mode_t mode, sdram_bist_result_t *out_result) {
   ctx.mode = mode;
   ctx.abort_flag = NULL;
 
-  bool started = sdram_bist_start(&ctx);
+  bool ok = sdram_bist_start(&ctx);
 
   chMtxLock(&sdram_ctx_mtx);
   sdram_ctx.bist_running = false;
+  sdram_ctx.last_bist_result = ctx.result;
 
-  if (started) {
-    sdram_ctx.last_bist_result = ctx.result;
-
-    if (ctx.result.status == SDRAM_BIST_PASS) {
-      if ((entry_state == SDRAM_DEGRADED) && (mode == SDRAM_BIST_MODE_FULL)) {
-        sdram_ctx.state = SDRAM_READY;
-        sdram_ctx.last_error = SDRAM_ERR_NONE;
-      }
-    } else {
-      sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
-
-      if (mode == SDRAM_BIST_MODE_FULL) {
-        sdram_ctx.state = SDRAM_FAULT;
-      } else {
-        sdram_ctx.state = SDRAM_DEGRADED;
-      }
-    }
+  if (!ok || ctx.result.status != SDRAM_BIST_PASS) {
+    sdram_ctx.state = (mode == SDRAM_BIST_MODE_FULL)
+                        ? SDRAM_FAULT
+                        : SDRAM_DEGRADED;
+    sdram_ctx.last_error = SDRAM_ERR_BIST_FAIL;
   }
 
-  if (out_result != NULL) {
-    *out_result = sdram_ctx.last_bist_result;
+  if (out_result) {
+    *out_result = ctx.result;
   }
-
   chMtxUnlock(&sdram_ctx_mtx);
-  return started;
+
+  return ok;
 }
 
-bool sdram_get_region(sdram_region_id_t region_id, sdram_region_info_t *out_info) {
-  if (out_info == NULL) {
-    return false;
-  }
+bool sdram_get_region(sdram_region_id_t region_id,
+                      sdram_region_info_t *out_info) {
+
+  if (!out_info) return false;
 
   chMtxLock(&sdram_ctx_mtx);
-  sdram_state_t state = sdram_ctx.state;
-  bool bist_running = sdram_ctx.bist_running;
+  if (sdram_ctx.state == SDRAM_FAULT || sdram_ctx.bist_running) {
+    chMtxUnlock(&sdram_ctx_mtx);
+    sdram_clear_region_info(out_info);
+    return false;
+  }
   chMtxUnlock(&sdram_ctx_mtx);
-
-  if ((state == SDRAM_FAULT) || bist_running) {
-    sdram_clear_region_info(out_info);
-    return false;
-  }
-
-  if ((region_id == SDRAM_CACHE_RESIDUAL) && (SDRAM_ENABLE_CACHE_RESIDUAL == 0u)) {
-    sdram_clear_region_info(out_info);
-    return false;
-  }
 
   if (!sdram_query_region_descriptor(region_id, out_info)) {
     sdram_clear_region_info(out_info);
