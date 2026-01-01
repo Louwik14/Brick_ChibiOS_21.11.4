@@ -4,7 +4,6 @@
 #include "sdram_driver.h"
 #include "sdram_driver_priv.h"
 #include "sdram_layout.h"
-#include "chprintf.h"
 
 // Global driver context and mutex protecting state/error/BIST fields.
 sdram_driver_ctx_t sdram_ctx = {
@@ -34,14 +33,10 @@ static void sdram_clear_region_info(sdram_region_info_t *info) {
 }
 
 void sdram_init(bool run_quick_bist) {
-  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
-
-  chprintf(chp, "[SDRAM] sdram_init(): start\r\n");
   // Ensure single initialization sequence.
   chMtxLock(&sdram_ctx_mtx);
   if (sdram_ctx.state != SDRAM_NOT_INITIALIZED) {
     chMtxUnlock(&sdram_ctx_mtx);
-    chprintf(chp, "[SDRAM] sdram_init(): already initialized\r\n");
     return;
   }
 
@@ -55,7 +50,6 @@ void sdram_init(bool run_quick_bist) {
     chMtxLock(&sdram_ctx_mtx);
     sdram_set_fault_locked(SDRAM_ERR_FMC_TIMEOUT);
     chMtxUnlock(&sdram_ctx_mtx);
-    chprintf(chp, "[SDRAM] sdram_init(): hardware init failed\r\n");
     return;
   }
 

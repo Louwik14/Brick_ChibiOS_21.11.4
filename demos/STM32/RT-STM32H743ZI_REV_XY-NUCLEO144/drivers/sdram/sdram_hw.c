@@ -6,7 +6,6 @@
  */
 #include "ch.h"
 #include "hal.h"
-#include "chprintf.h"
 #include "stm32h7xx.h"
 #include "stm32h743xx.h"
 #include "sdram_driver_priv.h"
@@ -65,8 +64,6 @@ static bool fmc_issue_command(uint32_t mode, uint32_t auto_refresh, uint32_t mod
 
 bool sdram_hw_init_sequence(void)
 {
-  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
-
   /*
    * Minimal JEDEC init sequence inspired by the STM32F4 Ksoloti driver:
    * - Only poll FMC busy, no reliance on MODE/NORMAL status reporting.
@@ -75,14 +72,10 @@ bool sdram_hw_init_sequence(void)
    * - Program refresh right after LOAD MODE and exit.
    */
 
-  chprintf(chp, "[SDRAM] INIT: FMC/SDRAM sequence start\r\n");
-
-  chprintf(chp, "[SDRAM] STEP: FMC clock enable\r\n");
   if ((RCC->AHB3ENR & RCC_AHB3ENR_FMCEN) == 0u) {
     RCC->AHB3ENR |= RCC_AHB3ENR_FMCEN;
     (void)RCC->AHB3ENR;
   }
-  chprintf(chp, "[SDRAM] STEP: FMC clock enable done\r\n");
 
   const uint32_t sdcr = FMC_SDCRx_NC_0 | /* 9 columns */
                         FMC_SDCRx_NR_1 | /* 13 rows    */
@@ -101,63 +94,37 @@ bool sdram_hw_init_sequence(void)
                         ((3u - 1u) << FMC_SDTRx_TRP_Pos) |   /* tRP  */
                         ((3u - 1u) << FMC_SDTRx_TRCD_Pos);   /* tRCD */
 
-  chprintf(chp, "[SDRAM] STEP: Configure SDCR/SDTR\r\n");
   FMC_Bank5_6_R->SDCR[0] = sdcr;
   FMC_Bank5_6_R->SDTR[0] = sdtr;
-  chprintf(chp, "[SDRAM] STEP: SDCR/SDTR configured\r\n");
 
   chThdSleepMicroseconds(200u);
 
-  chprintf(chp, "[SDRAM] CMD: CLK_ENABLE\r\n");
   if (!fmc_issue_command(SDRAM_CMD_CLK_ENABLE, 0u, 0u)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: CLK_ENABLE (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: CLK_ENABLE done (FMC not busy)\r\n");
 
   chThdSleepMilliseconds(1);
 
-  chprintf(chp, "[SDRAM] CMD: PALL\r\n");
   if (!fmc_issue_command(SDRAM_CMD_PALL, 0u, 0u)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: PALL (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: PALL done (FMC not busy)\r\n");
 
-  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH (1/2)\r\n");
   if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, SDRAM_AUTOREFRESH_CYCLES, 0u)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH (1/2) done (FMC not busy)\r\n");
 
-  chprintf(chp, "[SDRAM] CMD: AUTO_REFRESH (2/2)\r\n");
   if (!fmc_issue_command(SDRAM_CMD_AUTOREFRESH, SDRAM_AUTOREFRESH_CYCLES, 0u)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: AUTO_REFRESH (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: AUTO_REFRESH (2/2) done (FMC not busy)\r\n");
 
-  chprintf(chp, "[SDRAM] CMD: LOAD_MODE\r\n");
   if (!fmc_issue_command(SDRAM_CMD_LOAD_MODE, 0u, SDRAM_MODE_REGISTER_VALUE)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: LOAD_MODE (FMC busy)\r\n");
     return false;
   }
-  chprintf(chp, "[SDRAM] WAIT: LOAD_MODE done (FMC not busy)\r\n");
 
-  chprintf(chp, "[SDRAM] STEP: Refresh counter set\r\n");
   uint32_t sdrtr = FMC_Bank5_6_R->SDRTR;
   sdrtr &= ~FMC_SDRTR_COUNT_Msk;
   sdrtr |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos);
   FMC_Bank5_6_R->SDRTR = sdrtr;
-  chprintf(chp, "[SDRAM] STEP: Refresh counter set done\r\n");
-
-  chprintf(chp, "[SDRAM] WAIT: FMC not busy after refresh update\r\n");
-  if (!fmc_wait_while_busy(SDRAM_TIMEOUT_CYCLES)) {
-    chprintf(chp, "[SDRAM][ERR] TIMEOUT: Refresh update (FMC busy)\r\n");
-    return false;
-  }
-  chprintf(chp, "[SDRAM] WAIT: FMC not busy (refresh update done)\r\n");
 
   return true;
 }
