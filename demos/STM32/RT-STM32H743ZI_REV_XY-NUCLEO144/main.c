@@ -2,7 +2,7 @@
 #include "hal.h"
 #include "chprintf.h"
 
-#include "sdram_driver.h"
+#include "sdram_hw_minimal.h"
 
 /* UART1 / SD1 : debug central du projet */
 static const SerialConfig uart_cfg = {
@@ -25,48 +25,24 @@ int main(void) {
     chThdSleepMilliseconds(200);
 
     while (true) {
-
-        chprintf(chp, "\r\n");
-        chprintf(chp, "========================================\r\n");
-        chprintf(chp, " STM32H743 Clock & SDRAM Check\r\n");
-        chprintf(chp, "========================================\r\n");
-
-        /* Clocks */
-        chprintf(chp, "SYS_CK  : %lu Hz\r\n", STM32_SYS_CK);
-        chprintf(chp, "HCLK    : %lu Hz\r\n", STM32_HCLK);
-        chprintf(chp, "PCLK1   : %lu Hz\r\n", STM32_PCLK1);
-        chprintf(chp, "PCLK2   : %lu Hz\r\n", STM32_PCLK2);
-        chprintf(chp, "PCLK3   : %lu Hz\r\n", STM32_PCLK3);
-        chprintf(chp, "PCLK4   : %lu Hz\r\n", STM32_PCLK4);
-
-        chprintf(chp, "Assumed FMC SDCLK : ~%lu Hz (HCLK / 2)\r\n",
-                  STM32_HCLK / 2U);
-
-        /* Vérification SDRAM */
-        if (!sdram_is_initialized()) {
-            chprintf(chp, "\r\n[INFO] SDRAM not initialized, starting init...\r\n");
-
-            sdram_init(true);
-
-            sdram_state_t state = sdram_status();
-            if ((state != SDRAM_READY) && (state != SDRAM_DEGRADED)) {
-                chprintf(chp, "[ERR ] SDRAM init FAILED\r\n");
-            } else {
-                chprintf(chp, "[OK  ] SDRAM init OK\r\n");
-
-                if (!sdram_run_bist(SDRAM_BIST_MODE_QUICK, NULL)) {
-                    chprintf(chp, "[ERR ] SDRAM QUICK_BIST FAILED\r\n");
-                } else {
-                    chprintf(chp, "[OK  ] SDRAM QUICK_BIST PASSED\r\n");
-                }
-            }
-        } else {
-            chprintf(chp, "\r\n[OK  ] SDRAM already initialized\r\n");
+        bool ok = sdram_init_minimal();
+        if (!ok) {
+            chprintf(chp, "FAIL\r\n");
+            chThdSleepMilliseconds(1000);
+            continue;
         }
 
-        chprintf(chp, "========================================\r\n");
+        volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
+        const uint16_t test_value = 0xA55Au;
+        *sdram_base = test_value;
+        chprintf(chp, "WRITE OK\r\n");
 
-        /* Rafraîchissement toutes les 2 secondes */
-        chThdSleepMilliseconds(2000);
+        if (*sdram_base == test_value) {
+            chprintf(chp, "READ OK\r\n");
+        } else {
+            chprintf(chp, "FAIL\r\n");
+        }
+
+        chThdSleepMilliseconds(1000);
     }
 }
