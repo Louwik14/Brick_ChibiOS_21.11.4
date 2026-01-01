@@ -124,6 +124,7 @@ CSRC = $(ALLCSRC) \
        main.c \
        $(wildcard drivers/*.c) \
        $(wildcard drivers/sdram/*.c) \
+       $(CHIBIOS)/drivers/sdram/sdram_hw_minimal.c \
        
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -161,6 +162,8 @@ UADEFS =
 
 # List all user directories here
 UINCDIR += $(CHIBIOS)/os/various
+UINCDIR += $(CHIBIOS)/drivers
+UINCDIR += $(CHIBIOS)/drivers/sdram
 
 # List the user directory to look for the libraries here
 ULIBDIR =

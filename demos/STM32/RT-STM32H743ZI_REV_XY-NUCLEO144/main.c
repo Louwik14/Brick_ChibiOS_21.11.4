@@ -1,7 +1,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
-#include "sdram_driver.h"
+#include "sdram_hw_minimal.h"
 
 static const SerialConfig uart_cfg = {
     115200, 0, USART_CR2_STOP1_BITS, 0
@@ -15,19 +15,24 @@ int main(void) {
     chThdSleepMilliseconds(200);
 
     chprintf((BaseSequentialStream*)&SD1,
-              "\r\n=== SDRAM INIT TEST ===\r\n");
+              "\r\n=== SDRAM MINIMAL TEST ===\r\n");
 
-    chprintf((BaseSequentialStream*)&SD1,
-              "[TEST] Calling sdram_init(false)\r\n");
+    if (!sdram_init_minimal()) {
+        chprintf((BaseSequentialStream*)&SD1, "FAIL\r\n");
+    } else {
+        volatile uint32_t *sdram = (volatile uint32_t *)0xC0000000;
+        const uint32_t test_value = 0x12345678;
+        *sdram = test_value;
+        chprintf((BaseSequentialStream*)&SD1, "WRITE OK\r\n");
 
-    sdram_init(false);
-
-    chprintf((BaseSequentialStream*)&SD1,
-              "[OK] Returned from sdram_init()\r\n");
+        if (*sdram == test_value) {
+            chprintf((BaseSequentialStream*)&SD1, "READ OK\r\n");
+        } else {
+            chprintf((BaseSequentialStream*)&SD1, "FAIL\r\n");
+        }
+    }
 
     while (true) {
-        chprintf((BaseSequentialStream*)&SD1,
-                  "Main alive\r\n");
         chThdSleepMilliseconds(1000);
     }
 }
