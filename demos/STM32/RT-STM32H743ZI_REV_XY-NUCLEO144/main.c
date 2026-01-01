@@ -19,30 +19,37 @@ int main(void) {
     halInit();
     chSysInit();
 
-    /* Démarrage UART debug */
     sdStart(&SD1, &uart_cfg);
 
     chThdSleepMilliseconds(200);
 
+    chprintf(chp, "MAIN START\r\n");
+
     while (true) {
+
+        chprintf(chp, "BEFORE SDRAM\r\n");
+        chThdSleepMilliseconds(500);
+
         bool ok = sdram_init_minimal();
+
+        chprintf(chp, "AFTER SDRAM\r\n");
+
         if (!ok) {
-            chprintf(chp, "FAIL\r\n");
+            chprintf(chp, "SDRAM INIT FAIL\r\n");
             chThdSleepMilliseconds(1000);
             continue;
         }
 
         volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
-        const uint16_t test_value = 0xA55Au;
-        *sdram_base = test_value;
-        chprintf(chp, "WRITE OK\r\n");
+        *sdram_base = 0xA55A;
+        chprintf(chp, "WRITE DONE\r\n");
 
-        if (*sdram_base == test_value) {
+        if (*sdram_base == 0xA55A) {
             chprintf(chp, "READ OK\r\n");
         } else {
-            chprintf(chp, "FAIL\r\n");
+            chprintf(chp, "READ FAIL\r\n");
         }
 
-        chThdSleepMilliseconds(1000);
+        chThdSleepMilliseconds(2000);
     }
 }
