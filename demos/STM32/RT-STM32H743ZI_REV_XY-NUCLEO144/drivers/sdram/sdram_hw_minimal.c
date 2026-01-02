@@ -16,6 +16,8 @@
 
 #define SDRAM_BUSY_TIMEOUT_US (1000u)
 
+#define FMC_SDSR_BUSY_BIT (1u << 5)
+
 #define SDRAM_CMD_CLK_ENABLE  (1u)
 #define SDRAM_CMD_PALL        (2u)
 #define SDRAM_CMD_AUTOREFRESH (3u)
@@ -47,7 +49,7 @@ static void sdram_send_command(uint32_t mode, uint32_t auto_refresh, uint32_t mo
 
 static bool sdram_wait_while_busy(uint32_t timeout_us)
 {
-  while ((FMC_Bank5_6_R->SDSR & FMC_SDSR_BUSY) != 0u) {
+  while ((FMC_Bank5_6_R->SDSR & FMC_SDSR_BUSY_BIT) != 0u) {
     if (timeout_us == 0u) {
       return false;
     }
@@ -81,34 +83,31 @@ bool sdram_init_minimal(void)
   FMC_Bank5_6_R->SDCR[0] = sdcr;
   FMC_Bank5_6_R->SDTR[0] = sdtr;
 
+  if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
+    return false;
+  }
   sdram_send_command(SDRAM_CMD_CLK_ENABLE, 0u, 0u);
   chThdSleepMicroseconds(100u);
+
   if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
     return false;
   }
-
   sdram_send_command(SDRAM_CMD_PALL, 0u, 0u);
+
   if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
     return false;
   }
-
   sdram_send_command(SDRAM_CMD_AUTOREFRESH, 8u, 0u);
-  if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
-    return false;
-  }
 
-  sdram_send_command(SDRAM_CMD_LOAD_MODE, 0u, SDRAM_MODE_REGISTER_VALUE);
   if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
     return false;
   }
+  sdram_send_command(SDRAM_CMD_LOAD_MODE, 0u, SDRAM_MODE_REGISTER_VALUE);
 
   uint32_t sdrtr = FMC_Bank5_6_R->SDRTR;
   sdrtr &= ~FMC_SDRTR_COUNT_Msk;
   sdrtr |= (SDRAM_REFRESH_COUNT << FMC_SDRTR_COUNT_Pos) & FMC_SDRTR_COUNT_Msk;
   FMC_Bank5_6_R->SDRTR = sdrtr;
-  if (!sdram_wait_while_busy(SDRAM_BUSY_TIMEOUT_US)) {
-    return false;
-  }
 
   return true;
 }
