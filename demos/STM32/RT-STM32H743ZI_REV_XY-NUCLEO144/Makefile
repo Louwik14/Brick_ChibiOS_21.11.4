@@ -130,7 +130,7 @@ ASMXSRC = $(ALLXASMSRC)
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
 INCDIR += $(CHIBIOS_CONTRIB)/os/hal/include
-
+INCDIR += $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/LLD/FSMCv1
 ##############################################################################
 # Warnings
 #

@@ -1,9 +1,8 @@
-build/obj/main.o: main.c ../../../os/rt/include/ch.h \
- ../../../os/license/chlicense.h ../../../os/license/chversion.h \
- ../../../os/license/chcustomer.h cfg/chconf.h \
- ../../../os/rt/include/chchecks.h \
- ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
- ../../../os/common/ports/ARM-common/chtypes.h \
+build/obj/hal_sdram.o: \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/src/hal_sdram.c \
+ ../../../os/hal/include/hal.h \
+ ../../../os/common/portability/GCC/ccportab.h \
+ ../../../os/hal/osal/rt-nil/osal.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h \
@@ -13,7 +12,11 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h \
- ../../../os/common/portability/GCC/ccportab.h \
+ ../../../os/rt/include/ch.h ../../../os/license/chlicense.h \
+ ../../../os/license/chversion.h ../../../os/license/chcustomer.h \
+ cfg/chconf.h ../../../os/rt/include/chchecks.h \
+ ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
+ ../../../os/common/ports/ARM-common/chtypes.h \
  ../../../os/rt/include/chrfcu.h ../../../os/rt/include/chdebug.h \
  ../../../os/rt/include/chtime.h ../../../os/rt/include/chlists.h \
  ../../../os/rt/include/chalign.h ../../../os/rt/include/chtrace.h \
@@ -48,8 +51,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/oslib/include/chdelegates.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdarg.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
- ../../../os/rt/include/chdynamic.h ../../../os/hal/include/hal.h \
- ../../../os/hal/osal/rt-nil/osal.h cfg/halconf.h cfg/mcuconf.h \
+ ../../../os/rt/include/chdynamic.h cfg/halconf.h cfg/mcuconf.h \
  ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
  ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h \
  ../../../os/hal/ports/common/ARMCMx/nvic.h \
@@ -102,18 +104,11 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
  ../../../os/hal/include/hal_serial_usb.h \
- ../../../os/hal/lib/streams/chprintf.h \
- ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_fsmc.h \
- ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h
-../../../os/rt/include/ch.h:
-../../../os/license/chlicense.h:
-../../../os/license/chversion.h:
-../../../os/license/chcustomer.h:
-cfg/chconf.h:
-../../../os/rt/include/chchecks.h:
-../../../os/rt/include/chrestrictions.h:
-../../../os/rt/include/chearly.h:
-../../../os/common/ports/ARM-common/chtypes.h:
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/ports/STM32/LLD/FSMCv1/hal_sdram_lld.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_fsmc.h
+../../../os/hal/include/hal.h:
+../../../os/common/portability/GCC/ccportab.h:
+../../../os/hal/osal/rt-nil/osal.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h:
@@ -123,7 +118,15 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\inclu
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h:
-../../../os/common/portability/GCC/ccportab.h:
+../../../os/rt/include/ch.h:
+../../../os/license/chlicense.h:
+../../../os/license/chversion.h:
+../../../os/license/chcustomer.h:
+cfg/chconf.h:
+../../../os/rt/include/chchecks.h:
+../../../os/rt/include/chrestrictions.h:
+../../../os/rt/include/chearly.h:
+../../../os/common/ports/ARM-common/chtypes.h:
 ../../../os/rt/include/chrfcu.h:
 ../../../os/rt/include/chdebug.h:
 ../../../os/rt/include/chtime.h:
@@ -172,8 +175,6 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/oslib/include/chjobs.h:
 ../../../os/oslib/include/chfactory.h:
 ../../../os/rt/include/chdynamic.h:
-../../../os/hal/include/hal.h:
-../../../os/hal/osal/rt-nil/osal.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h:
@@ -237,6 +238,5 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h:
 ../../../os/hal/include/hal_mmc_spi.h:
 ../../../os/hal/include/hal_serial_usb.h:
-../../../os/hal/lib/streams/chprintf.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/ports/STM32/LLD/FSMCv1/hal_sdram_lld.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_fsmc.h:
-../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
