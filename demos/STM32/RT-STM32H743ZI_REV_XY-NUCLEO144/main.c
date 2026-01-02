@@ -4,7 +4,7 @@
 
 #include "sdram_hw_minimal.h"
 
-/* UART1 / SD1 : debug central du projet */
+/* UART1 / SD1 */
 static const SerialConfig uart_cfg = {
     115200,
     0,
@@ -14,37 +14,49 @@ static const SerialConfig uart_cfg = {
 
 static BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
 
-int main(void) {
-
+int main(void)
+{
     halInit();
     chSysInit();
 
     sdStart(&SD1, &uart_cfg);
-
     chThdSleepMilliseconds(200);
 
-    chprintf(chp, "MAIN\r\n");
+    chprintf(chp, "MAIN START\r\n");
 
+    chprintf(chp, "BEFORE SDRAM INIT\r\n");
     bool ok = sdram_init_minimal();
-    if (!ok) {
-        chprintf(chp, "FAIL\r\n");
-        while (true) {
-            chThdSleepMilliseconds(1000);
-        }
-    }
-    chprintf(chp, "INIT OK\r\n");
+    chprintf(chp, "AFTER SDRAM INIT: %d\r\n", ok ? 1 : 0);
 
-    volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
-    *sdram_base = 0xA55A;
+    chprintf(chp, "BEFORE POINTER\r\n");
+    volatile uint32_t *sdram =
+        (volatile uint32_t *)0xC0000000u;
+    chprintf(chp, "AFTER POINTER\r\n");
 
-    if (*sdram_base == 0xA55A) {
-        chprintf(chp, "WRITE OK\r\n");
-        chprintf(chp, "READ OK\r\n");
+    chprintf(chp, "BEFORE WRITE\r\n");
+    __DSB();
+    __ISB();
+    *sdram = 0x12345678u;
+    __DSB();
+    __ISB();
+    chprintf(chp, "AFTER WRITE\r\n");
+
+    chprintf(chp, "BEFORE READ\r\n");
+    __DSB();
+    __ISB();
+    uint32_t v = *sdram;
+    __DSB();
+    __ISB();
+    chprintf(chp, "AFTER READ: 0x%08lX\r\n", v);
+
+    if (v == 0x12345678u) {
+        chprintf(chp, "SDRAM OK\r\n");
     } else {
-        chprintf(chp, "FAIL\r\n");
+        chprintf(chp, "SDRAM FAIL\r\n");
     }
 
     while (true) {
+        chprintf(chp, "ALIVE\r\n");
         chThdSleepMilliseconds(1000);
     }
 }
