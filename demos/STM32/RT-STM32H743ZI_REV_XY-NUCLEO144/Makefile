@@ -106,6 +106,7 @@ CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        main.c \
        $(wildcard drivers/*.c)\
+       $(wildcard mpu/*.c)\
        $(wildcard sdram/*.c)
 
 CPPSRC = $(ALLCPPSRC)
@@ -119,6 +120,8 @@ ASMXSRC = $(ALLXASMSRC)
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
 INCDIR += sdram
+INCDIR += mpu
+
 
 ##############################################################################
 # Warnings
