@@ -23,33 +23,25 @@ int main(void) {
 
     chThdSleepMilliseconds(200);
 
-    chprintf(chp, "MAIN START\r\n");
+    bool ok = sdram_init_minimal();
+    if (!ok) {
+        chprintf(chp, "FAIL\r\n");
+        while (true) {
+            chThdSleepMilliseconds(1000);
+        }
+    }
+
+    volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
+    *sdram_base = 0xA55A;
+
+    if (*sdram_base == 0xA55A) {
+        chprintf(chp, "WRITE OK\r\n");
+        chprintf(chp, "READ OK\r\n");
+    } else {
+        chprintf(chp, "FAIL\r\n");
+    }
 
     while (true) {
-
-        chprintf(chp, "BEFORE SDRAM\r\n");
-        chThdSleepMilliseconds(500);
-
-        bool ok = sdram_init_minimal();
-
-        chprintf(chp, "AFTER SDRAM\r\n");
-
-        if (!ok) {
-            chprintf(chp, "SDRAM INIT FAIL\r\n");
-            chThdSleepMilliseconds(1000);
-            continue;
-        }
-
-        volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
-        *sdram_base = 0xA55A;
-        chprintf(chp, "WRITE DONE\r\n");
-
-        if (*sdram_base == 0xA55A) {
-            chprintf(chp, "READ OK\r\n");
-        } else {
-            chprintf(chp, "READ FAIL\r\n");
-        }
-
-        chThdSleepMilliseconds(2000);
+        chThdSleepMilliseconds(1000);
     }
 }
