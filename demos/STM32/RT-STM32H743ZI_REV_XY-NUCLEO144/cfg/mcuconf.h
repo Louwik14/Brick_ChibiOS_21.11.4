@@ -141,13 +141,13 @@
 #define STM32_PLL2_ENABLED                  TRUE
 #define STM32_PLL2_P_ENABLED                TRUE
 #define STM32_PLL2_Q_ENABLED                FALSE
-#define STM32_PLL2_R_ENABLED                FALSE
+#define STM32_PLL2_R_ENABLED                TRUE
 #define STM32_PLL2_DIVM_VALUE               5
 #define STM32_PLL2_DIVN_VALUE               98
 #define STM32_PLL2_FRACN_VALUE              2494   /* 491.52 MHz VCO */
 #define STM32_PLL2_DIVP_VALUE               10     /* SAI kernel = 49.152 MHz */
 #define STM32_PLL2_DIVQ_VALUE               2      /* unused */
-#define STM32_PLL2_DIVR_VALUE               2      /* unused */
+#define STM32_PLL2_DIVR_VALUE               12     /* SDMMC kernel = 40.96 MHz */
 
 /* PLL3: ADC + SPI (integer-only, independent of audio/SYSCLK). */
 #define STM32_PLL3_ENABLED                  TRUE
@@ -189,7 +189,7 @@
 #define STM32_STOPWUCK                      0
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_CKPERSEL                      STM32_CKPERSEL_HSI_CK
-#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL1_Q_CK
+#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL2_R_CK
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
