@@ -103,6 +103,23 @@ build/obj/stm32_isr.o: ../../../os/hal/ports/STM32/STM32H7xx/stm32_isr.c \
  ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h \
  ../../../os/hal/include/hal_mmc_spi.h \
  ../../../os/hal/include/hal_serial_usb.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_community.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_eicu.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_rng.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usbh.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_timcap.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_qei.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_comp.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_opamp.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_fsmc.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_onewire.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_crc.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_eeprom.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_hid.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti0.inc \
  ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti1.inc \
  ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti2.inc \
@@ -275,6 +292,23 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/SYSTICKv1/hal_st_lld.h:
 ../../../os/hal/include/hal_mmc_spi.h:
 ../../../os/hal/include/hal_serial_usb.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_community.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_eicu.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_rng.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usbh.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_timcap.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_qei.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_comp.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_opamp.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_fsmc.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_onewire.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_crc.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_eeprom.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_hid.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti0.inc:
 ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti1.inc:
 ../../../os/hal/ports/STM32/LLD/EXTIv1/stm32_exti2.inc:
