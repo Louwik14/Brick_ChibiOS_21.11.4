@@ -23,6 +23,8 @@ int main(void) {
 
     chThdSleepMilliseconds(200);
 
+    chprintf(chp, "MAIN START\r\n");
+
     bool ok = sdram_init_minimal();
     if (!ok) {
         chprintf(chp, "FAIL\r\n");
