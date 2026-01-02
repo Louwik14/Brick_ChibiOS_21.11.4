@@ -2,6 +2,16 @@
 #include "hal.h"
 #include "chprintf.h"
 
+/*
+ * Override default core init to keep caches disabled.
+ * FMC SDRAM validation must be done without cache/MPU effects.
+ */
+void __cpu_init(void) {
+#if CORTEX_MODEL == 7
+  /* Intentionally left empty: default crt1 enables I/D cache. */
+#endif
+}
+
 /* ================= UART ================= */
 
 static const SerialConfig uart_cfg = {
