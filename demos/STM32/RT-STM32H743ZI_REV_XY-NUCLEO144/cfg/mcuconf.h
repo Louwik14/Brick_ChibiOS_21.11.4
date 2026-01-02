@@ -411,6 +411,9 @@
 #define STM32_SDC_SDMMC_READ_TIMEOUT        10000
 #define STM32_SDC_SDMMC_CLOCK_DELAY         10
 #define STM32_SDC_SDMMC_PWRSAV              TRUE
+#define STM32_SDC_SDMMC1_DMA_STREAM         STM32_DMA_STREAM_ID(2, 0)
+#define STM32_SDC_SDMMC1_DMA_MSK            0xFFFFU
+#define STM32_SDC_SDMMC1_DMA_CHN            0x00000000U
 
 /*
  * SERIAL driver system settings.
