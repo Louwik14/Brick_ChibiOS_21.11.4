@@ -68,6 +68,8 @@
 #define HAL_USE_DAC                         FALSE
 #endif
 
+#define HAL_USE_SDRAM           TRUE
+
 /**
  * @brief   Enables the EFlash subsystem.
  */
