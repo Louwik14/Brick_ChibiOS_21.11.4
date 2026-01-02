@@ -396,7 +396,7 @@ _crt0_entry:
                 ldr     r1, =__process_stack_base__
  8000390:	20000400 	.word	0x20000400
                 ldr     r1, =__textdata_base__
- 8000394:	08005788 	.word	0x08005788
+ 8000394:	080057d0 	.word	0x080057d0
                 ldr     r2, =__data_base__
  8000398:	24000000 	.word	0x24000000
                 ldr     r3, =__data_end__
@@ -790,7 +790,7 @@ void __init_ram_areas(void) {
  80005f8:	1a3f      	subs	r7, r7, r0
  80005fa:	f027 0203 	bic.w	r2, r7, #3
  80005fe:	3204      	adds	r2, #4
- 8000600:	f004 fdca 	bl	8005198 <memset>
+ 8000600:	f004 fde2 	bl	80051c8 <memset>
       p++;
     }
     rap++;
@@ -874,11 +874,11 @@ void __init_ram_areas(void) {
 }
  800066c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
  800066e:	bf00      	nop
- 8000670:	0800523c 	.word	0x0800523c
+ 8000670:	0800526c 	.word	0x0800526c
  8000674:	24000e78 	.word	0x24000e78
  8000678:	24000e78 	.word	0x24000e78
  800067c:	24000e78 	.word	0x24000e78
- 8000680:	08005788 	.word	0x08005788
+ 8000680:	080057d0 	.word	0x080057d0
  8000684:	e000ed00 	.word	0xe000ed00
 	...
 
@@ -2673,7 +2673,7 @@ static bool _sdc_wait_for_transfer_state_internal(SDCDriver *sdcp,
 }
  8000ff0:	4770      	bx	lr
  8000ff2:	bf00      	nop
- 8000ff4:	080052bc 	.word	0x080052bc
+ 8000ff4:	080052ec 	.word	0x080052ec
 	...
 
 08001000 <_readt>:
@@ -2789,7 +2789,7 @@ static inline void chEvtObjectInit(event_source_t *esp) {
  80010ac:	6043      	str	r3, [r0, #4]
 }
  80010ae:	4770      	bx	lr
- 80010b0:	080052e0 	.word	0x080052e0
+ 80010b0:	08005310 	.word	0x08005310
 	...
 
 080010c0 <sdStart>:
@@ -2935,7 +2935,7 @@ void usbObjectInit(USBDriver *usbp) {
   usbp->state        = USB_STOP;
  800116a:	f800 3b30 	strb.w	r3, [r0], #48
     usbp->in_params[i]  = NULL;
- 800116e:	f004 f813 	bl	8005198 <memset>
+ 800116e:	f004 f82b 	bl	80051c8 <memset>
   usbp->config       = NULL;
  8001172:	2300      	movs	r3, #0
     usbp->out_params[i] = NULL;
@@ -2986,7 +2986,7 @@ void _usb_reset(USBDriver *usbp) {
   usbp->transmitting  = 0;
  8001194:	f840 5c04 	str.w	r5, [r0, #-4]
     usbp->epc[i] = NULL;
- 8001198:	f003 fffe 	bl	8005198 <memset>
+ 8001198:	f004 f816 	bl	80051c8 <memset>
 
   /* EP0 state machine initialization.*/
   usbp->ep0state = USB_EP0_STP_WAITING;
@@ -3499,7 +3499,7 @@ void _usb_ep0setup(USBDriver *usbp, usbep_t ep) {
  8001496:	f003 1301 	and.w	r3, r3, #65537	; 0x10001
  800149a:	60a3      	str	r3, [r4, #8]
     usbp->epc[i] = NULL;
- 800149c:	f003 fe7c 	bl	8005198 <memset>
+ 800149c:	f003 fe94 	bl	80051c8 <memset>
   usb_lld_disable_endpoints(usbp);
  80014a0:	4620      	mov	r0, r4
  80014a2:	f001 fabd 	bl	8002a20 <usb_lld_disable_endpoints>
@@ -3624,9 +3624,9 @@ void _usb_ep0setup(USBDriver *usbp, usbep_t ep) {
  800157c:	f894 0080 	ldrb.w	r0, [r4, #128]	; 0x80
  8001580:	e7bf      	b.n	8001502 <_usb_ep0setup+0x2f2>
  8001582:	bf00      	nop
- 8001584:	08005308 	.word	0x08005308
- 8001588:	08005310 	.word	0x08005310
- 800158c:	0800530c 	.word	0x0800530c
+ 8001584:	08005338 	.word	0x08005338
+ 8001588:	08005340 	.word	0x08005340
+ 800158c:	0800533c 	.word	0x0800533c
 
 08001590 <_usb_ep0in>:
  * @param[in] usbp      pointer to the @p USBDriver object
@@ -4008,7 +4008,7 @@ CH_IRQ_HANDLER(STM32_FSMC_HANDLER) {
  8001780:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   CH_IRQ_EPILOGUE();
  8001784:	f003 bc8c 	b.w	80050a0 <__port_irq_epilogue>
- 8001788:	08005314 	.word	0x08005314
+ 8001788:	08005344 	.word	0x08005344
  800178c:	00000000 	.word	0x00000000
 
 08001790 <sdramInit>:
@@ -4697,7 +4697,7 @@ int chvprintf(BaseSequentialStream *chp, const char *fmt, va_list ap) {
  8001c2a:	f04f 35ff 	mov.w	r5, #4294967295
  8001c2e:	e74d      	b.n	8001acc <chvprintf+0x2dc>
  8001c30:	cccccccd 	.word	0xcccccccd
- 8001c34:	08005320 	.word	0x08005320
+ 8001c34:	08005350 	.word	0x08005350
 	...
 
 08001c40 <chprintf>:
@@ -4799,7 +4799,7 @@ OSAL_IRQ_HANDLER(STM32_SDMMC1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001caa:	f003 b9f9 	b.w	80050a0 <__port_irq_epilogue>
  8001cae:	bf00      	nop
- 8001cb0:	0800534c 	.word	0x0800534c
+ 8001cb0:	0800537c 	.word	0x0800537c
  8001cb4:	240001bc 	.word	0x240001bc
 	...
 
@@ -4835,7 +4835,7 @@ OSAL_IRQ_HANDLER(STM32_USART1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001cda:	f003 b9e1 	b.w	80050a0 <__port_irq_epilogue>
  8001cde:	bf00      	nop
- 8001ce0:	08005340 	.word	0x08005340
+ 8001ce0:	08005370 	.word	0x08005370
  8001ce4:	24000338 	.word	0x24000338
 	...
 
@@ -4871,7 +4871,7 @@ OSAL_IRQ_HANDLER(STM32_UART5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8001d0a:	f003 b9c9 	b.w	80050a0 <__port_irq_epilogue>
  8001d0e:	bf00      	nop
- 8001d10:	08005334 	.word	0x08005334
+ 8001d10:	08005364 	.word	0x08005364
  8001d14:	24000398 	.word	0x24000398
 	...
 
@@ -4905,7 +4905,7 @@ OSAL_IRQ_HANDLER(STM32_TIM2_HANDLER) {
  8001d34:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   OSAL_IRQ_EPILOGUE();
  8001d38:	f003 b9b2 	b.w	80050a0 <__port_irq_epilogue>
- 8001d3c:	08005328 	.word	0x08005328
+ 8001d3c:	08005358 	.word	0x08005358
 
 08001d40 <irqInit>:
 /**
@@ -5672,7 +5672,7 @@ OSAL_IRQ_HANDLER(STM32_ADC12_HANDLER) {
  80021a6:	702a      	strb	r2, [r5, #0]
  80021a8:	612b      	str	r3, [r5, #16]
  80021aa:	e7dd      	b.n	8002168 <Vector88+0x58>
- 80021ac:	08005358 	.word	0x08005358
+ 80021ac:	08005388 	.word	0x08005388
  80021b0:	24000008 	.word	0x24000008
  80021b4:	40022000 	.word	0x40022000
  80021b8:	2400001c 	.word	0x2400001c
@@ -5718,7 +5718,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80021e6:	f002 bf5b 	b.w	80050a0 <__port_irq_epilogue>
  80021ea:	bf00      	nop
- 80021ec:	080053b8 	.word	0x080053b8
+ 80021ec:	080053e8 	.word	0x080053e8
  80021f0:	58025400 	.word	0x58025400
  80021f4:	24000040 	.word	0x24000040
 	...
@@ -5765,7 +5765,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800222a:	f002 bf39 	b.w	80050a0 <__port_irq_epilogue>
  800222e:	bf00      	nop
- 8002230:	080053ac 	.word	0x080053ac
+ 8002230:	080053dc 	.word	0x080053dc
  8002234:	58025400 	.word	0x58025400
  8002238:	24000040 	.word	0x24000040
  800223c:	00000000 	.word	0x00000000
@@ -5812,7 +5812,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800226a:	f002 bf19 	b.w	80050a0 <__port_irq_epilogue>
  800226e:	bf00      	nop
- 8002270:	080053a0 	.word	0x080053a0
+ 8002270:	080053d0 	.word	0x080053d0
  8002274:	58025400 	.word	0x58025400
  8002278:	24000040 	.word	0x24000040
  800227c:	00000000 	.word	0x00000000
@@ -5859,7 +5859,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80022aa:	f002 bef9 	b.w	80050a0 <__port_irq_epilogue>
  80022ae:	bf00      	nop
- 80022b0:	08005394 	.word	0x08005394
+ 80022b0:	080053c4 	.word	0x080053c4
  80022b4:	58025400 	.word	0x58025400
  80022b8:	24000040 	.word	0x24000040
  80022bc:	00000000 	.word	0x00000000
@@ -5906,7 +5906,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80022ea:	f002 bed9 	b.w	80050a0 <__port_irq_epilogue>
  80022ee:	bf00      	nop
- 80022f0:	08005388 	.word	0x08005388
+ 80022f0:	080053b8 	.word	0x080053b8
  80022f4:	58025400 	.word	0x58025400
  80022f8:	24000040 	.word	0x24000040
  80022fc:	00000000 	.word	0x00000000
@@ -5953,7 +5953,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800232a:	f002 beb9 	b.w	80050a0 <__port_irq_epilogue>
  800232e:	bf00      	nop
- 8002330:	0800537c 	.word	0x0800537c
+ 8002330:	080053ac 	.word	0x080053ac
  8002334:	58025400 	.word	0x58025400
  8002338:	24000040 	.word	0x24000040
  800233c:	00000000 	.word	0x00000000
@@ -6000,7 +6000,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800236a:	f002 be99 	b.w	80050a0 <__port_irq_epilogue>
  800236e:	bf00      	nop
- 8002370:	08005370 	.word	0x08005370
+ 8002370:	080053a0 	.word	0x080053a0
  8002374:	58025400 	.word	0x58025400
  8002378:	24000040 	.word	0x24000040
  800237c:	00000000 	.word	0x00000000
@@ -6047,7 +6047,7 @@ OSAL_IRQ_HANDLER(STM32_BDMA1_CH7_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80023aa:	f002 be79 	b.w	80050a0 <__port_irq_epilogue>
  80023ae:	bf00      	nop
- 80023b0:	08005364 	.word	0x08005364
+ 80023b0:	08005394 	.word	0x08005394
  80023b4:	58025400 	.word	0x58025400
  80023b8:	24000040 	.word	0x24000040
  80023bc:	00000000 	.word	0x00000000
@@ -6092,7 +6092,7 @@ void bdmaInit(void) {
  80023ec:	4770      	bx	lr
  80023ee:	bf00      	nop
  80023f0:	24000040 	.word	0x24000040
- 80023f4:	080053dc 	.word	0x080053dc
+ 80023f4:	0800540c 	.word	0x0800540c
  80023f8:	58025408 	.word	0x58025408
  80023fc:	58025400 	.word	0x58025400
 
@@ -6136,7 +6136,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002426:	f002 be3b 	b.w	80050a0 <__port_irq_epilogue>
  800242a:	bf00      	nop
- 800242c:	080054b8 	.word	0x080054b8
+ 800242c:	080054e8 	.word	0x080054e8
  8002430:	40020000 	.word	0x40020000
  8002434:	24000084 	.word	0x24000084
 	...
@@ -6183,7 +6183,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800246a:	f002 be19 	b.w	80050a0 <__port_irq_epilogue>
  800246e:	bf00      	nop
- 8002470:	080054ac 	.word	0x080054ac
+ 8002470:	080054dc 	.word	0x080054dc
  8002474:	40020000 	.word	0x40020000
  8002478:	24000084 	.word	0x24000084
  800247c:	00000000 	.word	0x00000000
@@ -6230,7 +6230,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80024aa:	f002 bdf9 	b.w	80050a0 <__port_irq_epilogue>
  80024ae:	bf00      	nop
- 80024b0:	080054a0 	.word	0x080054a0
+ 80024b0:	080054d0 	.word	0x080054d0
  80024b4:	40020000 	.word	0x40020000
  80024b8:	24000084 	.word	0x24000084
  80024bc:	00000000 	.word	0x00000000
@@ -6277,7 +6277,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80024ea:	f002 bdd9 	b.w	80050a0 <__port_irq_epilogue>
  80024ee:	bf00      	nop
- 80024f0:	08005494 	.word	0x08005494
+ 80024f0:	080054c4 	.word	0x080054c4
  80024f4:	40020000 	.word	0x40020000
  80024f8:	24000084 	.word	0x24000084
  80024fc:	00000000 	.word	0x00000000
@@ -6322,7 +6322,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002526:	f002 bdbb 	b.w	80050a0 <__port_irq_epilogue>
  800252a:	bf00      	nop
- 800252c:	08005488 	.word	0x08005488
+ 800252c:	080054b8 	.word	0x080054b8
  8002530:	40020000 	.word	0x40020000
  8002534:	24000084 	.word	0x24000084
 	...
@@ -6369,7 +6369,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800256a:	f002 bd99 	b.w	80050a0 <__port_irq_epilogue>
  800256e:	bf00      	nop
- 8002570:	0800547c 	.word	0x0800547c
+ 8002570:	080054ac 	.word	0x080054ac
  8002574:	40020000 	.word	0x40020000
  8002578:	24000084 	.word	0x24000084
  800257c:	00000000 	.word	0x00000000
@@ -6416,7 +6416,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80025aa:	f002 bd79 	b.w	80050a0 <__port_irq_epilogue>
  80025ae:	bf00      	nop
- 80025b0:	08005518 	.word	0x08005518
+ 80025b0:	08005548 	.word	0x08005548
  80025b4:	40020000 	.word	0x40020000
  80025b8:	24000084 	.word	0x24000084
  80025bc:	00000000 	.word	0x00000000
@@ -6463,7 +6463,7 @@ OSAL_IRQ_HANDLER(STM32_DMA1_CH7_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80025ea:	f002 bd59 	b.w	80050a0 <__port_irq_epilogue>
  80025ee:	bf00      	nop
- 80025f0:	0800550c 	.word	0x0800550c
+ 80025f0:	0800553c 	.word	0x0800553c
  80025f4:	40020000 	.word	0x40020000
  80025f8:	24000084 	.word	0x24000084
  80025fc:	00000000 	.word	0x00000000
@@ -6508,7 +6508,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH0_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002626:	f002 bd3b 	b.w	80050a0 <__port_irq_epilogue>
  800262a:	bf00      	nop
- 800262c:	08005500 	.word	0x08005500
+ 800262c:	08005530 	.word	0x08005530
  8002630:	40020400 	.word	0x40020400
  8002634:	24000084 	.word	0x24000084
 	...
@@ -6555,7 +6555,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH1_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800266a:	f002 bd19 	b.w	80050a0 <__port_irq_epilogue>
  800266e:	bf00      	nop
- 8002670:	080054f4 	.word	0x080054f4
+ 8002670:	08005524 	.word	0x08005524
  8002674:	40020400 	.word	0x40020400
  8002678:	24000084 	.word	0x24000084
  800267c:	00000000 	.word	0x00000000
@@ -6602,7 +6602,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH2_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80026aa:	f002 bcf9 	b.w	80050a0 <__port_irq_epilogue>
  80026ae:	bf00      	nop
- 80026b0:	080054e8 	.word	0x080054e8
+ 80026b0:	08005518 	.word	0x08005518
  80026b4:	40020400 	.word	0x40020400
  80026b8:	24000084 	.word	0x24000084
  80026bc:	00000000 	.word	0x00000000
@@ -6649,7 +6649,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH3_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80026ea:	f002 bcd9 	b.w	80050a0 <__port_irq_epilogue>
  80026ee:	bf00      	nop
- 80026f0:	080054dc 	.word	0x080054dc
+ 80026f0:	0800550c 	.word	0x0800550c
  80026f4:	40020400 	.word	0x40020400
  80026f8:	24000084 	.word	0x24000084
  80026fc:	00000000 	.word	0x00000000
@@ -6694,7 +6694,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH4_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  8002726:	f002 bcbb 	b.w	80050a0 <__port_irq_epilogue>
  800272a:	bf00      	nop
- 800272c:	080054d0 	.word	0x080054d0
+ 800272c:	08005500 	.word	0x08005500
  8002730:	40020400 	.word	0x40020400
  8002734:	24000084 	.word	0x24000084
 	...
@@ -6741,7 +6741,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH5_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  800276a:	f002 bc99 	b.w	80050a0 <__port_irq_epilogue>
  800276e:	bf00      	nop
- 8002770:	080054c4 	.word	0x080054c4
+ 8002770:	080054f4 	.word	0x080054f4
  8002774:	40020400 	.word	0x40020400
  8002778:	24000084 	.word	0x24000084
  800277c:	00000000 	.word	0x00000000
@@ -6788,7 +6788,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH6_HANDLER) {
   OSAL_IRQ_EPILOGUE();
  80027aa:	f002 bc79 	b.w	80050a0 <__port_irq_epilogue>
  80027ae:	bf00      	nop
- 80027b0:	08005470 	.word	0x08005470
+ 80027b0:	080054a0 	.word	0x080054a0
  80027b4:	40020400 	.word	0x40020400
  80027b8:	24000084 	.word	0x24000084
  80027bc:	00000000 	.word	0x00000000
@@ -6834,7 +6834,7 @@ OSAL_IRQ_HANDLER(STM32_DMA2_CH7_HANDLER) {
  80027e8:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
   OSAL_IRQ_EPILOGUE();
  80027ec:	f002 bc58 	b.w	80050a0 <__port_irq_epilogue>
- 80027f0:	08005464 	.word	0x08005464
+ 80027f0:	08005494 	.word	0x08005494
  80027f4:	40020400 	.word	0x40020400
  80027f8:	24000084 	.word	0x24000084
  80027fc:	00000000 	.word	0x00000000
@@ -6895,7 +6895,7 @@ void dmaInit(void) {
  8002836:	bf00      	nop
  8002838:	40020010 	.word	0x40020010
  800283c:	24000084 	.word	0x24000084
- 8002840:	08005524 	.word	0x08005524
+ 8002840:	08005554 	.word	0x08005554
  8002844:	40020000 	.word	0x40020000
  8002848:	40020400 	.word	0x40020400
  800284c:	00000000 	.word	0x00000000
@@ -7052,7 +7052,7 @@ void usb_lld_init(void) {
  8002922:	bd10      	pop	{r4, pc}
  8002924:	24000108 	.word	0x24000108
  8002928:	40080000 	.word	0x40080000
- 800292c:	08005654 	.word	0x08005654
+ 800292c:	08005684 	.word	0x08005684
 
 08002930 <usb_lld_reset>:
  *
@@ -7199,7 +7199,7 @@ void usb_lld_reset(USBDriver *usbp) {
  80029ec:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
  80029ee:	bf00      	nop
  80029f0:	000c0010 	.word	0x000c0010
- 80029f4:	08005630 	.word	0x08005630
+ 80029f4:	08005660 	.word	0x08005660
  80029f8:	10008040 	.word	0x10008040
  80029fc:	00000000 	.word	0x00000000
 
@@ -8105,7 +8105,7 @@ OSAL_IRQ_HANDLER(STM32_OTG1_HANDLER) {
  800304c:	e6db      	b.n	8002e06 <Vector1D4+0x86>
  800304e:	bf00      	nop
  8003050:	24000108 	.word	0x24000108
- 8003054:	08005624 	.word	0x08005624
+ 8003054:	08005654 	.word	0x08005654
  8003058:	04000030 	.word	0x04000030
       otg_epout_handler(usbp, 2);
  800305c:	2002      	movs	r0, #2
@@ -8242,7 +8242,7 @@ OSAL_IRQ_HANDLER(STM32_OTG1_HANDLER) {
  8003152:	f001 bfa5 	b.w	80050a0 <__port_irq_epilogue>
  8003156:	bf00      	nop
  8003158:	24000108 	.word	0x24000108
- 800315c:	08005624 	.word	0x08005624
+ 800315c:	08005654 	.word	0x08005654
 
 08003160 <usb_lld_stall_out>:
  *
@@ -10009,7 +10009,7 @@ OSAL_IRQ_HANDLER(STM32_SPI1_HANDLER) {
  8003b96:	f001 ba83 	b.w	80050a0 <__port_irq_epilogue>
  8003b9a:	bf00      	nop
  8003b9c:	2400020c 	.word	0x2400020c
- 8003ba0:	08005690 	.word	0x08005690
+ 8003ba0:	080056c0 	.word	0x080056c0
  8003ba4:	24000214 	.word	0x24000214
 	...
 
@@ -10072,7 +10072,7 @@ OSAL_IRQ_HANDLER(STM32_SPI2_HANDLER) {
  8003c06:	f001 ba4b 	b.w	80050a0 <__port_irq_epilogue>
  8003c0a:	bf00      	nop
  8003c0c:	24000248 	.word	0x24000248
- 8003c10:	08005684 	.word	0x08005684
+ 8003c10:	080056b4 	.word	0x080056b4
  8003c14:	24000250 	.word	0x24000250
 	...
 
@@ -10135,7 +10135,7 @@ OSAL_IRQ_HANDLER(STM32_SPI3_HANDLER) {
  8003c76:	f001 ba13 	b.w	80050a0 <__port_irq_epilogue>
  8003c7a:	bf00      	nop
  8003c7c:	24000284 	.word	0x24000284
- 8003c80:	08005678 	.word	0x08005678
+ 8003c80:	080056a8 	.word	0x080056a8
  8003c84:	2400028c 	.word	0x2400028c
 	...
 
@@ -10198,7 +10198,7 @@ OSAL_IRQ_HANDLER(STM32_SPI5_HANDLER) {
  8003ce6:	f001 b9db 	b.w	80050a0 <__port_irq_epilogue>
  8003cea:	bf00      	nop
  8003cec:	240002c0 	.word	0x240002c0
- 8003cf0:	0800566c 	.word	0x0800566c
+ 8003cf0:	0800569c 	.word	0x0800569c
  8003cf4:	240002c8 	.word	0x240002c8
 	...
 
@@ -10261,7 +10261,7 @@ OSAL_IRQ_HANDLER(STM32_SPI6_HANDLER) {
  8003d56:	f001 b9a3 	b.w	80050a0 <__port_irq_epilogue>
  8003d5a:	bf00      	nop
  8003d5c:	240002fc 	.word	0x240002fc
- 8003d60:	08005660 	.word	0x08005660
+ 8003d60:	08005690 	.word	0x08005690
  8003d64:	24000304 	.word	0x24000304
 	...
 
@@ -11597,7 +11597,7 @@ static inline void __oslib_init(void) {
  8004528:	b007      	add	sp, #28
  800452a:	bd30      	pop	{r4, r5, pc}
  800452c:	24000e00 	.word	0x24000e00
- 8004530:	080056a0 	.word	0x080056a0
+ 8004530:	080056d0 	.word	0x080056d0
  8004534:	24000440 	.word	0x24000440
 	...
 
@@ -13086,8 +13086,8 @@ static inline void __dbg_object_init(system_debug_t *sdp) {
  8004bf4:	b006      	add	sp, #24
  8004bf6:	bd70      	pop	{r4, r5, r6, pc}
  8004bf8:	24000e00 	.word	0x24000e00
- 8004bfc:	080056bc 	.word	0x080056bc
- 8004c00:	080056b4 	.word	0x080056b4
+ 8004bfc:	080056ec 	.word	0x080056ec
+ 8004c00:	080056e4 	.word	0x080056e4
  8004c04:	08004b61 	.word	0x08004b61
 	...
 
@@ -14112,174 +14112,203 @@ void __port_irq_epilogue(void) {
 	...
 
 080050f0 <main>:
-
-  .sdcmr = 0, /* handled by HAL */
-  .sdrtr = (761U << FMC_SDRTR_COUNT_Pos)
+  .sdrtr = (781U << FMC_SDRTR_COUNT_Pos)
 };
 
+/* ================= MAIN ================= */
+
 int main(void) {
- 80050f0:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 80050f0:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
+
   halInit();
- 80050f2:	f7fb facd 	bl	8000690 <halInit>
-  sdramStart(&SDRAMD1, &sdram_cfg);
-  chprintf((BaseSequentialStream *)&SD1, "sdramStart OK\r\n");
-
-  volatile uint16_t *sdram = (volatile uint16_t *)SDRAM_BASE;
-
-  sdram[0] = 0x1234;
- 80050f6:	f241 2634 	movw	r6, #4660	; 0x1234
+ 80050f4:	f7fb facc 	bl	8000690 <halInit>
   chSysInit();
- 80050fa:	f7ff f9f1 	bl	80044e0 <chSysInit>
+ 80050f8:	f7ff f9f2 	bl	80044e0 <chSysInit>
+
   sdStart(&SD1, &uart_cfg);
- 80050fe:	491c      	ldr	r1, [pc, #112]	; (8005170 <main+0x80>)
- 8005100:	481c      	ldr	r0, [pc, #112]	; (8005174 <main+0x84>)
-  sdram[1] = 0xABCD;
- 8005102:	f64a 37cd 	movw	r7, #43981	; 0xabcd
-  sdStart(&SD1, &uart_cfg);
- 8005106:	f7fb ffdb 	bl	80010c0 <sdStart>
+ 80050fc:	4925      	ldr	r1, [pc, #148]	; (8005194 <main+0xa4>)
+ 80050fe:	4826      	ldr	r0, [pc, #152]	; (8005198 <main+0xa8>)
+ 8005100:	f7fb ffde 	bl	80010c0 <sdStart>
+
   chprintf((BaseSequentialStream *)&SD1,
- 800510a:	491b      	ldr	r1, [pc, #108]	; (8005178 <main+0x88>)
- 800510c:	4819      	ldr	r0, [pc, #100]	; (8005174 <main+0x84>)
- 800510e:	f7fc fd97 	bl	8001c40 <chprintf>
+ 8005104:	4925      	ldr	r1, [pc, #148]	; (800519c <main+0xac>)
+ 8005106:	4824      	ldr	r0, [pc, #144]	; (8005198 <main+0xa8>)
+ 8005108:	f7fc fd9a 	bl	8001c40 <chprintf>
+           "\r\n=== SDRAM x16 FMC TEST (STM32H7) ===\r\n");
+
+  /* Init + start SDRAM */
   sdramInit();
- 8005112:	f7fc fb3d 	bl	8001790 <sdramInit>
-  chprintf((BaseSequentialStream *)&SD1, "sdramInit OK\r\n");
- 8005116:	4919      	ldr	r1, [pc, #100]	; (800517c <main+0x8c>)
- 8005118:	4816      	ldr	r0, [pc, #88]	; (8005174 <main+0x84>)
- 800511a:	f7fc fd91 	bl	8001c40 <chprintf>
+ 800510c:	f7fc fb40 	bl	8001790 <sdramInit>
   sdramStart(&SDRAMD1, &sdram_cfg);
- 800511e:	4918      	ldr	r1, [pc, #96]	; (8005180 <main+0x90>)
- 8005120:	4818      	ldr	r0, [pc, #96]	; (8005184 <main+0x94>)
- 8005122:	f7fc fb45 	bl	80017b0 <sdramStart>
-  chprintf((BaseSequentialStream *)&SD1, "sdramStart OK\r\n");
- 8005126:	4918      	ldr	r1, [pc, #96]	; (8005188 <main+0x98>)
- 8005128:	4812      	ldr	r0, [pc, #72]	; (8005174 <main+0x84>)
- 800512a:	f7fc fd89 	bl	8001c40 <chprintf>
-  sdram[0] = 0x1234;
- 800512e:	f04f 4340 	mov.w	r3, #3221225472	; 0xc0000000
-
-  uint16_t a = sdram[0];
-  uint16_t b = sdram[1];
+ 8005110:	4923      	ldr	r1, [pc, #140]	; (80051a0 <main+0xb0>)
+ 8005112:	4824      	ldr	r0, [pc, #144]	; (80051a4 <main+0xb4>)
+ 8005114:	f7fc fb4c 	bl	80017b0 <sdramStart>
 
   chprintf((BaseSequentialStream *)&SD1,
- 8005132:	4916      	ldr	r1, [pc, #88]	; (800518c <main+0x9c>)
-  sdram[0] = 0x1234;
- 8005134:	801e      	strh	r6, [r3, #0]
-  sdram[1] = 0xABCD;
- 8005136:	805f      	strh	r7, [r3, #2]
-  uint16_t a = sdram[0];
- 8005138:	881c      	ldrh	r4, [r3, #0]
-  uint16_t b = sdram[1];
- 800513a:	885d      	ldrh	r5, [r3, #2]
-  uint16_t a = sdram[0];
- 800513c:	b2a4      	uxth	r4, r4
-  chprintf((BaseSequentialStream *)&SD1,
- 800513e:	480d      	ldr	r0, [pc, #52]	; (8005174 <main+0x84>)
-  uint16_t b = sdram[1];
- 8005140:	b2ad      	uxth	r5, r5
-  chprintf((BaseSequentialStream *)&SD1,
- 8005142:	4622      	mov	r2, r4
- 8005144:	462b      	mov	r3, r5
- 8005146:	f7fc fd7b 	bl	8001c40 <chprintf>
-           "R0=0x%04X R1=0x%04X\r\n", a, b);
+ 8005118:	f04f 4240 	mov.w	r2, #3221225472	; 0xc0000000
+ 800511c:	4922      	ldr	r1, [pc, #136]	; (80051a8 <main+0xb8>)
+ 800511e:	481e      	ldr	r0, [pc, #120]	; (8005198 <main+0xa8>)
+ 8005120:	f7fc fd8e 	bl	8001c40 <chprintf>
 
-  if (a == 0x1234 && b == 0xABCD) {
- 800514a:	42b4      	cmp	r4, r6
- 800514c:	d10a      	bne.n	8005164 <main+0x74>
- 800514e:	42bd      	cmp	r5, r7
- 8005150:	d108      	bne.n	8005164 <main+0x74>
-    chprintf((BaseSequentialStream *)&SD1, "SDRAM BASIC OK\r\n");
- 8005152:	490f      	ldr	r1, [pc, #60]	; (8005190 <main+0xa0>)
- 8005154:	4807      	ldr	r0, [pc, #28]	; (8005174 <main+0x84>)
- 8005156:	f7fc fd73 	bl	8001c40 <chprintf>
-  } else {
-    chprintf((BaseSequentialStream *)&SD1, "SDRAM BASIC FAIL\r\n");
+  volatile uint16_t *sdram = SDRAM_PTR;
+
+  /* ================= WRITE TEST ================= */
+
+  chprintf((BaseSequentialStream *)&SD1, "WRITE...\r\n");
+ 8005124:	4921      	ldr	r1, [pc, #132]	; (80051ac <main+0xbc>)
+ 8005126:	481c      	ldr	r0, [pc, #112]	; (8005198 <main+0xa8>)
+ 8005128:	f7fc fd8a 	bl	8001c40 <chprintf>
+ 800512c:	4a20      	ldr	r2, [pc, #128]	; (80051b0 <main+0xc0>)
+ 800512e:	f44f 4325 	mov.w	r3, #42240	; 0xa500
+
+  for (uint32_t i = 0; i < 32; i++) {
+ 8005132:	4820      	ldr	r0, [pc, #128]	; (80051b4 <main+0xc4>)
+    sdram[i] = (uint16_t)(0xA500 + i);
+ 8005134:	f822 3b02 	strh.w	r3, [r2], #2
+  for (uint32_t i = 0; i < 32; i++) {
+ 8005138:	1c59      	adds	r1, r3, #1
+ 800513a:	4282      	cmp	r2, r0
+ 800513c:	b28b      	uxth	r3, r1
+ 800513e:	d1f9      	bne.n	8005134 <main+0x44>
+
+  bool ok = true;
+
+  for (uint32_t i = 0; i < 32; i++) {
+    uint16_t v = sdram[i];
+    chprintf((BaseSequentialStream *)&SD1,
+ 8005140:	f8df 8054 	ldr.w	r8, [pc, #84]	; 8005198 <main+0xa8>
+  for (uint32_t i = 0; i < 32; i++) {
+ 8005144:	2400      	movs	r4, #0
+  chprintf((BaseSequentialStream *)&SD1, "READ...\r\n");
+ 8005146:	491c      	ldr	r1, [pc, #112]	; (80051b8 <main+0xc8>)
+  bool ok = true;
+ 8005148:	2601      	movs	r6, #1
+  chprintf((BaseSequentialStream *)&SD1, "READ...\r\n");
+ 800514a:	4640      	mov	r0, r8
+ 800514c:	4f18      	ldr	r7, [pc, #96]	; (80051b0 <main+0xc0>)
+    chprintf((BaseSequentialStream *)&SD1,
+ 800514e:	f8df 906c 	ldr.w	r9, [pc, #108]	; 80051bc <main+0xcc>
+  chprintf((BaseSequentialStream *)&SD1, "READ...\r\n");
+ 8005152:	f7fc fd75 	bl	8001c40 <chprintf>
+    uint16_t v = sdram[i];
+ 8005156:	f837 5b02 	ldrh.w	r5, [r7], #2
+    chprintf((BaseSequentialStream *)&SD1,
+ 800515a:	4622      	mov	r2, r4
+ 800515c:	4649      	mov	r1, r9
+ 800515e:	4640      	mov	r0, r8
+    uint16_t v = sdram[i];
+ 8005160:	b2ad      	uxth	r5, r5
+    chprintf((BaseSequentialStream *)&SD1,
+ 8005162:	462b      	mov	r3, r5
+ 8005164:	f7fc fd6c 	bl	8001c40 <chprintf>
+             "R[%lu] = 0x%04X\r\n", i, v);
+    if (v != (uint16_t)(0xA500 + i)) {
+ 8005168:	f5a4 43b6 	sub.w	r3, r4, #23296	; 0x5b00
+  for (uint32_t i = 0; i < 32; i++) {
+ 800516c:	3401      	adds	r4, #1
+    if (v != (uint16_t)(0xA500 + i)) {
+ 800516e:	b29b      	uxth	r3, r3
+      ok = false;
+ 8005170:	429d      	cmp	r5, r3
+ 8005172:	bf18      	it	ne
+ 8005174:	2600      	movne	r6, #0
+  for (uint32_t i = 0; i < 32; i++) {
+ 8005176:	2c20      	cmp	r4, #32
+ 8005178:	d1ed      	bne.n	8005156 <main+0x66>
+    }
   }
+
+  chprintf((BaseSequentialStream *)&SD1,
+ 800517a:	4911      	ldr	r1, [pc, #68]	; (80051c0 <main+0xd0>)
+ 800517c:	4b11      	ldr	r3, [pc, #68]	; (80051c4 <main+0xd4>)
+ 800517e:	4806      	ldr	r0, [pc, #24]	; (8005198 <main+0xa8>)
+ 8005180:	2e00      	cmp	r6, #0
+ 8005182:	bf08      	it	eq
+ 8005184:	4619      	moveq	r1, r3
+ 8005186:	f7fc fd5b 	bl	8001c40 <chprintf>
+           ok ? "SDRAM OK ✅\r\n" : "SDRAM FAIL ❌\r\n");
 
   while (true) {
     chThdSleepMilliseconds(1000);
- 800515a:	f242 7010 	movw	r0, #10000	; 0x2710
- 800515e:	f7ff fdf7 	bl	8004d50 <chThdSleep>
+ 800518a:	f242 7010 	movw	r0, #10000	; 0x2710
+ 800518e:	f7ff fddf 	bl	8004d50 <chThdSleep>
   while (true) {
- 8005162:	e7fa      	b.n	800515a <main+0x6a>
-    chprintf((BaseSequentialStream *)&SD1, "SDRAM BASIC FAIL\r\n");
- 8005164:	490b      	ldr	r1, [pc, #44]	; (8005194 <main+0xa4>)
- 8005166:	4803      	ldr	r0, [pc, #12]	; (8005174 <main+0x84>)
- 8005168:	f7fc fd6a 	bl	8001c40 <chprintf>
- 800516c:	e7f5      	b.n	800515a <main+0x6a>
- 800516e:	bf00      	nop
- 8005170:	08005778 	.word	0x08005778
- 8005174:	24000338 	.word	0x24000338
- 8005178:	080056e8 	.word	0x080056e8
- 800517c:	08005708 	.word	0x08005708
- 8005180:	08005768 	.word	0x08005768
- 8005184:	24000438 	.word	0x24000438
- 8005188:	08005718 	.word	0x08005718
- 800518c:	08005728 	.word	0x08005728
- 8005190:	08005740 	.word	0x08005740
- 8005194:	08005754 	.word	0x08005754
+ 8005192:	e7fa      	b.n	800518a <main+0x9a>
+ 8005194:	080057c0 	.word	0x080057c0
+ 8005198:	24000338 	.word	0x24000338
+ 800519c:	0800573c 	.word	0x0800573c
+ 80051a0:	080057b0 	.word	0x080057b0
+ 80051a4:	24000438 	.word	0x24000438
+ 80051a8:	08005768 	.word	0x08005768
+ 80051ac:	08005784 	.word	0x08005784
+ 80051b0:	c0000002 	.word	0xc0000002
+ 80051b4:	c0000042 	.word	0xc0000042
+ 80051b8:	08005790 	.word	0x08005790
+ 80051bc:	0800579c 	.word	0x0800579c
+ 80051c0:	08005718 	.word	0x08005718
+ 80051c4:	08005728 	.word	0x08005728
 
-08005198 <memset>:
- 8005198:	0783      	lsls	r3, r0, #30
- 800519a:	b530      	push	{r4, r5, lr}
- 800519c:	d048      	beq.n	8005230 <memset+0x98>
- 800519e:	1e54      	subs	r4, r2, #1
- 80051a0:	2a00      	cmp	r2, #0
- 80051a2:	d03f      	beq.n	8005224 <memset+0x8c>
- 80051a4:	b2ca      	uxtb	r2, r1
- 80051a6:	4603      	mov	r3, r0
- 80051a8:	e001      	b.n	80051ae <memset+0x16>
- 80051aa:	3c01      	subs	r4, #1
- 80051ac:	d33a      	bcc.n	8005224 <memset+0x8c>
- 80051ae:	f803 2b01 	strb.w	r2, [r3], #1
- 80051b2:	079d      	lsls	r5, r3, #30
- 80051b4:	d1f9      	bne.n	80051aa <memset+0x12>
- 80051b6:	2c03      	cmp	r4, #3
- 80051b8:	d92d      	bls.n	8005216 <memset+0x7e>
- 80051ba:	b2cd      	uxtb	r5, r1
- 80051bc:	ea45 2505 	orr.w	r5, r5, r5, lsl #8
- 80051c0:	2c0f      	cmp	r4, #15
- 80051c2:	ea45 4505 	orr.w	r5, r5, r5, lsl #16
- 80051c6:	d936      	bls.n	8005236 <memset+0x9e>
- 80051c8:	f1a4 0210 	sub.w	r2, r4, #16
- 80051cc:	f022 0c0f 	bic.w	ip, r2, #15
- 80051d0:	f103 0e20 	add.w	lr, r3, #32
- 80051d4:	44e6      	add	lr, ip
- 80051d6:	ea4f 1c12 	mov.w	ip, r2, lsr #4
- 80051da:	f103 0210 	add.w	r2, r3, #16
- 80051de:	e942 5504 	strd	r5, r5, [r2, #-16]
- 80051e2:	e942 5502 	strd	r5, r5, [r2, #-8]
- 80051e6:	3210      	adds	r2, #16
- 80051e8:	4572      	cmp	r2, lr
- 80051ea:	d1f8      	bne.n	80051de <memset+0x46>
- 80051ec:	f10c 0201 	add.w	r2, ip, #1
- 80051f0:	f014 0f0c 	tst.w	r4, #12
- 80051f4:	eb03 1202 	add.w	r2, r3, r2, lsl #4
- 80051f8:	f004 0c0f 	and.w	ip, r4, #15
- 80051fc:	d013      	beq.n	8005226 <memset+0x8e>
- 80051fe:	f1ac 0304 	sub.w	r3, ip, #4
- 8005202:	f023 0303 	bic.w	r3, r3, #3
- 8005206:	3304      	adds	r3, #4
- 8005208:	4413      	add	r3, r2
- 800520a:	f842 5b04 	str.w	r5, [r2], #4
- 800520e:	4293      	cmp	r3, r2
- 8005210:	d1fb      	bne.n	800520a <memset+0x72>
- 8005212:	f00c 0403 	and.w	r4, ip, #3
- 8005216:	b12c      	cbz	r4, 8005224 <memset+0x8c>
- 8005218:	b2c9      	uxtb	r1, r1
- 800521a:	441c      	add	r4, r3
- 800521c:	f803 1b01 	strb.w	r1, [r3], #1
- 8005220:	429c      	cmp	r4, r3
- 8005222:	d1fb      	bne.n	800521c <memset+0x84>
- 8005224:	bd30      	pop	{r4, r5, pc}
- 8005226:	4664      	mov	r4, ip
- 8005228:	4613      	mov	r3, r2
- 800522a:	2c00      	cmp	r4, #0
- 800522c:	d1f4      	bne.n	8005218 <memset+0x80>
- 800522e:	e7f9      	b.n	8005224 <memset+0x8c>
- 8005230:	4603      	mov	r3, r0
- 8005232:	4614      	mov	r4, r2
- 8005234:	e7bf      	b.n	80051b6 <memset+0x1e>
- 8005236:	461a      	mov	r2, r3
- 8005238:	46a4      	mov	ip, r4
- 800523a:	e7e0      	b.n	80051fe <memset+0x66>
+080051c8 <memset>:
+ 80051c8:	0783      	lsls	r3, r0, #30
+ 80051ca:	b530      	push	{r4, r5, lr}
+ 80051cc:	d048      	beq.n	8005260 <memset+0x98>
+ 80051ce:	1e54      	subs	r4, r2, #1
+ 80051d0:	2a00      	cmp	r2, #0
+ 80051d2:	d03f      	beq.n	8005254 <memset+0x8c>
+ 80051d4:	b2ca      	uxtb	r2, r1
+ 80051d6:	4603      	mov	r3, r0
+ 80051d8:	e001      	b.n	80051de <memset+0x16>
+ 80051da:	3c01      	subs	r4, #1
+ 80051dc:	d33a      	bcc.n	8005254 <memset+0x8c>
+ 80051de:	f803 2b01 	strb.w	r2, [r3], #1
+ 80051e2:	079d      	lsls	r5, r3, #30
+ 80051e4:	d1f9      	bne.n	80051da <memset+0x12>
+ 80051e6:	2c03      	cmp	r4, #3
+ 80051e8:	d92d      	bls.n	8005246 <memset+0x7e>
+ 80051ea:	b2cd      	uxtb	r5, r1
+ 80051ec:	ea45 2505 	orr.w	r5, r5, r5, lsl #8
+ 80051f0:	2c0f      	cmp	r4, #15
+ 80051f2:	ea45 4505 	orr.w	r5, r5, r5, lsl #16
+ 80051f6:	d936      	bls.n	8005266 <memset+0x9e>
+ 80051f8:	f1a4 0210 	sub.w	r2, r4, #16
+ 80051fc:	f022 0c0f 	bic.w	ip, r2, #15
+ 8005200:	f103 0e20 	add.w	lr, r3, #32
+ 8005204:	44e6      	add	lr, ip
+ 8005206:	ea4f 1c12 	mov.w	ip, r2, lsr #4
+ 800520a:	f103 0210 	add.w	r2, r3, #16
+ 800520e:	e942 5504 	strd	r5, r5, [r2, #-16]
+ 8005212:	e942 5502 	strd	r5, r5, [r2, #-8]
+ 8005216:	3210      	adds	r2, #16
+ 8005218:	4572      	cmp	r2, lr
+ 800521a:	d1f8      	bne.n	800520e <memset+0x46>
+ 800521c:	f10c 0201 	add.w	r2, ip, #1
+ 8005220:	f014 0f0c 	tst.w	r4, #12
+ 8005224:	eb03 1202 	add.w	r2, r3, r2, lsl #4
+ 8005228:	f004 0c0f 	and.w	ip, r4, #15
+ 800522c:	d013      	beq.n	8005256 <memset+0x8e>
+ 800522e:	f1ac 0304 	sub.w	r3, ip, #4
+ 8005232:	f023 0303 	bic.w	r3, r3, #3
+ 8005236:	3304      	adds	r3, #4
+ 8005238:	4413      	add	r3, r2
+ 800523a:	f842 5b04 	str.w	r5, [r2], #4
+ 800523e:	4293      	cmp	r3, r2
+ 8005240:	d1fb      	bne.n	800523a <memset+0x72>
+ 8005242:	f00c 0403 	and.w	r4, ip, #3
+ 8005246:	b12c      	cbz	r4, 8005254 <memset+0x8c>
+ 8005248:	b2c9      	uxtb	r1, r1
+ 800524a:	441c      	add	r4, r3
+ 800524c:	f803 1b01 	strb.w	r1, [r3], #1
+ 8005250:	429c      	cmp	r4, r3
+ 8005252:	d1fb      	bne.n	800524c <memset+0x84>
+ 8005254:	bd30      	pop	{r4, r5, pc}
+ 8005256:	4664      	mov	r4, ip
+ 8005258:	4613      	mov	r3, r2
+ 800525a:	2c00      	cmp	r4, #0
+ 800525c:	d1f4      	bne.n	8005248 <memset+0x80>
+ 800525e:	e7f9      	b.n	8005254 <memset+0x8c>
+ 8005260:	4603      	mov	r3, r0
+ 8005262:	4614      	mov	r4, r2
+ 8005264:	e7bf      	b.n	80051e6 <memset+0x1e>
+ 8005266:	461a      	mov	r2, r3
+ 8005268:	46a4      	mov	ip, r4
+ 800526a:	e7e0      	b.n	800522e <memset+0x66>
