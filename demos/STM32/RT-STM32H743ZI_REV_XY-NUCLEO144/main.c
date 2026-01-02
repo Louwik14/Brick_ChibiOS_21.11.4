@@ -61,6 +61,7 @@ int main(void)
   chprintf(chp, "===============================\r\n");
 
   chprintf(chp, "BEFORE sdramStart()\r\n");
+  sdramInit();
   sdramStart(&SDRAMD1, &sdram_cfg);
   chprintf(chp, "AFTER sdramStart()\r\n");
 

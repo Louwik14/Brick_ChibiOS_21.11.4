@@ -115,6 +115,7 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        main.c \
+       $(CHIBIOS_CONTRIB)/os/hal/src/hal_community.c \
        $(CHIBIOS_CONTRIB)/os/hal/src/hal_fsmc.c \
        $(CHIBIOS_CONTRIB)/os/hal/src/hal_sdram.c \
        $(wildcard drivers/*.c)
