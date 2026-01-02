@@ -1,6 +1,6 @@
 /**
  * @file mpu_config.c
- * @brief Initialisation minimale et idempotente du MPU pour la section .ram_d2.
+ * @brief Initialisation minimale et idempotente du MPU pour la section .nocache.
  */
 
 #include "mpu_config.h"
@@ -43,9 +43,9 @@ static bool mpu_compute_region_size(uintptr_t base,
 
 bool mpu_config_init_once(void) {
     static bool initialized = false;
-    const uintptr_t ram_d2_base = (uintptr_t)&__ram_d2_start__;
-    const uintptr_t ram_d2_end  = (uintptr_t)&__ram_d2_end__;
-    const uintptr_t ram_d2_size = ram_d2_end - ram_d2_base;
+    const uintptr_t nocache_base = (uintptr_t)&__nocache_base__;
+    const uintptr_t nocache_end  = (uintptr_t)&__nocache_end__;
+    const uintptr_t nocache_size = nocache_end - nocache_base;
     uint32_t region_size_encoding = 0U;
     uintptr_t region_size_bytes = 0U;
 
@@ -53,16 +53,16 @@ bool mpu_config_init_once(void) {
         return true;
     }
 
-    if (((ram_d2_base & 0x1FU) != 0U) || (ram_d2_size == 0U)) {
+    if (((nocache_base & 0x1FU) != 0U) || (nocache_size == 0U)) {
         return false;
     }
 
-    if (!mpu_compute_region_size(ram_d2_base, ram_d2_size,
+    if (!mpu_compute_region_size(nocache_base, nocache_size,
                                  &region_size_encoding, &region_size_bytes)) {
         return false;
     }
 
-    if (ram_d2_size > region_size_bytes) {
+    if (nocache_size > region_size_bytes) {
         return false;
     }
 
@@ -72,9 +72,9 @@ bool mpu_config_init_once(void) {
 
     /*
      * Région D2 : mémoire normale, non-cacheable, shareable pour les buffers
-     * DMA audio/SD (.ram_d2).
+     * DMA audio/SD (.nocache).
      */
-    ARM_MPU_SetRegion(ARM_MPU_RBAR(MPU_REGION_D2_NOCACHE, ram_d2_base),
+    ARM_MPU_SetRegion(ARM_MPU_RBAR(MPU_REGION_D2_NOCACHE, nocache_base),
                       ARM_MPU_RASR(0u,              /* XN */
                                    ARM_MPU_AP_FULL, /* RW */
                                    1u,              /* TEX: Normal memory */
@@ -97,4 +97,3 @@ bool mpu_config_init_once(void) {
     initialized = true;
     return true;
 }
-

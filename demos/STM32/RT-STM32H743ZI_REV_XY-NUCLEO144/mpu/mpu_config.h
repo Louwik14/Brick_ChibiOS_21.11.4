@@ -12,11 +12,11 @@
 #include "mpu_map.h"
 
 /*
- * Limites exportées par le script LD pour la section .ram_d2 (SRAM D2).
+ * Limites exportées par le script LD pour la section .nocache (SRAM D2 / SRAM3).
  * Utilisées pour dériver la fenêtre MPU non-cacheable compatible DMA.
  */
-extern uint8_t __ram_d2_start__;
-extern uint8_t __ram_d2_end__;
+extern uint8_t __nocache_base__;
+extern uint8_t __nocache_end__;
 
 bool mpu_config_init_once(void);
 

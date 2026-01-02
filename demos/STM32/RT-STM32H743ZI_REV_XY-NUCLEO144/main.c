@@ -2,6 +2,8 @@
 #include "hal.h"
 #include "chprintf.h"
 
+#include "mpu_config.h"
+
 static const SerialConfig uart_cfg = {
   115200,
   0,
@@ -26,6 +28,11 @@ int main(void) {
 
   sdStart(&SD1, &uart_cfg);
   BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+
+  if (!mpu_config_init_once()) {
+    chprintf(chp, "MPU init failed (nocache region).\r\n");
+    while (true) chThdSleepMilliseconds(1000);
+  }
 
   chprintf(chp, "\r\n=== SDMMC1 RAW BLOCK TEST (NOCACHE BUF) ===\r\n");
 
