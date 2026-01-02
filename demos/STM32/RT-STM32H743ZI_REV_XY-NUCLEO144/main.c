@@ -9,8 +9,9 @@ static const SerialConfig uart_cfg = {
   0
 };
 
-/* Zone NOCACHE déclarée dans mcuconf: RBAR=0x24000000 size=16K */
-#define NOCACHE_BASE 0x24000000U
+/* Buffer IDMA: section non-cacheable + alignement 32B. */
+__attribute__((section(".nocache"), aligned(32)))
+static uint8_t sdc_buf[512];
 
 static void dump_hex(BaseSequentialStream *chp, const uint8_t *p, size_t n) {
   for (size_t i = 0; i < n; i++) {
@@ -28,8 +29,7 @@ int main(void) {
 
   chprintf(chp, "\r\n=== SDMMC1 RAW BLOCK TEST (NOCACHE BUF) ===\r\n");
 
-  /* Buffer DMA-safe + (chez toi) MPU no-cache */
-  static uint8_t *buf = (uint8_t *)NOCACHE_BASE;
+  uint8_t *buf = sdc_buf;
 
   /* Sanity: card detect (si le LLD le supporte) */
   chprintf(chp, "Card inserted? %s\r\n", sdcIsCardInserted(&SDCD1) ? "YES" : "NO");

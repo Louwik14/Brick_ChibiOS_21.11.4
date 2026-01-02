@@ -44,7 +44,7 @@
 /*
  * Memory attributes settings.
  */
-#define STM32_NOCACHE_ENABLE                FALSE
+#define STM32_NOCACHE_ENABLE                TRUE
 #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
 #define STM32_NOCACHE_RBAR                  0x24000000U
 #define STM32_NOCACHE_RASR                  MPU_RASR_SIZE_16K
@@ -411,9 +411,6 @@
 #define STM32_SDC_SDMMC_READ_TIMEOUT        10000
 #define STM32_SDC_SDMMC_CLOCK_DELAY         10
 #define STM32_SDC_SDMMC_PWRSAV              TRUE
-#define STM32_SDC_SDMMC1_DMA_STREAM         STM32_DMA_STREAM_ID(2, 0)
-#define STM32_SDC_SDMMC1_DMA_MSK            0xFFFFU
-#define STM32_SDC_SDMMC1_DMA_CHN            0x00000000U
 
 /*
  * SERIAL driver system settings.
