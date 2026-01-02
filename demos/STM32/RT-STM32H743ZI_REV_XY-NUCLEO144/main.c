@@ -3,49 +3,65 @@
 #include "chprintf.h"
 
 static const SerialConfig uart_cfg = {
-  115200, 0, USART_CR2_STOP1_BITS, 0
+  115200,
+  0,
+  USART_CR2_STOP1_BITS,
+  0
 };
 
-int main(void) {
-  uint8_t buffer[512];
-  sdcflags_t errors;
+/* Zone NOCACHE déclarée dans mcuconf: RBAR=0x24000000 size=16K */
+#define NOCACHE_BASE 0x24000000U
 
+static void dump_hex(BaseSequentialStream *chp, const uint8_t *p, size_t n) {
+  for (size_t i = 0; i < n; i++) {
+    chprintf(chp, "%02X%s", p[i], ((i + 1) % 16 == 0) ? "\r\n" : " ");
+  }
+  if (n % 16) chprintf(chp, "\r\n");
+}
+
+int main(void) {
   halInit();
   chSysInit();
 
   sdStart(&SD1, &uart_cfg);
-  chprintf((BaseSequentialStream *)&SD1,
-           "\r\n=== SDMMC1 RAW BLOCK TEST ===\r\n");
+  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
 
+  chprintf(chp, "\r\n=== SDMMC1 RAW BLOCK TEST (NOCACHE BUF) ===\r\n");
+
+  /* Buffer DMA-safe + (chez toi) MPU no-cache */
+  static uint8_t *buf = (uint8_t *)NOCACHE_BASE;
+
+  /* Sanity: card detect (si le LLD le supporte) */
+  chprintf(chp, "Card inserted? %s\r\n", sdcIsCardInserted(&SDCD1) ? "YES" : "NO");
+
+  chprintf(chp, "sdcStart...\r\n");
   sdcStart(&SDCD1, NULL);
+
+  chprintf(chp, "sdcConnect...\r\n");
   if (sdcConnect(&SDCD1) != HAL_SUCCESS) {
-    errors = sdcGetAndClearErrors(&SDCD1);
-    chprintf((BaseSequentialStream *)&SD1,
-             "sdcConnect failed (errors=0x%08lX)\r\n", errors);
-    while (true) {
-      chThdSleepMilliseconds(1000);
-    }
+    sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
+    chprintf(chp, "sdcConnect FAILED errors=0x%08lX\r\n", (uint32_t)e);
+    while (true) chThdSleepMilliseconds(1000);
+  }
+  chprintf(chp, "sdcConnect OK\r\n");
+
+  chprintf(chp, "Reading LBA0...\r\n");
+  if (sdcRead(&SDCD1, 0, buf, 1) != HAL_SUCCESS) {
+    sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
+    chprintf(chp, "sdcRead FAILED errors=0x%08lX\r\n", (uint32_t)e);
+    while (true) chThdSleepMilliseconds(1000);
   }
 
-  if (sdcRead(&SDCD1, 0, buffer, 1) != HAL_SUCCESS) {
-    errors = sdcGetAndClearErrors(&SDCD1);
-    chprintf((BaseSequentialStream *)&SD1,
-             "sdcRead failed (errors=0x%08lX)\r\n", errors);
-    while (true) {
-      chThdSleepMilliseconds(1000);
-    }
-  }
+#if CORTEX_MODEL == 7
+  /* Si DCache est ON, invalidation pour voir ce que le DMA a écrit */
+  SCB_InvalidateDCache_by_Addr((uint32_t *)((uint32_t)buf & ~31U), 512 + 32);
+#endif
 
-  chprintf((BaseSequentialStream *)&SD1, "LBA0[0..31]:\r\n");
-  for (size_t i = 0; i < 32; i++) {
-    chprintf((BaseSequentialStream *)&SD1, "%02X ", buffer[i]);
-    if (((i + 1U) % 16U) == 0U) {
-      chprintf((BaseSequentialStream *)&SD1, "\r\n");
-    }
-  }
-  chprintf((BaseSequentialStream *)&SD1, "\r\n");
+  chprintf(chp, "LBA0 first 32 bytes:\r\n");
+  dump_hex(chp, buf, 32);
 
   while (true) {
+    chprintf(chp, "Alive\r\n");
     chThdSleepMilliseconds(1000);
   }
 }
