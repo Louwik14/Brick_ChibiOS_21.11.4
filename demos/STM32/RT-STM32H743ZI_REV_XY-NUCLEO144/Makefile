@@ -77,9 +77,9 @@ DEPDIR   := ./.dep
 include $(CHIBIOS)/os/license/license.mk
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
 
-include $(CHIBIOS)/os/hal/hal.mk
+include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
-include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
+include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32H7xx/platform.mk
 include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 
@@ -91,16 +91,6 @@ include $(CHIBIOS)/tools/mk/autobuild.mk
 include $(CHIBIOS)/os/test/test.mk
 include $(CHIBIOS)/test/rt/rt_test.mk
 include $(CHIBIOS)/test/oslib/oslib_test.mk
-
-##############################################################################
-# >>> ChibiOS-Contrib FMC / SDRAM <<<
-#
-# IMPORTANT:
-# This MUST be included AFTER hal.mk and platform.mk
-#
-##############################################################################
-
-include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/LLD/FSMCv1/driver.mk
 
 ##############################################################################
 # Linker script
@@ -115,9 +105,6 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        main.c \
-       $(CHIBIOS_CONTRIB)/os/hal/src/hal_community.c \
-       $(CHIBIOS_CONTRIB)/os/hal/src/hal_fsmc.c \
-       $(CHIBIOS_CONTRIB)/os/hal/src/hal_sdram.c \
        $(wildcard drivers/*.c)
 
 CPPSRC = $(ALLCPPSRC)
@@ -130,8 +117,6 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
-INCDIR += $(CHIBIOS_CONTRIB)/os/hal/include
-INCDIR += $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/LLD/FSMCv1
 ##############################################################################
 # Warnings
 #
