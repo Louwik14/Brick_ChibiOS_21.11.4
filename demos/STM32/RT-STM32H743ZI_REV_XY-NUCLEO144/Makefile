@@ -83,6 +83,12 @@ include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32H7xx/platform.mk
 include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 
+# Force SDMMCv2 (IDMA) on STM32H7 and fail the build if SDMMCv1 sneaks in.
+include $(CHIBIOS)/os/hal/ports/STM32/LLD/SDMMCv2/driver.mk
+ifneq ($(filter %/LLD/SDMMCv1/hal_sdc_lld.c,$(PLATFORMSRC)),)
+  $(error SDMMCv1 detected in PLATFORMSRC on STM32H7, use SDMMCv2/IDMA)
+endif
+
 include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/common/ports/ARMv7-M/compilers/GCC/mk/port.mk
 
