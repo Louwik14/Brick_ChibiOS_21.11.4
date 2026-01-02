@@ -38,7 +38,19 @@ static const SDRAMConfig sdram_cfg = {
     ((7U - 1U) << FMC_SDTRx_TRC_Pos)  |
     ((2U - 1U) << FMC_SDTRx_TWR_Pos)  |
     ((2U - 1U) << FMC_SDTRx_TRP_Pos)  |
-    ((2U - 1U) << FMC_SDTRx_TRCD_Pos)
+    ((2U - 1U) << FMC_SDTRx_TRCD_Pos),
+
+  /* SDCMR: mode register definition + auto-refresh count */
+  .sdcmr =
+    ((2U - 1U) << FMC_SDCMR_NRFS_Pos) |
+    ((FMC_SDCMR_MRD_BURST_LENGTH_1 |
+      FMC_SDCMR_MRD_BURST_TYPE_SEQUENTIAL |
+      FMC_SDCMR_MRD_CAS_LATENCY_3 |
+      FMC_SDCMR_MRD_OPERATING_MODE_STANDARD |
+      FMC_SDCMR_MRD_WRITEBURST_MODE_SINGLE) << FMC_SDCMR_MRD_Pos),
+
+  /* SDRTR: refresh rate counter (tREF=64ms, 8192 rows, SDCLK=100MHz). */
+  .sdrtr = (761U << FMC_SDRTR_COUNT_Pos)
 };
 
 /* ------------------------------------------------------------------------- */
@@ -59,6 +71,7 @@ int main(void)
   chprintf(chp, " SDRAM DRIVER START TEST (H7)\r\n");
   chprintf(chp, "===============================\r\n");
 
+  sdramInit();
   chprintf(chp, "BEFORE sdramStart()\r\n");
   sdramStart(&SDRAMD1, &sdram_cfg);
   chprintf(chp, "AFTER sdramStart()\r\n");

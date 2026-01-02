@@ -77,7 +77,7 @@ DEPDIR   := ./.dep
 include $(CHIBIOS)/os/license/license.mk
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.mk
 
-include $(CHIBIOS)/os/hal/hal.mk
+include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/hal/ports/STM32/STM32H7xx/platform.mk
 include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
@@ -115,8 +115,7 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        main.c \
-       $(wildcard drivers/*.c) \
-       $(wildcard drivers/sdram/*.c)
+       $(wildcard drivers/*.c)
 
 CPPSRC = $(ALLCPPSRC)
 ASMSRC = $(ALLASMSRC)
@@ -128,7 +127,6 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
-INCDIR += drivers/sdram
 
 ##############################################################################
 # Warnings

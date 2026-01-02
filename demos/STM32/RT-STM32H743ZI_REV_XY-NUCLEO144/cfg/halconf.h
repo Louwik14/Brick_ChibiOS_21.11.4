@@ -558,6 +558,9 @@
 #define WSPI_USE_MUTUAL_EXCLUSION           TRUE
 #endif
 
+/* Community overlay (ChibiOS-Contrib). */
+#include "halconf_community.h"
+
 #endif /* HALCONF_H */
 
 /** @} */
