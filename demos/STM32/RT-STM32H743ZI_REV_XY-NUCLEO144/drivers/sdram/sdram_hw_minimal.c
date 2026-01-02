@@ -82,7 +82,7 @@ bool sdram_init_minimal(void)
   sdram_send_command(SDRAM_CMD_PALL, 0u, 0u);
 
   sdram_wait_while_busy();
-  sdram_send_command(SDRAM_CMD_AUTOREFRESH, 8u, 0u);
+  sdram_send_command(SDRAM_CMD_AUTOREFRESH, 4u, 0u);
 
   sdram_wait_while_busy();
   sdram_send_command(SDRAM_CMD_LOAD_MODE, 0u, SDRAM_MODE_REGISTER_VALUE);

@@ -23,7 +23,7 @@ int main(void) {
 
     chThdSleepMilliseconds(200);
 
-    chprintf(chp, "MAIN START\r\n");
+    chprintf(chp, "MAIN\r\n");
 
     bool ok = sdram_init_minimal();
     if (!ok) {
@@ -32,6 +32,7 @@ int main(void) {
             chThdSleepMilliseconds(1000);
         }
     }
+    chprintf(chp, "INIT OK\r\n");
 
     volatile uint16_t *sdram_base = (volatile uint16_t *)0xC0000000u;
     *sdram_base = 0xA55A;
