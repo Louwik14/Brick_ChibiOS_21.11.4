@@ -1,6 +1,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
+#include "hal_fsmc.h"
 #include "hal_sdram.h"
 
 /* ------------------------------------------------------------------------- */

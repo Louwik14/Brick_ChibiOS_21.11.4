@@ -115,8 +115,9 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        main.c \
-       $(wildcard drivers/*.c) \
-       $(wildcard drivers/sdram/*.c)
+       $(CHIBIOS_CONTRIB)/os/hal/src/hal_fsmc.c \
+       $(CHIBIOS_CONTRIB)/os/hal/src/hal_sdram.c \
+       $(wildcard drivers/*.c)
 
 CPPSRC = $(ALLCPPSRC)
 ASMSRC = $(ALLASMSRC)
@@ -128,7 +129,7 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
-INCDIR += drivers/sdram
+INCDIR += $(CHIBIOS_CONTRIB)/os/hal/include
 
 ##############################################################################
 # Warnings
