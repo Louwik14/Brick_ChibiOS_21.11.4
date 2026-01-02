@@ -127,13 +127,32 @@ Raisons :
 
 ### SDRAM externe
 
-* Référence : **W9825G6KH-6I (256 Mbit / 32 MB)**
-* Usage **exclusif audio** :
+* Référence : **W9825G6KH-6I (256 Mbit / 32 MB, x16)**
+* Driver : **ChibiOS-Contrib HAL SDRAM + FSMCv1**
+* État : ✅ **SDRAM fonctionnelle (validation atomique OK)**
 
-  * buffers
-  * looper
-  * delay
-  * granular
+#### Règles d’utilisation (NON négociables)
+
+* ✅ Accès **32-bit uniquement** (`uint32_t*`)
+* ❌ Interdit : accès `uint16_t*` / `uint8_t*` (aliasing / writes non fiables sur STM32H7)
+* ⚠️ Particularité STM32H7 + SDRAM x16 : **les demi-mots sont inversés** sur les accès 32-bit  
+  Exemple : écrire `0x11223344` → relire `0x33441122` (normal).
+* ✅ Pour travailler “comme d’habitude”, utiliser un wrapper qui applique un **swap16** à l’écriture/lecture.
+
+#### Module projet (config bétonnée)
+
+* Fichiers : `sdram_ext.c / sdram_ext.h`
+* API :
+  * `sdram_ext_init()` (appelle `sdramInit()` + `sdramStart(&SDRAMD1, &sdram_cfg)`)
+  * `sdram_ext_write32(index, value)` / `sdram_ext_read32(index)` (gèrent le swap16)
+* Base : `SDRAM_EXT_BASE = 0xC0000000`
+
+#### Usage prévu (audio uniquement)
+
+* buffers
+* looper
+* delay
+* granular
 * ❌ Pas de heap
 * ❌ Pas d’objets UI
 * ❌ Pas de structures système
@@ -146,7 +165,6 @@ Raisons :
 * drivers
 
 ---
-
 ## 7. Interface utilisateur
 
 ### Entrées
@@ -244,23 +262,25 @@ Reset → halInit() → chSysInit() → main()
 * ❌ **Aucune initialisation SDRAM dans `boardInit()`**
 * SDRAM initialisée :
 
-  * dans `sdram.c`
+  * dans **`sdram_ext.c`** (module dédié)
   * explicitement depuis `main()` ou un thread contrôlé
-  * avec logs UART
-  * timeout et échec propre
+  * avec logs UART (étapes de bring-up)
+  * en gardant le chemin d’init simple : `sdramInit()` → `sdramStart(&SDRAMD1, &sdram_cfg)`
+
+* Validation minimale de référence (doit toujours passer) :
+  * écrire 1 mot : `0x11223344`
+  * relire : `0x33441122` (swap demi-mots normal sur x16)
 
 ---
 
 ## 12. Cache / MPU — politique projet
 
-* ❌ Pas de cache activé tant que :
+* Objectif actuel : **validation fonctionnelle** → garder les tests *simples et déterministes*.
+* ⚠️ Attention STM32H7 : si le **D-Cache** est activé par le startup, une SDRAM externe peut donner des tests “faux FAIL” tant que le **MPU** n’a pas marqué la zone SDRAM avec les bons attributs.
+* Politique projet :
 
-  * SDRAM non validée
-  * architecture mémoire non figée
-* Cache / MPU **viendront plus tard**, uniquement pour :
-
-  * optimisation
-  * cohérence DMA
+  * ✅ Phase bring-up SDRAM : **cache OFF** (ou SDRAM marquée non-cacheable via MPU)
+  * ✅ Phase production : cache ON + MPU (Write-Back/Write-Allocate) + **maintenance cache explicite** sur buffers DMA (clean/invalidate par adresse)
 
 ---
 
@@ -279,20 +299,20 @@ Reset → halInit() → chSysInit() → main()
 
 ## 14. Prochaines étapes recommandées
 
-1. Implémenter `sdram.c / sdram.h`
-2. Tester la SDRAM (patterns simples)
-3. Finaliser drivers UI (ADC, MUX, OLED, LEDs)
-4. Mettre en place le **squelette audio DMA**
-5. Intégrer SPI-link audio **1 cartouche**
-6. Étendre prudemment à 2 cartouches audio
-7. Plus tard :
+1. ✅ SDRAM : module `sdram_ext.c / sdram_ext.h` (config verrouillée + helpers 32-bit)
+2. ✅ SDRAM : test atomique de référence (write/read 1 mot) OK
+3. 🔜 Ajouter un **test SDRAM plus long** (patterns + pseudo-random) en mode *cache OFF* ou SDRAM *non-cacheable MPU*
+4. Finaliser drivers UI (ADC, MUX, OLED, LEDs)
+5. Mettre en place le **squelette audio DMA**
+6. Intégrer SPI-link audio **1 cartouche**
+7. Étendre prudemment à 2 cartouches audio
+8. Plus tard :
 
-   * cache / MPU
+   * MPU + cache (mode production, cohérence DMA)
    * optimisation
    * USB audio (optionnel)
 
 ---
-
 ## 15. État final actuel
 
 > 🟢 Socle CPU / clock / debug sain

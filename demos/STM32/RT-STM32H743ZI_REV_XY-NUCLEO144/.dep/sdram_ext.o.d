@@ -1,4 +1,4 @@
-build/obj/main.o: main.c ../../../os/rt/include/ch.h \
+build/obj/sdram_ext.o: sdram/sdram_ext.c ../../../os/rt/include/ch.h \
  ../../../os/license/chlicense.h ../../../os/license/chversion.h \
  ../../../os/license/chcustomer.h cfg/chconf.h \
  ../../../os/rt/include/chchecks.h \
@@ -119,7 +119,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- ../../../os/hal/lib/streams/chprintf.h sdram/sdram_ext.h
+ sdram/sdram_ext.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -269,5 +269,4 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
-../../../os/hal/lib/streams/chprintf.h:
 sdram/sdram_ext.h:
