@@ -59,7 +59,7 @@
 /* -------------------------------------------------------------------------- */
 
 /** Bus I2C dédié aux codecs ADAU1979 (voir board.h pour le câblage exact). */
-#define AUDIO_I2C_DRIVER              I2CD3
+#define AUDIO_I2C_DRIVER              I2CD2
 
 /** Adresses 7 bits des deux ADAU1979 (config strap ADDR0/ADDR1). */
 #define ADAU1979_I2C_ADDRESS_0        0x11U
