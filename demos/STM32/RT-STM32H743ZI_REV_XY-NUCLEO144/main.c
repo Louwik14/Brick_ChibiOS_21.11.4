@@ -54,11 +54,9 @@ static void sdmmc_test(BaseSequentialStream *chp) {
     sdc_buf_rx[i] = 0U;
   }
 
-  /* SD driver start (NO config struct on H7) */
   chprintf(chp, "sdcStart...\r\n");
   sdcStart(&SDCD1, NULL);
 
-  /* Connect card */
   chprintf(chp, "sdcConnect...\r\n");
   if (sdcConnect(&SDCD1) != HAL_SUCCESS) {
     sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
