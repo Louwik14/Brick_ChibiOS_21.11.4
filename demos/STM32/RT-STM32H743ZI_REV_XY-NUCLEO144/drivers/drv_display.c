@@ -1,5 +1,4 @@
 #include "drv_display.h"
-#include "drivers.h"
 #include "ch.h"
 #include "hal.h"
 #include "brick_config.h"
@@ -22,8 +21,7 @@ static const SPIConfig spicfg = {
             SPI_CFG1_DSIZE_VALUE(7),      /* 8 bits */
 
     .cfg2 = SPI_CFG2_MASTER |
-            SPI_CFG2_SSM    |
-            SPI_CFG2_SSOE
+            SPI_CFG2_SSM
 };
 
 /* ====================================================================== */
@@ -38,6 +36,8 @@ static thread_t *display_tp = NULL;
 /*                              UTILITAIRES GPIO                          */
 /* ====================================================================== */
 
+static inline void cs_low(void)  { palClearLine(LINE_SPI5_CS_OLED); }
+static inline void cs_high(void) { palSetLine  (LINE_SPI5_CS_OLED); }
 static inline void dc_cmd(void)  { palClearLine(LINE_SPI5_DC_OLED); }
 static inline void dc_data(void) { palSetLine  (LINE_SPI5_DC_OLED); }
 
@@ -46,31 +46,19 @@ static inline void dc_data(void) { palSetLine  (LINE_SPI5_DC_OLED); }
 /* ====================================================================== */
 
 static void send_cmd(uint8_t cmd) {
-    chMtxLock(&spi5_mutex);
-
-    /* SPI5 est partagé, la config est appliquée par transaction sous mutex. */
-    spiStart(&SPID5, &spicfg);
-
     dc_cmd();
-    palClearLine(LINE_SPI5_CS_OLED);
-    spiSend(&SPID5, 1, &cmd);
-    palSetLine(LINE_SPI5_CS_OLED);
-
-    chMtxUnlock(&spi5_mutex);
+    cs_low();
+    spiPolledExchange(&SPID5, cmd);
+    cs_high();
 }
 
 static void send_data(const uint8_t *data, size_t len) {
-    chMtxLock(&spi5_mutex);
-
-    /* SPI5 est partagé, la config est appliquée par transaction sous mutex. */
-    spiStart(&SPID5, &spicfg);
-
     dc_data();
-    palClearLine(LINE_SPI5_CS_OLED);
-    spiSend(&SPID5, len, data);
-    palSetLine(LINE_SPI5_CS_OLED);
-
-    chMtxUnlock(&spi5_mutex);
+    for (size_t i = 0; i < len; i++) {
+        cs_low();
+        spiPolledExchange(&SPID5, data[i]);
+        cs_high();
+    }
 }
 
 /* ====================================================================== */
@@ -101,11 +89,27 @@ static inline void set_pixel(int x, int y, bool on) {
 
 void drv_display_init(void) {
 
+    /* GPIO OLED */
+    palSetLineMode(LINE_SPI5_CS_OLED,  PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LINE_SPI5_DC_OLED,  PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LINE_SPI5_RES_OLED, PAL_MODE_OUTPUT_PUSHPULL);
+
+    cs_high();
+    dc_data();
+    palSetLine(LINE_SPI5_RES_OLED);
+
+    /* SPI5 pins forced to AF5 (STM32H7 specific) */
+    palSetLineMode(LINE_SPI5_SCK,  PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_SPI5_MISO, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_SPI5_MOSI, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+
+    spiStart(&SPID5, &spicfg);
+
     /* Reset OLED */
     palClearLine(LINE_SPI5_RES_OLED);
-    chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(50);
     palSetLine(LINE_SPI5_RES_OLED);
-    chThdSleepMilliseconds(10);
+    chThdSleepMilliseconds(50);
 
     /* Séquence init SSD1309 / SSD1306 */
     send_cmd(0xAE);
@@ -114,19 +118,14 @@ void drv_display_init(void) {
     send_cmd(0xD3); send_cmd(0x00);
     send_cmd(0x40);
     send_cmd(0x8D); send_cmd(0x14);
-    send_cmd(0x20); send_cmd(0x02);
+    send_cmd(0x20); send_cmd(0x00);
     send_cmd(0xA1);
     send_cmd(0xC8);
     send_cmd(0xDA); send_cmd(0x12);
-    send_cmd(0x81); send_cmd(0x7F);
-    send_cmd(0xD9); send_cmd(0xF1);
-    send_cmd(0xDB); send_cmd(0x40);
-    send_cmd(0xA4);
-    send_cmd(0xA6);
-    send_cmd(0x21); send_cmd(0x00); send_cmd(0x7F);
     send_cmd(0xAF);
 
     drv_display_clear();
+    drv_display_update();
 
     extern const font_t FONT_5X7;
     current_font = &FONT_5X7;
@@ -150,7 +149,6 @@ void drv_display_update(void) {
         send_cmd(0xB0 + page);
         send_cmd(0x00);
         send_cmd(0x10);
-        send_cmd(0x21); send_cmd(0x00); send_cmd(0x7F);
         send_data(&buffer[page * BRICK_OLED_WIDTH], BRICK_OLED_WIDTH);
     }
 }
