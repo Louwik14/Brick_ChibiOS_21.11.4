@@ -606,6 +606,7 @@ static void audio_dma_start(void) {
     AUDIO_SAI_RX_BLOCK->CR1 |= SAI_xCR1_DMAEN;
     AUDIO_SAI_TX_BLOCK->CR1 |= SAI_xCR1_DMAEN;
     AUDIO_SAI_TX_BLOCK->CR1 |= SAI_xCR1_SAIEN;
+    AUDIO_SAI_RX_BLOCK->CR1 |= SAI_xCR1_MCKEN;
     AUDIO_SAI_RX_BLOCK->CR1 |= SAI_xCR1_SAIEN;
 #else
     (void)audio_dma_rx_cb;
