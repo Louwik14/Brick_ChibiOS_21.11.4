@@ -47,6 +47,10 @@ static void sdram_test(BaseSequentialStream *chp) {
 
 static void sdmmc_test(BaseSequentialStream *chp) {
   /* SDMMC1 simple IDMA read/write test. */
+  static const SDCConfig sdc_cfg = {
+    SDC_MODE_1BIT,
+    0U
+  };
   chprintf(chp, "\r\n=== SDMMC1 TEST (H7 + SDMMCv2 + MPU) ===\r\n");
 
   for (size_t i = 0; i < sizeof(sdc_buf_tx); i++) {
@@ -54,8 +58,9 @@ static void sdmmc_test(BaseSequentialStream *chp) {
     sdc_buf_rx[i] = 0U;
   }
 
+  /* SD driver start (force 1-bit + lowest frequency). */
   chprintf(chp, "sdcStart...\r\n");
-  sdcStart(&SDCD1, NULL);
+  sdcStart(&SDCD1, &sdc_cfg);
 
   chprintf(chp, "sdcConnect...\r\n");
   if (sdcConnect(&SDCD1) != HAL_SUCCESS) {
