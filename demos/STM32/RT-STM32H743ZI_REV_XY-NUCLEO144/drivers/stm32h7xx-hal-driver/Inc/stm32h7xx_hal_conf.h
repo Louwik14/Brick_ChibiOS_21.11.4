@@ -20,7 +20,7 @@ extern "C" {
 #define HAL_GPIO_MODULE_ENABLED
 #define HAL_RCC_MODULE_ENABLED
 #define HAL_SAI_MODULE_ENABLED
-
+#define HAL_DMA_MODULE_ENABLED
 /* ########################## Oscillator Values ############################# */
 #if !defined(HSE_VALUE)
 #define HSE_VALUE (25000000UL)
