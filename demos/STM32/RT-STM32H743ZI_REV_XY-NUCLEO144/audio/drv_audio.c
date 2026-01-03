@@ -509,8 +509,8 @@ static THD_FUNCTION(audioThread, arg) {
 static void audio_hw_configure_sai(void) {
 #if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
     /* Active les horloges SAI et force la réinitialisation. */
-    rccEnableSAI1(true);
-    rccResetSAI1();
+    rccEnableSAI2(true);
+    rccResetSAI2();
 
     /*
      * Horloges audio : PLL3_P = 49.152 MHz (mcuconf.h) -> MCLK = PLL3_P / 4 = 12.288 MHz.
