@@ -107,7 +107,9 @@ CSRC = $(ALLCSRC) \
        $(CHIBIOS)/os/various/syscalls.c \
        main.c \
        $(wildcard drivers/*.c)\
+       $(wildcard midi/*.c)\
        $(wildcard mpu/*.c)\
+       $(wildcard usb/*.c)\
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c)
 
@@ -121,8 +123,10 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
+INCDIR += midi
 INCDIR += sdram
 INCDIR += mpu
+INCDIR += usb
 INCDIR += ui
 
 
