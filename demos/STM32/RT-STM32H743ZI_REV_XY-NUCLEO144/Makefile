@@ -111,8 +111,9 @@ CSRC = $(ALLCSRC) \
        $(wildcard mpu/*.c)\
        $(wildcard usb/*.c)\
        $(wildcard ui/*.c)\
-       $(wildcard sdram/*.c)
-
+       $(wildcard sdram/*.c) \
+       $(wildcard audio/*.c)
+       
 CPPSRC = $(ALLCPPSRC)
 ASMSRC = $(ALLASMSRC)
 ASMXSRC = $(ALLXASMSRC)
@@ -128,6 +129,7 @@ INCDIR += sdram
 INCDIR += mpu
 INCDIR += usb
 INCDIR += ui
+INCDIR += audio
 
 
 ##############################################################################

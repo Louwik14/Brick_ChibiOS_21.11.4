@@ -148,10 +148,10 @@ static const uint8_t string1[] = {
   'C',0,'h',0,'i',0,'b',0,'i',0,'O',0,'S',0
 };
 static const uint8_t string2[] = {
-  32, USB_DESCRIPTOR_STRING,
-  'U',0,'S',0,'B',0,' ',0,'M',0,'I',0,'D',0,'I',0,' ',0,
-  'D',0,'e',0,'v',0,'i',0,'c',0,'e',0
+  12, USB_DESCRIPTOR_STRING,
+  'B',0,'r',0,'i',0,'c',0,'k',0
 };
+
 static const uint8_t string3[] = {
   10, USB_DESCRIPTOR_STRING,
   '0',0,'0',0,'0',0,'1',0
