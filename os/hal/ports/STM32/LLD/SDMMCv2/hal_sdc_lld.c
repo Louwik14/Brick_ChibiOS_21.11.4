@@ -71,12 +71,16 @@ static const SDCConfig sdc_default_cfg = {
 };
 
 #if STM32_SDC_USE_SDMMC1 || defined(__DOXYGEN__)
+__attribute__((section(".nocache"), aligned(32)))
 static uint8_t __nocache_sd1_buf[MMCSD_BLOCK_SIZE];
+__attribute__((section(".nocache"), aligned(32)))
 static uint32_t __nocache_sd1_wbuf[1];
 #endif
 
 #if STM32_SDC_USE_SDMMC2 || defined(__DOXYGEN__)
+__attribute__((section(".nocache"), aligned(32)))
 static uint8_t __nocache_sd2_buf[MMCSD_BLOCK_SIZE];
+__attribute__((section(".nocache"), aligned(32)))
 static uint32_t __nocache_sd2_wbuf[1];
 #endif
 
