@@ -11,7 +11,24 @@
 * Toolchain : **ARM GCC**
 * Debug : **ST‑Link (SWD)** + OpenOCD
 * IDE : **ChibiStudio**
-* Debug principal : **UART (non temps réel)** + GPIO debug
+* Debug runtime principal : **UART1 (USART1 / SD1)**
+
+### Projet basé sur
+
+```
+
+ChibiOS_21.11.4/demos/STM32/RT-STM32H743ZI_REV_XY-NUCLEO144
+
+```
+
+### Board custom
+
+```
+
+os/hal/boards/STM32H743_LQFP176_CUSTOM
+
+```
+
 
 > ⚠️ Le firmware vise d’abord la **simplicité, la lisibilité et le déterminisme**.  
 > Toute optimisation est secondaire.
