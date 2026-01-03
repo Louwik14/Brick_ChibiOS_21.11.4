@@ -89,10 +89,8 @@ build/obj/nullstreams.o: ../../../os/hal/lib/streams/nullstreams.c \
  ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
- ../../../os/hal/include/hal_sdc.h \
- ../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h \
- ../../../os/hal/include/hal_sio.h ../../../os/hal/include/hal_spi.h \
- ../../../os/hal/include/hal_spi_v2.h \
+ ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
+ ../../../os/hal/include/hal_spi.h ../../../os/hal/include/hal_spi_v2.h \
  ../../../os/hal/ports/STM32/LLD/SPIv3/hal_spi_v2_lld.h \
  ../../../os/hal/include/hal_trng.h ../../../os/hal/include/hal_uart.h \
  ../../../os/hal/include/hal_usb.h \
@@ -237,7 +235,6 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
 ../../../os/hal/include/hal_sdc.h:
-../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h:
 ../../../os/hal/include/hal_sio.h:
 ../../../os/hal/include/hal_spi.h:
 ../../../os/hal/include/hal_spi_v2.h:

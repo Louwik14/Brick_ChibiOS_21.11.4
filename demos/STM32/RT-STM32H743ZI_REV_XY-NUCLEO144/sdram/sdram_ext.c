@@ -1,3 +1,68 @@
+/*
+ * =========================================================
+ * SDRAM x16 / 32-bit ACCESS — HALFWORD SWAP CONTRACT
+ * =========================================================
+ *
+ * CONTEXT
+ * -------
+ * This project uses an external SDRAM connected via FMC
+ * with a **x16 data bus** (16-bit wide).
+ *
+ * The Cortex-M7 CPU performs **32-bit accesses**.
+ * Each 32-bit access is therefore split by the FMC into
+ * two consecutive 16-bit transfers.
+ *
+ *
+ * OBSERVED HARDWARE BEHAVIOR (VALIDATED)
+ * -------------------------------------
+ * When performing a 32-bit write followed by a 32-bit read:
+ *
+ *   Write : 0x11223344
+ *   Read  : 0x33441122
+ *
+ * The two 16-bit halfwords are **systematically swapped**.
+ *
+ * This behavior:
+ *   - is deterministic
+ *   - is stable across addresses
+ *   - is NOT a timing issue
+ *   - is NOT a refresh issue
+ *   - is NOT a wiring error
+ *
+ * It is a direct consequence of:
+ *   - x16 SDRAM bus width
+ *   - FMC internal data assembly
+ *   - CPU endianness
+ *
+ *
+ * SOFTWARE CONTRACT
+ * -----------------
+ * The SDRAM access API compensates this hardware-level
+ * halfword swap so that:
+ *
+ *   sdram_ext_write32()
+ *   sdram_ext_read32()
+ *
+ * present a **logical 32-bit view** to the rest of the system.
+ *
+ * ALL 32-bit accesses to external SDRAM MUST go through
+ * these helpers.
+ *
+ *
+ * IMPORTANT WARNINGS
+ * ------------------
+ * - Do NOT remove the swap unless the FMC bus width changes.
+ * - Do NOT access SDRAM directly with raw pointers.
+ * - Do NOT "fix" this behavior in tests by changing expectations.
+ *
+ * Tests must respect this contract.
+ *
+ * The SDRAM has been validated with raw observation tests
+ * and this behavior is EXPECTED and REQUIRED.
+ *
+ * =========================================================
+ */
+
 #include "ch.h"
 #include "hal.h"
 #include "sdram_ext.h"

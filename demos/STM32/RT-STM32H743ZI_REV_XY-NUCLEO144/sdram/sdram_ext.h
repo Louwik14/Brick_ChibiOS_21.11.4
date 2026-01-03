@@ -1,3 +1,10 @@
+/*
+ * NOTE:
+ * External SDRAM is x16.
+ * All 32-bit accesses MUST use the provided helpers.
+ * Direct raw access will observe halfword swapping.
+ */
+
 #ifndef SDRAM_EXT_H
 #define SDRAM_EXT_H
 
