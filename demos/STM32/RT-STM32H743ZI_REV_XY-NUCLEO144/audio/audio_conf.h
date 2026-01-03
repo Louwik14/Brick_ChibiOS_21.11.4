@@ -35,6 +35,14 @@
 /** Résolution logique des échantillons (24 bits significatifs dans int32_t). */
 #define AUDIO_SAMPLE_BITS             24U
 
+/* -------------------------------------------------------------------------- */
+/* Mode test sans codec                                                      */
+/* -------------------------------------------------------------------------- */
+
+#ifndef AUDIO_ALLOW_NO_CODEC
+#define AUDIO_ALLOW_NO_CODEC          TRUE
+#endif
+
 /**
  * @brief SAI1 Bloc B = ADC (RX maître TDM 8 canaux).
  */
