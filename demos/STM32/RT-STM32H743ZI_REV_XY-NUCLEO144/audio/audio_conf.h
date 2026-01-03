@@ -35,6 +35,14 @@
 /** Résolution logique des échantillons (24 bits significatifs dans int32_t). */
 #define AUDIO_SAMPLE_BITS             24U
 
+/* -------------------------------------------------------------------------- */
+/* Mode test sans codec                                                      */
+/* -------------------------------------------------------------------------- */
+
+#ifndef AUDIO_ALLOW_NO_CODEC
+#define AUDIO_ALLOW_NO_CODEC          TRUE
+#endif
+
 /**
  * @brief SAI1 Bloc B = ADC (RX maître TDM 8 canaux).
  */
@@ -59,7 +67,7 @@
 /* -------------------------------------------------------------------------- */
 
 /** Bus I2C dédié aux codecs ADAU1979 (voir board.h pour le câblage exact). */
-#define AUDIO_I2C_DRIVER              I2CD3
+#define AUDIO_I2C_DRIVER              I2CD2
 
 /** Adresses 7 bits des deux ADAU1979 (config strap ADDR0/ADDR1). */
 #define ADAU1979_I2C_ADDRESS_0        0x11U

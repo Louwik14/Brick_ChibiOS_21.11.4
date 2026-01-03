@@ -14,9 +14,17 @@
 /* API publique                                                               */
 /* -------------------------------------------------------------------------- */
 
+typedef enum {
+    DRV_AUDIO_STOPPED = 0,
+    DRV_AUDIO_READY,
+    DRV_AUDIO_RUNNING,
+    DRV_AUDIO_FAULT
+} drv_audio_state_t;
+
 void drv_audio_init(void);
 void drv_audio_start(void);
 void drv_audio_stop(void);
+drv_audio_state_t drv_audio_get_state(void);
 
 const int32_t* drv_audio_get_input_buffer(uint8_t *index, size_t *frames);
 int32_t*       drv_audio_get_output_buffer(uint8_t *index, size_t *frames);
@@ -38,6 +46,10 @@ __attribute__((weak)) void drv_audio_process_block(
     int32_t                     *dac_out,  /* [frames][AUDIO_NUM_OUTPUT_CHANNELS]  */
     spilink_audio_block_t        spi_out,  /* [4][frames][4] cartouches sortantes */
     size_t                       frames);
+
+/* Hooks faibles pour la validation DMA (pas de log dans IRQ). */
+__attribute__((weak)) void drv_audio_dma_half_cb(uint8_t half);
+__attribute__((weak)) void drv_audio_dma_full_cb(uint8_t half);
 
 /* Interfaces SPI-LINK (stubs extensibles). */
 typedef void (*drv_spilink_pull_cb_t)(spilink_audio_block_t dest, size_t frames);
