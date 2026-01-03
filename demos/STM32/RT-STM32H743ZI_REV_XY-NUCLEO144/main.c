@@ -22,10 +22,6 @@ static void sdram_test(BaseSequentialStream *chp) {
   const uint32_t test_index = 0U;
   const uint32_t test_value = 0x11223344U;
   uint32_t read_value = 0U;
-  uint32_t expected = 0U;
-
-  /* SDRAM x16 swaps halfwords on 32-bit accesses; compare logically. */
-  expected = (test_value >> 16) | (test_value << 16);
 
   /* SDRAM init + minimal functional test (32-bit only, wrapper mandatory). */
   chprintf(chp, "SDRAM init...\r\n");
@@ -35,7 +31,7 @@ static void sdram_test(BaseSequentialStream *chp) {
   sdram_ext_write32(test_index, test_value);
   read_value = sdram_ext_read32(test_index);
 
-  if (read_value != expected) {
+  if (read_value != test_value) {
     chprintf(chp, "SDRAM test FAILED: 0x%08lX\r\n", read_value);
     while (true) {
       chThdSleepMilliseconds(1000);
