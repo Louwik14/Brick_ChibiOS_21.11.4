@@ -83,6 +83,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_can.h ../../../os/hal/include/hal_crypto.h \
  ../../../os/hal/include/hal_dac.h ../../../os/hal/include/hal_efl.h \
  ../../../os/hal/include/hal_gpt.h ../../../os/hal/include/hal_i2c.h \
+ ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
  ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
@@ -117,7 +118,8 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- midi/midi.h usb/usb_device.h
+ ../../../os/hal/lib/streams/chprintf.h audio/drv_audio.h \
+ audio/audio_conf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -225,6 +227,7 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_efl.h:
 ../../../os/hal/include/hal_gpt.h:
 ../../../os/hal/include/hal_i2c.h:
+../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h:
 ../../../os/hal/include/hal_i2s.h:
 ../../../os/hal/include/hal_icu.h:
 ../../../os/hal/include/hal_mac.h:
@@ -266,5 +269,6 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
-midi/midi.h:
-usb/usb_device.h:
+../../../os/hal/lib/streams/chprintf.h:
+audio/drv_audio.h:
+audio/audio_conf.h:

@@ -85,6 +85,7 @@ build/obj/rt_test_sequence_008.o: \
  ../../../os/hal/include/hal_can.h ../../../os/hal/include/hal_crypto.h \
  ../../../os/hal/include/hal_dac.h ../../../os/hal/include/hal_efl.h \
  ../../../os/hal/include/hal_gpt.h ../../../os/hal/include/hal_i2c.h \
+ ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
  ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
@@ -240,6 +241,7 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_efl.h:
 ../../../os/hal/include/hal_gpt.h:
 ../../../os/hal/include/hal_i2c.h:
+../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h:
 ../../../os/hal/include/hal_i2s.h:
 ../../../os/hal/include/hal_icu.h:
 ../../../os/hal/include/hal_mac.h:
