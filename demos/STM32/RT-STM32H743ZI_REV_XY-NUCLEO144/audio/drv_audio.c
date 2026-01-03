@@ -9,13 +9,6 @@
 #include "mpu_config.h"
 #include <string.h>
 
-typedef enum {
-    AUDIO_STOPPED = 0,
-    AUDIO_READY,
-    AUDIO_RUNNING,
-    AUDIO_FAULT
-} audio_state_t;
-
 /* -------------------------------------------------------------------------- */
 /* Buffers ping/pong                                                          */
 /* -------------------------------------------------------------------------- */
@@ -72,7 +65,7 @@ static binary_semaphore_t audio_dma_sem;
 static const stm32_dma_stream_t *sai_rx_dma = NULL;
 static const stm32_dma_stream_t *sai_tx_dma = NULL;
 static thread_t *audio_thread = NULL;
-static audio_state_t audio_state = AUDIO_STOPPED;
+static drv_audio_state_t audio_state = DRV_AUDIO_STOPPED;
 static bool audio_initialized = false;
 
 /* Nombre d'échantillons transférés par transaction (ping + pong). */
@@ -114,7 +107,7 @@ void drv_audio_init(void) {
     }
 
     if (!mpu_config_init_once()) {
-        audio_state = AUDIO_FAULT;
+        audio_state = DRV_AUDIO_FAULT;
         return;
     }
 
@@ -123,9 +116,13 @@ void drv_audio_init(void) {
     audio_control_init();
 
     /* Prépare le bus I2C et les codecs. */
+#if AUDIO_ALLOW_NO_CODEC
+    msg_t codec_status = HAL_RET_SUCCESS;
+#else
     msg_t codec_status = adau1979_init();
+#endif
     if (codec_status != HAL_RET_SUCCESS) {
-        audio_state = AUDIO_FAULT;
+        audio_state = DRV_AUDIO_FAULT;
         return;
     }
     audio_codec_pcm4104_init();
@@ -144,12 +141,12 @@ void drv_audio_init(void) {
     /* Les GPIO SAI sont déjà configurés via board.h. */
     audio_hw_configure_sai();
 
-    audio_state = AUDIO_READY;
+    audio_state = DRV_AUDIO_READY;
     audio_initialized = true;
 }
 
 void drv_audio_start(void) {
-    if (audio_state == AUDIO_RUNNING) {
+    if (audio_state == DRV_AUDIO_RUNNING) {
         return;
     }
 
@@ -157,16 +154,20 @@ void drv_audio_start(void) {
         drv_audio_init();
     }
 
-    if (audio_state == AUDIO_FAULT) {
+    if (audio_state == DRV_AUDIO_FAULT) {
         audio_codec_pcm4104_set_mute(true);
         return;
     }
 
     audio_codec_pcm4104_set_mute(true);
 
+#if AUDIO_ALLOW_NO_CODEC
+    msg_t codec_status = HAL_RET_SUCCESS;
+#else
     msg_t codec_status = adau1979_set_default_config();
+#endif
     if (codec_status != HAL_RET_SUCCESS) {
-        audio_state = AUDIO_FAULT;
+        audio_state = DRV_AUDIO_FAULT;
         return;
     }
 
@@ -183,12 +184,12 @@ void drv_audio_start(void) {
                                          audioThread,
                                          NULL);
     }
-    audio_state = AUDIO_RUNNING;
+    audio_state = DRV_AUDIO_RUNNING;
     audio_codec_pcm4104_set_mute(false);
 }
 
 void drv_audio_stop(void) {
-    if ((audio_state != AUDIO_RUNNING) && (audio_state != AUDIO_READY)) {
+    if ((audio_state != DRV_AUDIO_RUNNING) && (audio_state != DRV_AUDIO_READY)) {
         return;
     }
 
@@ -202,7 +203,11 @@ void drv_audio_stop(void) {
         audio_thread = NULL;
     }
 
-    audio_state = AUDIO_STOPPED;
+    audio_state = DRV_AUDIO_STOPPED;
+}
+
+drv_audio_state_t drv_audio_get_state(void) {
+    return audio_state;
 }
 
 const int32_t* drv_audio_get_input_buffer(uint8_t *index, size_t *frames) {
@@ -437,6 +442,14 @@ void __attribute__((weak)) drv_audio_process_block(const int32_t              *a
     }
 }
 
+void __attribute__((weak)) drv_audio_dma_half_cb(uint8_t half) {
+    (void)half;
+}
+
+void __attribute__((weak)) drv_audio_dma_full_cb(uint8_t half) {
+    (void)half;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Thread audio : déclenché par les callbacks DMA                             */
 /* -------------------------------------------------------------------------- */
@@ -496,8 +509,8 @@ static THD_FUNCTION(audioThread, arg) {
 static void audio_hw_configure_sai(void) {
 #if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
     /* Active les horloges SAI et force la réinitialisation. */
-    rccEnableSAI1(true);
-    rccResetSAI1();
+    rccEnableSAI2(true);
+    rccResetSAI2();
 
     /*
      * Horloges audio : PLL3_P = 49.152 MHz (mcuconf.h) -> MCLK = PLL3_P / 4 = 12.288 MHz.
@@ -623,7 +636,13 @@ static void audio_dma_rx_cb(void *p, uint32_t flags) {
         chSysHalt("AUDIO DMA ERROR");
     }
     if ((flags & (STM32_DMA_ISR_HTIF | STM32_DMA_ISR_TCIF)) != 0U) {
-        uint8_t half = ((flags & STM32_DMA_ISR_HTIF) != 0U) ? 0U : 1U;
+        bool is_half = ((flags & STM32_DMA_ISR_HTIF) != 0U);
+        uint8_t half = is_half ? 0U : 1U;
+        if (is_half) {
+            drv_audio_dma_half_cb(half);
+        } else {
+            drv_audio_dma_full_cb(half);
+        }
         audio_dma_sync_mark(half, AUDIO_SYNC_FLAG_RX);
     }
 }
