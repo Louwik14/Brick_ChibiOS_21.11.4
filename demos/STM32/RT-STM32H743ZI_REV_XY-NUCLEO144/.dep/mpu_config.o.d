@@ -119,7 +119,8 @@ build/obj/mpu_config.o: mpu/mpu_config.c mpu/mpu_config.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
- ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
+ sdram/sdram_ext.h
 mpu/mpu_config.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h:
@@ -271,3 +272,4 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
+sdram/sdram_ext.h:

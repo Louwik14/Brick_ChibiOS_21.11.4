@@ -62,7 +62,6 @@ static void sdmmc_test(BaseSequentialStream *chp) {
   chprintf(chp, "sdcStart...\r\n");
   sdcStart(&SDCD1, &sdc_cfg);
 
-  /* Connect card */
   chprintf(chp, "sdcConnect...\r\n");
   if (sdcConnect(&SDCD1) != HAL_SUCCESS) {
     sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
