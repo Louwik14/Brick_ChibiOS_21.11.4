@@ -15,7 +15,6 @@ static const SerialConfig uart_cfg = {
 /* Buffer SDMMC IDMA : NON CACHEABLE + aligné */
 __attribute__((section(".nocache"), aligned(32)))
 static uint8_t sdc_buf_tx[512];
-
 __attribute__((section(".nocache"), aligned(32)))
 static uint8_t sdc_buf_rx[512];
 
@@ -25,9 +24,10 @@ static void sdram_test(BaseSequentialStream *chp) {
   uint32_t read_value = 0U;
   uint32_t expected = 0U;
 
-  /* SDRAM x16 swaps halfwords on 32-bit accesses */
+  /* SDRAM x16 swaps halfwords on 32-bit accesses; compare logically. */
   expected = (test_value >> 16) | (test_value << 16);
 
+  /* SDRAM init + minimal functional test (32-bit only, wrapper mandatory). */
   chprintf(chp, "SDRAM init...\r\n");
   sdram_ext_init();
 
@@ -46,6 +46,7 @@ static void sdram_test(BaseSequentialStream *chp) {
 }
 
 static void sdmmc_test(BaseSequentialStream *chp) {
+  /* SDMMC1 simple IDMA read/write test. */
   chprintf(chp, "\r\n=== SDMMC1 TEST (H7 + SDMMCv2 + MPU) ===\r\n");
 
   for (size_t i = 0; i < sizeof(sdc_buf_tx); i++) {
@@ -64,6 +65,7 @@ static void sdmmc_test(BaseSequentialStream *chp) {
   }
   chprintf(chp, "sdcConnect OK\r\n");
 
+  /* Write one block */
   chprintf(chp, "Writing LBA0...\r\n");
   if (sdcWrite(&SDCD1, 0, sdc_buf_tx, 1) != HAL_SUCCESS) {
     sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
@@ -71,6 +73,7 @@ static void sdmmc_test(BaseSequentialStream *chp) {
     while (true) chThdSleepMilliseconds(1000);
   }
 
+  /* Read back */
   chprintf(chp, "Reading LBA0...\r\n");
   if (sdcRead(&SDCD1, 0, sdc_buf_rx, 1) != HAL_SUCCESS) {
     sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
@@ -93,16 +96,18 @@ int main(void) {
   halInit();
   chSysInit();
 
+  /* UART */
   sdStart(&SD1, &uart_cfg);
   BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
 
+  /* MPU */
   if (!mpu_config_init_once()) {
     chprintf(chp, "MPU init FAILED\r\n");
     while (true) chThdSleepMilliseconds(1000);
   }
   chprintf(chp, "MPU OK\r\n");
 
-  /* Phase 2 validation order */
+  /* Phase 2 validation order: SDRAM then SDMMC. */
   sdram_test(chp);
   sdmmc_test(chp);
 
