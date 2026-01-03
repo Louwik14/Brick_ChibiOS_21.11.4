@@ -1,8 +1,8 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
-#include "mpu_config.h"
-#include "sdram_ext.h"
+#include "ff.h"
+#include <string.h>
 
 /* UART */
 static const SerialConfig uart_cfg = {
@@ -12,11 +12,43 @@ static const SerialConfig uart_cfg = {
   0
 };
 
-/* Buffer SDMMC IDMA : NON CACHEABLE + aligné */
-__attribute__((section(".nocache"), aligned(32)))
-static uint8_t sdc_buf_tx[512];
-__attribute__((section(".nocache"), aligned(32)))
-static uint8_t sdc_buf_rx[512];
+/* MMC_SPI driver instance (required by FatFS bindings). */
+MMCDriver MMCD1;
+
+/* Low speed SPI configuration for SD init (very conservative). */
+static SPIConfig sd_spi_cfg_low = {
+  .circular = false,
+  .slave    = false,
+  .data_cb  = NULL,
+  .error_cb = NULL,
+  .ssport   = GPIOC,
+  .sspad    = GPIOC_SD_SPI_CS,
+  .cr1      = SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0,
+  .cr2      = 0U
+};
+
+/* High speed SPI configuration for SD transfers (<= 12 MHz target). */
+static SPIConfig sd_spi_cfg_high = {
+  .circular = false,
+  .slave    = false,
+  .data_cb  = NULL,
+  .error_cb = NULL,
+  .ssport   = GPIOC,
+  .sspad    = GPIOC_SD_SPI_CS,
+  .cr1      = SPI_CR1_BR_2 | SPI_CR1_BR_1,
+  .cr2      = 0U
+};
+
+/* MMC/SD over SPI configuration. */
+static MMCConfig mmc_cfg = {&SPID3, &sd_spi_cfg_low, &sd_spi_cfg_high};
+
+static void fatal(BaseSequentialStream *chp, const char *msg, uint32_t code) {
+  chprintf(chp, "%s: 0x%08lX\r\n", msg, (uint32_t)code);
+  while (true) {
+    chprintf(chp, "FAILED\r\n");
+    chThdSleepMilliseconds(1000);
+  }
+}
 
 static void sdram_test(BaseSequentialStream *chp) {
   const uint32_t test_index = 0U;
@@ -42,79 +74,55 @@ static void sdram_test(BaseSequentialStream *chp) {
     }
   }
 
-  chprintf(chp, "SDRAM test OK\r\n");
-}
+  chprintf(chp, "\r\n=== SPI-SD TEST (MMC_SPI + FatFS) ===\r\n");
 
-static void sdmmc_test(BaseSequentialStream *chp) {
-  /* SDMMC1 simple IDMA read/write test. */
-  static const SDCConfig sdc_cfg = {
-    SDC_MODE_1BIT,
-    0U
-  };
-  chprintf(chp, "\r\n=== SDMMC1 TEST (H7 + SDMMCv2 + MPU) ===\r\n");
+  chprintf(chp, "SPI-SD init...\r\n");
+  mmcStart(&MMCD1, &mmc_cfg);
 
-  for (size_t i = 0; i < sizeof(sdc_buf_tx); i++) {
-    sdc_buf_tx[i] = (uint8_t)(i & 0xFFU);
-    sdc_buf_rx[i] = 0U;
+  chprintf(chp, "SPI-SD connect...\r\n");
+  if (mmcConnect(&MMCD1)) {
+    fatal(chp, "SPI-SD connect FAILED", 1U);
   }
 
-  /* SD driver start (force 1-bit + lowest frequency). */
-  chprintf(chp, "sdcStart...\r\n");
-  sdcStart(&SDCD1, &sdc_cfg);
-
-  chprintf(chp, "sdcConnect...\r\n");
-  if (sdcConnect(&SDCD1) != HAL_SUCCESS) {
-    sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
-    chprintf(chp, "sdcConnect FAILED: 0x%08lX\r\n", (uint32_t)e);
-    while (true) chThdSleepMilliseconds(1000);
+  chprintf(chp, "SD mount...\r\n");
+  FATFS fs;
+  FRESULT fr = f_mount(&fs, "/", 1);
+  if (fr != FR_OK) {
+    fatal(chp, "SD mount FAILED", fr);
   }
-  chprintf(chp, "sdcConnect OK\r\n");
+  chprintf(chp, "SD mount OK\r\n");
 
-  /* Write one block */
-  chprintf(chp, "Writing LBA0...\r\n");
-  if (sdcWrite(&SDCD1, 0, sdc_buf_tx, 1) != HAL_SUCCESS) {
-    sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
-    chprintf(chp, "sdcWrite FAILED: 0x%08lX\r\n", (uint32_t)e);
-    while (true) chThdSleepMilliseconds(1000);
+  FIL file;
+  UINT bytes = 0;
+  const char *msg = "hello spi sd\r\n";
+  char read_buf[32] = {0};
+
+  chprintf(chp, "Write test.txt...\r\n");
+  fr = f_open(&file, "test.txt", FA_WRITE | FA_CREATE_ALWAYS);
+  if (fr != FR_OK) {
+    fatal(chp, "Write open FAILED", fr);
   }
-
-  /* Read back */
-  chprintf(chp, "Reading LBA0...\r\n");
-  if (sdcRead(&SDCD1, 0, sdc_buf_rx, 1) != HAL_SUCCESS) {
-    sdcflags_t e = sdcGetAndClearErrors(&SDCD1);
-    chprintf(chp, "sdcRead FAILED: 0x%08lX\r\n", (uint32_t)e);
-    while (true) chThdSleepMilliseconds(1000);
+  fr = f_write(&file, msg, strlen(msg), &bytes);
+  if (fr != FR_OK || bytes == 0U) {
+    fatal(chp, "Write FAILED", fr);
   }
+  f_close(&file);
+  chprintf(chp, "Write OK\r\n");
 
-  for (size_t i = 0; i < sizeof(sdc_buf_tx); i++) {
-    if (sdc_buf_rx[i] != sdc_buf_tx[i]) {
-      chprintf(chp, "SDMMC verify FAILED at %u\r\n", (unsigned int)i);
-      while (true) chThdSleepMilliseconds(1000);
-    }
+  chprintf(chp, "Read test.txt...\r\n");
+  fr = f_open(&file, "test.txt", FA_READ);
+  if (fr != FR_OK) {
+    fatal(chp, "Read open FAILED", fr);
   }
-
-  chprintf(chp, "SDMMC test OK\r\n");
-}
-
-int main(void) {
-
-  halInit();
-  chSysInit();
-
-  /* UART */
-  sdStart(&SD1, &uart_cfg);
-  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
-
-  /* MPU */
-  if (!mpu_config_init_once()) {
-    chprintf(chp, "MPU init FAILED\r\n");
-    while (true) chThdSleepMilliseconds(1000);
+  fr = f_read(&file, read_buf, sizeof(read_buf) - 1U, &bytes);
+  if (fr != FR_OK) {
+    fatal(chp, "Read FAILED", fr);
   }
-  chprintf(chp, "MPU OK\r\n");
+  f_close(&file);
+  read_buf[sizeof(read_buf) - 1U] = '\0';
 
-  /* Phase 2 validation order: SDRAM then SDMMC. */
-  sdram_test(chp);
-  sdmmc_test(chp);
+  chprintf(chp, "Read OK\r\n");
+  chprintf(chp, "Content: \"%s\"\r\n", read_buf);
 
   while (true) {
     chprintf(chp, "Alive\r\n");
