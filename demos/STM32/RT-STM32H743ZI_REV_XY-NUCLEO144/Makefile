@@ -104,6 +104,7 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
+       $(CHIBIOS)/os/various/syscalls.c \
        main.c \
        $(wildcard drivers/*.c)\
        $(wildcard mpu/*.c)\

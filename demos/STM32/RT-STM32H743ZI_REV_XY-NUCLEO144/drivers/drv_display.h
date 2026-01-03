@@ -48,5 +48,19 @@ void drv_display_draw_char_in_box(const font_t *font,
                                   uint8_t x, uint8_t y,
                                   uint8_t box_w, uint8_t box_h,
                                   char c);
+/* ====================================================================== */
+/*                        PRIMITIVES GRAPHIQUES                           */
+/* ====================================================================== */
+
+/* Pixel */
+void drv_display_draw_pixel(int x, int y, bool on);
+
+/* Rectangles */
+void drv_display_draw_rect(int x, int y, int w, int h);
+void drv_display_fill_rect(int x, int y, int w, int h);
+
+/* Optionnel mais utile */
+void drv_display_clear_rect(int x, int y, int w, int h);
+
 
 #endif /* DRV_DISPLAY_H */

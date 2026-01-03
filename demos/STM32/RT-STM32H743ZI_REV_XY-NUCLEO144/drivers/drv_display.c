@@ -62,6 +62,15 @@ static void send_data(const uint8_t *data, size_t len) {
 }
 
 /* ====================================================================== */
+/*                              DIRTY STATE                               */
+/* ====================================================================== */
+
+static volatile bool display_dirty = false;
+/* 1 bit par page (0..7) */
+static uint8_t dirty_pages = 0;
+
+
+/* ====================================================================== */
 /*                              FRAMEBUFFER                               */
 /* ====================================================================== */
 
@@ -74,14 +83,72 @@ uint8_t* drv_display_get_buffer(void) {
 /* ====================================================================== */
 
 static inline void set_pixel(int x, int y, bool on) {
-    if (x < 0 || x >= BRICK_OLED_WIDTH || y < 0 || y >= BRICK_OLED_HEIGHT) return;
+    if (x < 0 || x >= BRICK_OLED_WIDTH || y < 0 || y >= BRICK_OLED_HEIGHT)
+        return;
 
     const int index = x + (y >> 3) * BRICK_OLED_WIDTH;
     const uint8_t mask = (uint8_t)(1U << (y & 7));
 
-    if (on) buffer[index] |=  mask;
+    uint8_t old = buffer[index];
+
+    if (on) buffer[index] |= mask;
     else    buffer[index] &= (uint8_t)~mask;
+
+    /* Ne marquer dirty QUE si le pixel change vraiment */
+    if (buffer[index] != old) {
+        display_dirty = true;
+        dirty_pages |= (1U << (y >> 3));
+    }
 }
+
+void drv_display_draw_pixel(int x, int y, bool on) {
+    set_pixel(x, y, on);
+}
+
+void drv_display_draw_rect(int x, int y, int w, int h) {
+
+    if (w <= 0 || h <= 0)
+        return;
+
+    /* Top & bottom */
+    for (int ix = 0; ix < w; ix++) {
+        drv_display_draw_pixel(x + ix, y, true);
+        drv_display_draw_pixel(x + ix, y + h - 1, true);
+    }
+
+    /* Left & right */
+    for (int iy = 0; iy < h; iy++) {
+        drv_display_draw_pixel(x, y + iy, true);
+        drv_display_draw_pixel(x + w - 1, y + iy, true);
+    }
+}
+
+void drv_display_fill_rect(int x, int y, int w, int h) {
+
+    if (w <= 0 || h <= 0)
+        return;
+
+    for (int iy = 0; iy < h; iy++) {
+        for (int ix = 0; ix < w; ix++) {
+            drv_display_draw_pixel(x + ix, y + iy, true);
+        }
+    }
+}
+
+
+void drv_display_clear_rect(int x, int y, int w, int h) {
+
+    if (w <= 0 || h <= 0)
+        return;
+
+    for (int iy = 0; iy < h; iy++) {
+        for (int ix = 0; ix < w; ix++) {
+            drv_display_draw_pixel(x + ix, y + iy, false);
+        }
+    }
+}
+
+
 
 /* ====================================================================== */
 /*                      INITIALISATION OLED                               */
@@ -137,6 +204,8 @@ void drv_display_init(void) {
 
 void drv_display_clear(void) {
     memset(buffer, 0x00, sizeof(buffer));
+    display_dirty = true;
+    dirty_pages = 0xFF; /* toutes les pages */
 }
 
 /* ====================================================================== */
@@ -145,12 +214,26 @@ void drv_display_clear(void) {
 
 void drv_display_update(void) {
 
+    /* Rien à faire */
+    if (!display_dirty)
+        return;
+
     for (uint8_t page = 0; page < 8; page++) {
+
+        if (!(dirty_pages & (1U << page)))
+            continue;
+
         send_cmd(0xB0 + page);
         send_cmd(0x00);
         send_cmd(0x10);
-        send_data(&buffer[page * BRICK_OLED_WIDTH], BRICK_OLED_WIDTH);
+
+        send_data(&buffer[page * BRICK_OLED_WIDTH],
+                  BRICK_OLED_WIDTH);
     }
+
+    /* Reset dirty state */
+    display_dirty = false;
+    dirty_pages = 0;
 }
 
 /* ====================================================================== */
