@@ -50,14 +50,29 @@ static void fatal(BaseSequentialStream *chp, const char *msg, uint32_t code) {
   }
 }
 
-int main(void) {
+static void sdram_test(BaseSequentialStream *chp) {
+  const uint32_t test_index = 0U;
+  const uint32_t test_value = 0x11223344U;
+  uint32_t read_value = 0U;
+  uint32_t expected = 0U;
 
-  halInit();
-  chSysInit();
+  /* SDRAM x16 swaps halfwords on 32-bit accesses; compare logically. */
+  expected = (test_value >> 16) | (test_value << 16);
 
-  /* UART */
-  sdStart(&SD1, &uart_cfg);
-  BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+  /* SDRAM init + minimal functional test (32-bit only, wrapper mandatory). */
+  chprintf(chp, "SDRAM init...\r\n");
+  sdram_ext_init();
+
+  chprintf(chp, "SDRAM test write/read...\r\n");
+  sdram_ext_write32(test_index, test_value);
+  read_value = sdram_ext_read32(test_index);
+
+  if (read_value != expected) {
+    chprintf(chp, "SDRAM test FAILED: 0x%08lX\r\n", read_value);
+    while (true) {
+      chThdSleepMilliseconds(1000);
+    }
+  }
 
   chprintf(chp, "\r\n=== SPI-SD TEST (MMC_SPI + FatFS) ===\r\n");
 
