@@ -635,8 +635,8 @@
  * PB7  - SPI3_CS                   (output pushpull).
  * PB8  - PIN8                      (analog).
  * PB9  - PIN9                      (analog).
- * PB10 - PIN10                     (analog).
- * PB11 - PIN11                     (analog).
+ * PB10 - I2C2_SCL                  (alternate 4).
+ * PB11 - I2C2_SDA                  (alternate 4).
  * PB12 - UART5_RX                  (alternate 8).
  * PB13 - UART5_TX                  (alternate 8).
  * PB14 - USB2_DM                   (alternate 12).
@@ -652,8 +652,8 @@
                                      PIN_MODE_OUTPUT(GPIOB_SPI3_CS) |      \
                                      PIN_MODE_ANALOG(GPIOB_PIN8) |         \
                                      PIN_MODE_ANALOG(GPIOB_PIN9) |         \
-                                     PIN_MODE_ANALOG(GPIOB_PIN10) |        \
-                                     PIN_MODE_ANALOG(GPIOB_PIN11) |        \
+                                     PIN_MODE_ALTERNATE(GPIOB_PIN10) |     \
+                                     PIN_MODE_ALTERNATE(GPIOB_PIN11) |     \
                                      PIN_MODE_ALTERNATE(GPIOB_UART5_RX) |  \
                                      PIN_MODE_ALTERNATE(GPIOB_UART5_TX) |  \
                                      PIN_MODE_ALTERNATE(GPIOB_USB2_DM) |   \
@@ -668,8 +668,8 @@
                                      PIN_OTYPE_PUSHPULL(GPIOB_SPI3_CS) |    \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PIN8) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOB_PIN9) |       \
-                                     PIN_OTYPE_PUSHPULL(GPIOB_PIN10) |      \
-                                     PIN_OTYPE_PUSHPULL(GPIOB_PIN11) |      \
+                                     PIN_OTYPE_OPENDRAIN(GPIOB_PIN10) |     \
+                                     PIN_OTYPE_OPENDRAIN(GPIOB_PIN11) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOB_UART5_RX) |   \
                                      PIN_OTYPE_PUSHPULL(GPIOB_UART5_TX) |   \
                                      PIN_OTYPE_PUSHPULL(GPIOB_USB2_DM) |    \
@@ -684,8 +684,8 @@
                                      PIN_OSPEED_LOW(GPIOB_SPI3_CS) |       \
                                      PIN_OSPEED_VERYLOW(GPIOB_PIN8) |      \
                                      PIN_OSPEED_VERYLOW(GPIOB_PIN9) |      \
-                                     PIN_OSPEED_VERYLOW(GPIOB_PIN10) |     \
-                                     PIN_OSPEED_VERYLOW(GPIOB_PIN11) |     \
+                                     PIN_OSPEED_HIGH(GPIOB_PIN10) |        \
+                                     PIN_OSPEED_HIGH(GPIOB_PIN11) |        \
                                      PIN_OSPEED_HIGH(GPIOB_UART5_RX) |     \
                                      PIN_OSPEED_HIGH(GPIOB_UART5_TX) |     \
                                      PIN_OSPEED_HIGH(GPIOB_USB2_DM) |      \
@@ -700,8 +700,8 @@
                                      PIN_PUPDR_FLOATING(GPIOB_SPI3_CS) |   \
                                      PIN_PUPDR_FLOATING(GPIOB_PIN8) |      \
                                      PIN_PUPDR_FLOATING(GPIOB_PIN9) |      \
-                                     PIN_PUPDR_FLOATING(GPIOB_PIN10) |     \
-                                     PIN_PUPDR_FLOATING(GPIOB_PIN11) |     \
+                                     PIN_PUPDR_PULLUP(GPIOB_PIN10) |       \
+                                     PIN_PUPDR_PULLUP(GPIOB_PIN11) |       \
                                      PIN_PUPDR_FLOATING(GPIOB_UART5_RX) |  \
                                      PIN_PUPDR_FLOATING(GPIOB_UART5_TX) |  \
                                      PIN_PUPDR_FLOATING(GPIOB_USB2_DM) |   \
@@ -732,8 +732,8 @@
                                      PIN_AFIO_AF(GPIOB_SPI3_CS, 0U))
 #define VAL_GPIOB_AFRH              (PIN_AFIO_AF(GPIOB_PIN8, 0U) |         \
                                      PIN_AFIO_AF(GPIOB_PIN9, 0U) |         \
-                                     PIN_AFIO_AF(GPIOB_PIN10, 0U) |        \
-                                     PIN_AFIO_AF(GPIOB_PIN11, 0U) |        \
+                                     PIN_AFIO_AF(GPIOB_PIN10, 4U) |        \
+                                     PIN_AFIO_AF(GPIOB_PIN11, 4U) |        \
                                      PIN_AFIO_AF(GPIOB_UART5_RX, 8U) |     \
                                      PIN_AFIO_AF(GPIOB_UART5_TX, 8U) |     \
                                      PIN_AFIO_AF(GPIOB_USB2_DM, 12U) |      \

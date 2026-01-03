@@ -35,31 +35,39 @@
 /** Résolution logique des échantillons (24 bits significatifs dans int32_t). */
 #define AUDIO_SAMPLE_BITS             24U
 
+/* -------------------------------------------------------------------------- */
+/* Mode test sans codec                                                      */
+/* -------------------------------------------------------------------------- */
+
+#ifndef AUDIO_ALLOW_NO_CODEC
+#define AUDIO_ALLOW_NO_CODEC          TRUE
+#endif
+
 /**
  * @brief SAI1 Bloc B = ADC (RX maître TDM 8 canaux).
  */
-#define AUDIO_SAI_RX                  SAI1
-#define AUDIO_SAI_RX_BLOCK            SAI1_Block_B
+#define AUDIO_SAI_RX                  SAI2
+#define AUDIO_SAI_RX_BLOCK            SAI2_Block_B
 
 /**
  * @brief SAI1 Bloc A = DAC (TX esclave TDM 4 canaux synchronisé sur le bloc B).
  */
-#define AUDIO_SAI_TX                  SAI1
-#define AUDIO_SAI_TX_BLOCK            SAI1_Block_A
+#define AUDIO_SAI_TX                  SAI2
+#define AUDIO_SAI_TX_BLOCK            SAI2_Block_A
 
 /** Broches SAI issues du fichier board.h (mode Alternate 6). */
-#define AUDIO_LINE_SAI_MCLK           LINE_SAI1_MCLK_A
-#define AUDIO_LINE_SAI_FS             LINE_SAI1_FS_A
-#define AUDIO_LINE_SAI_SCK            LINE_SAI1_SCK_A
-#define AUDIO_LINE_SAI_SD_RX          LINE_SAI1_SD_B
-#define AUDIO_LINE_SAI_SD_TX          LINE_SAI1_SD_A
+#define AUDIO_LINE_SAI_MCLK           LINE_SAI2_MCLK_A
+#define AUDIO_LINE_SAI_FS             LINE_SAI2_FS_A
+#define AUDIO_LINE_SAI_SCK            LINE_SAI2_SCK_A
+#define AUDIO_LINE_SAI_SD_RX          LINE_SAI2_SD_B
+#define AUDIO_LINE_SAI_SD_TX          LINE_SAI2_SD_A
 
 /* -------------------------------------------------------------------------- */
 /* I2C et périphériques externes                                              */
 /* -------------------------------------------------------------------------- */
 
 /** Bus I2C dédié aux codecs ADAU1979 (voir board.h pour le câblage exact). */
-#define AUDIO_I2C_DRIVER              I2CD3
+#define AUDIO_I2C_DRIVER              I2CD2
 
 /** Adresses 7 bits des deux ADAU1979 (config strap ADDR0/ADDR1). */
 #define ADAU1979_I2C_ADDRESS_0        0x11U
@@ -74,8 +82,8 @@
 #define AUDIO_SAI_TX_DMA_STREAM       STM32_DMA_STREAM_ID(1, 1)
 
 /* Requests DMAMUX : valeurs issues du RM0433, section DMAMUX. */
-#define AUDIO_SAI_RX_DMA_REQUEST      87U  /* SAI1_B */
-#define AUDIO_SAI_TX_DMA_REQUEST      86U  /* SAI1_A */
+#define AUDIO_SAI_RX_DMA_REQUEST      STM32_DMAMUX1_SAI2_B
+#define AUDIO_SAI_TX_DMA_REQUEST      STM32_DMAMUX1_SAI2_A
 
 /* Priorité DMA (0 = basse, 3 = très haute). */
 #define AUDIO_SAI_RX_DMA_PRIORITY     2U
