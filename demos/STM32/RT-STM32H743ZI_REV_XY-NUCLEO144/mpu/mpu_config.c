@@ -1,99 +1,63 @@
 /**
  * @file mpu_config.c
- * @brief Initialisation minimale et idempotente du MPU pour la section .nocache.
+ * @brief MPU configuration: mark .nocache as non-cacheable (ChibiOS-safe)
  */
 
 #include "mpu_config.h"
 
-#include <stddef.h>
-#include <stdint.h>
+#include "ch.h"
+#include "hal.h"
 
-#include "stm32h743xx.h"
-#include "core_cm7.h"
-#include "mpu_armv7.h"
+extern uint8_t __nocache_base__;
+extern uint8_t __nocache_end__;
 
-static bool mpu_compute_region_size(uintptr_t base,
-                                    uintptr_t size,
-                                    uint32_t *encoded_size,
-                                    uintptr_t *region_bytes) {
-    uint32_t rasr_size = ARM_MPU_REGION_SIZE_32B;
-    uintptr_t candidate_bytes = 32U;
-
-    if ((size == 0U) || (encoded_size == NULL) || (region_bytes == NULL)) {
-        return false;
-    }
-
-    while ((candidate_bytes < size) && (rasr_size < ARM_MPU_REGION_SIZE_4GB)) {
-        candidate_bytes <<= 1;
-        rasr_size++;
-    }
-
-    if ((candidate_bytes & (candidate_bytes - 1U)) != 0U) {
-        return false;
-    }
-
-    if ((base & (candidate_bytes - 1U)) != 0U) {
-        return false;
-    }
-
-    *encoded_size = rasr_size;
-    *region_bytes = candidate_bytes;
-    return true;
-}
+static bool initialized = false;
 
 bool mpu_config_init_once(void) {
-    static bool initialized = false;
-    const uintptr_t nocache_base = (uintptr_t)&__nocache_base__;
-    const uintptr_t nocache_end  = (uintptr_t)&__nocache_end__;
-    const uintptr_t nocache_size = nocache_end - nocache_base;
-    uint32_t region_size_encoding = 0U;
-    uintptr_t region_size_bytes = 0U;
 
-    if (initialized) {
-        return true;
-    }
-
-    if (((nocache_base & 0x1FU) != 0U) || (nocache_size == 0U)) {
-        return false;
-    }
-
-    if (!mpu_compute_region_size(nocache_base, nocache_size,
-                                 &region_size_encoding, &region_size_bytes)) {
-        return false;
-    }
-
-    if (nocache_size > region_size_bytes) {
-        return false;
-    }
-
-    ARM_MPU_Disable();
-    __DSB();
-    __ISB();
-
-    /*
-     * Région D2 : mémoire normale, non-cacheable, shareable pour les buffers
-     * DMA audio/SD (.nocache).
-     */
-    ARM_MPU_SetRegion(ARM_MPU_RBAR(MPU_REGION_D2_NOCACHE, nocache_base),
-                      ARM_MPU_RASR(0u,              /* XN */
-                                   ARM_MPU_AP_FULL, /* RW */
-                                   1u,              /* TEX: Normal memory */
-                                   1u,              /* Shareable */
-                                   0u,              /* Non-cacheable */
-                                   0u,              /* Non-bufferable */
-                                   0u,              /* Subregions enabled */
-                                   region_size_encoding));
-
-    __DSB();
-    __ISB();
-
-    SCB_InvalidateDCache();
-    __DSB();
-    __ISB();
-    ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
-    __DSB();
-    __ISB();
-
-    initialized = true;
+  if (initialized) {
     return true;
+  }
+  initialized = true;
+
+#if CORTEX_MODEL == 7
+
+  uintptr_t base = (uintptr_t)&__nocache_base__;
+  size_t size    = (size_t)(&__nocache_end__ - &__nocache_base__);
+
+  /* Minimum MPU region size */
+  if (size < 32U) {
+    return false;
+  }
+
+  /* Compute power-of-two region size */
+  size_t region_size = 32U;
+  uint32_t rasr_size = MPU_RASR_SIZE_32;
+
+  while (region_size < size) {
+    region_size <<= 1;
+    rasr_size++;
+  }
+
+  /* Disable MPU before configuration */
+  mpuDisable();
+
+  /*
+   * Configure ONE region for .nocache
+   * - non-cacheable
+   * - background region still enabled
+   */
+  mpuConfigureRegion(
+      MPU_REGION_D2_NOCACHE,
+      base,
+      rasr_size |
+      MPU_RASR_ATTR_NON_CACHEABLE
+  );
+
+  /* Re-enable MPU with default memory map */
+  mpuEnable(MPU_CTRL_PRIVDEFENA_Msk);
+
+#endif
+
+  return true;
 }

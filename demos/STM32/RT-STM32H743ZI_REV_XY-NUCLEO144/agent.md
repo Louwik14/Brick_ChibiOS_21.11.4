@@ -1,5 +1,7 @@
-# Project State — STM32H743 / ChibiOS 21.11.4
+# 📄 `agent.md`
 
+```markdown
+# Project State — STM32H743 / ChibiOS 21.11.4
 ## Audio workstation modulaire type *Octatrack-like* avec cartouches Ksoloti
 
 ---
@@ -17,147 +19,133 @@
 ### Projet basé sur
 
 ```
+
 ChibiOS_21.11.4/demos/STM32/RT-STM32H743ZI_REV_XY-NUCLEO144
+
 ```
 
 ### Board custom
 
 ```
+
 os/hal/boards/STM32H743_LQFP176_CUSTOM
+
 ```
 
 ---
 
-## 2. Vision produit (figée)
+## 2. Vision produit (FIGÉE)
 
 Le projet vise à développer une **machine audio temps réel de type Octatrack**, pensée pour :
 
-* **Performance live**
-* **Robustesse absolue**
-* **Latence faible et déterministe**
-* **Architecture modulaire par cartouches**
+* Performance live
+* Robustesse absolue
+* Latence faible et déterministe
+* Architecture modulaire par cartouches
 
-La machine se comporte comme une **console audio + séquenceur**, capable de piloter et d’intégrer des **modules DSP externes (cartouches Ksoloti)**, de manière fiable et reproductible, sans dépendre d’un ordinateur.
+La machine fonctionne comme une **console audio + séquenceur autonome**, sans dépendance à un ordinateur.
 
-> Objectif assumé :
-> *« un musicien doit pouvoir monter sur scène avec cette machine en toute confiance »*
+> Objectif produit :
+> *« Un musicien doit pouvoir monter sur scène avec cette machine en toute confiance. »*
 
 ---
 
-## 3. Architecture audio globale (verrouillée)
+## 3. Architecture audio globale (FIGÉE)
 
 ### Paramètres audio
 
 * Fréquence : **48 kHz**
 * Taille de bloc : **64 samples**
-* Audio **hard real-time**, prioritaire sur toute autre tâche
-* Aucun traitement audio critique dans des threads RTOS classiques
+* Audio **hard real-time**
+* Aucun traitement audio critique dans des threads RTOS
 
-### Pilotage audio
+### Pilotage
 
 * Audio déclenché par **DMA SAI (IRQ half / full)**
-* Traitement audio dans une fonction dédiée appelée à cadence fixe
-* UI, MIDI, LEDs, etc. sont **soft real-time**
+* Traitement audio dans une fonction dédiée à cadence fixe
+* UI, MIDI, LEDs = **soft real-time**
 
 ---
 
-## 4. Pistes audio (décision réaliste)
+## 4. Pistes audio
 
 ### Audio interne (STM32H7)
 
-* **8 pistes stéréo garanties simultanément**
-* FX **globaux en sends** (pas par piste)
-* Mixage, routing et looper local
+* **8 pistes stéréo garanties**
+* FX globaux en sends
+* Mixage, routing, looper local
 
 ### Audio externe (cartouches Ksoloti)
 
-* Les cartouches assurent :
+* DSP lourd
+* Synthèse
+* FX complexes
 
-  * DSP lourd
-  * synthèse
-  * FX complexes
-* Le STM32H7 agit comme :
+Le STM32H7 agit comme :
+* séquenceur
+* routeur
+* mixeur léger
 
-  * séquenceur
-  * routeur
-  * mixeur léger
+### Nombre de cartouches actives
 
-### Nombre de cartouches audio actives
-
-* **1 à 2 cartouches audio actives simultanément** (temps réel garanti)
-* Plus possible techniquement, mais **non garanti live**
-* Les autres cartouches peuvent rester connectées pour :
-
-  * paramètres
-  * contrôle
-  * états
+* **1 à 2 cartouches audio actives simultanément**
+* Plus possible techniquement, mais non garanti live
 
 ---
 
-## 5. Bus cartouches — SPI-link (choix final)
+## 5. Bus cartouches — SPI-link (FIGÉ)
 
-### Décision
-
-> ❗ **Le bus SPI-link est conservé comme bus audio et contrôle des cartouches.**
-
-Raisons :
-
-* Ksoloti est nativement esclave
-* Le protocole SPI-link est déjà éprouvé
-* Éviter toute modification lourde du firmware Ksoloti
-* Le SPI-link est utilisé **à la limite de ses capacités**, mais de manière consciente
+> ❗ **Le bus SPI-link est conservé comme bus audio et contrôle.**
 
 ### Contraintes assumées
 
-* Pas de parallélisme réel entre plusieurs SPI audio
-* Latence et charge **cumulatives**
-* SPI utilisé comme **bus audio synchrone**, pas comme bus de contrôle best-effort
+* Pas de parallélisme SPI audio
+* Latence cumulative
+* SPI utilisé comme **bus audio synchrone**
 
 ### Règles SPI-link
 
-* SPI-link déclenché **sur chaque bloc audio**
+* Déclenché à chaque bloc audio
 * DMA obligatoire
 * Double buffer RX/TX
-* Aucune logique UI dans le chemin SPI audio
-* SPI-link = **audio critique**, priorité élevée
+* Aucune logique UI dans le chemin audio
+* Priorité élevée
 
 ---
 
 ## 6. Mémoire
 
-### SDRAM externe
+### SDRAM externe (FMC)
 
-* Référence : **W9825G6KH-6I (256 Mbit / 32 MB, x16)**
-* Driver : **ChibiOS-Contrib HAL SDRAM + FSMCv1**
-* État : ✅ **SDRAM fonctionnelle (validation atomique OK)**
+* Référence : **W9825G6KH-6I** (32 MB, x16)
+* Driver : ChibiOS-Contrib HAL SDRAM
+* État : ✅ fonctionnelle
 
-#### Règles d’utilisation (NON négociables)
+#### Règles NON NÉGOCIABLES
 
-* ✅ Accès **32-bit uniquement** (`uint32_t*`)
-* ❌ Interdit : accès `uint16_t*` / `uint8_t*` (aliasing / writes non fiables sur STM32H7)
-* ⚠️ Particularité STM32H7 + SDRAM x16 : **les demi-mots sont inversés** sur les accès 32-bit  
-  Exemple : écrire `0x11223344` → relire `0x33441122` (normal).
-* ✅ Pour travailler “comme d’habitude”, utiliser un wrapper qui applique un **swap16** à l’écriture/lecture.
+* Accès **32-bit uniquement**
+* ❌ Accès 8/16-bit interdits
+* Demi-mots inversés (x16)
+* Wrapper `swap16` obligatoire
 
-#### Module projet (config bétonnée)
+#### Usage autorisé
 
-* Fichiers : `sdram_ext.c / sdram_ext.h`
-* API :
-  * `sdram_ext_init()` (appelle `sdramInit()` + `sdramStart(&SDRAMD1, &sdram_cfg)`)
-  * `sdram_ext_write32(index, value)` / `sdram_ext_read32(index)` (gèrent le swap16)
-* Base : `SDRAM_EXT_BASE = 0xC0000000`
-
-#### Usage prévu (audio uniquement)
-
-* buffers
-* looper
+* buffers audio
 * delay
+* looper
 * granular
-* ❌ Pas de heap
-* ❌ Pas d’objets UI
-* ❌ Pas de structures système
 
-### SRAM interne
+#### Usage interdit
+
+* heap
+* UI
+* structures système
+
+Base : `0xC0000000`
+
+---
+
+## 7. SRAM interne
 
 * UI
 * contrôle
@@ -165,160 +153,187 @@ Raisons :
 * drivers
 
 ---
-## 7. Interface utilisateur
+
+## 8. Interface utilisateur
 
 ### Entrées
 
-* Switchs tactiles classiques
-* **16 pads à capteurs Hall Effect analogiques**
-
-  * 2 multiplexeurs 8 canaux
-  * calcul de vélocité par mesure temporelle (Δt)
-* 1 multiplexeur 8 canaux séparé pour :
-
-  * potentiomètres assignables
-* 4 encodeurs rotatifs
-
-  * décodage logiciel
-  * pas de quadrature HW
-  * pas d’EXTI (audio prioritaire)
+* Switchs tactiles
+* 16 pads Hall Effect (ADC + MUX)
+* Potentiomètres multiplexés
+* 4 encodeurs rotatifs (software)
 
 ### Sorties
 
-* OLED SPI 2.4"
-* **25 LEDs adressables WS2812C-2020**
+* OLED SPI
+* 25 LEDs WS2812 (DMA + timer)
 
-  * pilotage DMA + timer
-  * mises à jour asynchrones
-  * jamais dans le chemin audio
+Jamais dans le chemin audio.
 
 ---
 
-## 8. Audio I/O interne
+## 9. Audio I/O interne
 
-* **SAI2A** :
-
-  * maître horloge
-  * 2 codecs ADC en daisy-chain
-  * jusqu’à 4 entrées stéréo
-* **SAI2B** :
-
-  * codec DAC
-  * sorties stéréo
-* 2 sorties stéréo indépendantes et routables
+* SAI2A : ADC (4 entrées stéréo)
+* SAI2B : DAC
+* 2 sorties stéréo indépendantes
 
 ---
 
-## 9. Connectivité
+## 10. Connectivité
 
-* MIDI DIN :
-
-  * UART5 RX/TX
-* USB :
-
-  * device MIDI
-  * audio USB envisagé plus tard (hors scope immédiat)
-* USB host :
-
-  * MIDI class compliant
+* MIDI DIN (UART5)
+* USB device MIDI
+* USB host MIDI
 
 ---
 
-## 10. État global actuel — VALIDÉ
+## 11. Boot / Debug (VALIDÉ)
 
-### Boot / Clock
-
-* Boot CPU validé
 * Séquence :
-
 ```
+
 Reset → halInit() → chSysInit() → main()
+
 ```
 
-* Clock **HSI + PLL1** (mode debug sûr)
-* Fréquences vérifiées via UART :
-
-  * SYS_CK
-  * HCLK
-  * PCLK1–4
-
-### Debug
-
-* UART1 (USART1 / SD1) 100 % fonctionnel
-* Baudrate configuré explicitement
-* UART = **outil central de validation**
-
-### LED debug
-
-* LED sur **PH7**, active-low
-* Fonctionnelle
-* Preuve visuelle minimale de vie système
+* Clock : HSI + PLL1 (debug-safe)
+* UART1 = outil principal de validation
+* LED debug sur PH7
 
 ---
 
-## 11. FMC / SDRAM — règle non négociable
+## 12. FMC / SDRAM — règles STRICTES
 
-* Pins FMC définies dans `board.h`
-* ❌ **Aucune initialisation SDRAM dans `boardInit()`**
-* SDRAM initialisée :
-
-  * dans **`sdram_ext.c`** (module dédié)
-  * explicitement depuis `main()` ou un thread contrôlé
-  * avec logs UART (étapes de bring-up)
-  * en gardant le chemin d’init simple : `sdramInit()` → `sdramStart(&SDRAMD1, &sdram_cfg)`
-
-* Validation minimale de référence (doit toujours passer) :
-  * écrire 1 mot : `0x11223344`
-  * relire : `0x33441122` (swap demi-mots normal sur x16)
+* Pins définies dans `board.h`
+* ❌ Aucune init SDRAM dans `boardInit()`
+* Init uniquement via `sdram_ext.c`
+* Validation minimale :
+  * write `0x11223344`
+  * read `0x33441122`
 
 ---
 
-## 12. Cache / MPU — politique projet
-
-* Objectif actuel : **validation fonctionnelle** → garder les tests *simples et déterministes*.
-* ⚠️ Attention STM32H7 : si le **D-Cache** est activé par le startup, une SDRAM externe peut donner des tests “faux FAIL” tant que le **MPU** n’a pas marqué la zone SDRAM avec les bons attributs.
-* Politique projet :
-
-  * ✅ Phase bring-up SDRAM : **cache OFF** (ou SDRAM marquée non-cacheable via MPU)
-  * ✅ Phase production : cache ON + MPU (Write-Back/Write-Allocate) + **maintenance cache explicite** sur buffers DMA (clean/invalidate par adresse)
-
----
-
-## 13. Philosophie projet (non négociable)
+## 13. Philosophie projet (NON NÉGOCIABLE)
 
 * ❌ Pas de bidouille HAL
 * ❌ Pas d’init lourde avant `main()`
+* ❌ Pas de heap dynamique
 * ❌ Pas de logique audio dans l’UI
-* ❌ Pas de heap dynamique dans l’architecture finale
 * ✅ Tout périphérique critique est initialisé explicitement
 * ✅ Toute init est observable via UART
 * ✅ Fiabilité live > performance brute
-* ✅ Ksoloti = pilier central du concept “cartouche”
+* ✅ Ksoloti = pilier du concept
 
 ---
 
-## 14. Prochaines étapes recommandées
+## 14. État actuel
 
-1. ✅ SDRAM : module `sdram_ext.c / sdram_ext.h` (config verrouillée + helpers 32-bit)
-2. ✅ SDRAM : test atomique de référence (write/read 1 mot) OK
-3. 🔜 Ajouter un **test SDRAM plus long** (patterns + pseudo-random) en mode *cache OFF* ou SDRAM *non-cacheable MPU*
-4. Finaliser drivers UI (ADC, MUX, OLED, LEDs)
-5. Mettre en place le **squelette audio DMA**
-6. Intégrer SPI-link audio **1 cartouche**
-7. Étendre prudemment à 2 cartouches audio
-8. Plus tard :
-
-   * MPU + cache (mode production, cohérence DMA)
-   * optimisation
-   * USB audio (optionnel)
+> 🟢 Boot / clock / debug sains  
+> 🟢 SDRAM validée  
+> 🧱 Architecture verrouillée  
+> 🧠 Compromis techniques assumés  
 
 ---
-## 15. État final actuel
 
-> 🟢 Socle CPU / clock / debug sain
-> 🟢 Vision produit claire et réaliste
-> 🧱 Architecture audio et cartouches verrouillée
-> 🧠 Compromis techniques assumés et documentés
+# 15. MEMORY / CACHE / MPU CONTRACT  
+## (Codex / ChatGPT — SOURCE DE VÉRITÉ)
+
+Cette section définit **le contrat absolu** que toute aide automatisée doit respecter.
 
 ---
+
+## 15.1 Invariants globaux (TOUJOURS vrais)
+
+* MCU : STM32H743 (single-core M7)
+* RTOS : ChibiOS 21.11.4
+* Audio temps réel déterministe
+* Aucune allocation dynamique
+* Aucune décision mémoire implicite
+* Aucune optimisation sans demande explicite
+
+---
+
+## 15.2 Modèle mémoire STRUCTUREL (fixe)
+
+### DTCM (0x20000000)
+* Code audio critique
+* États audio
+* ❌ DMA interdit
+
+### SRAM AXI / D2
+* Tous buffers DMA (SAI, SPI, SDMMC, LEDs)
+* Alignement ≥ 32 bytes
+* Pas de logique audio critique
+
+### SDRAM FMC
+* Audio uniquement
+* Accès 32-bit
+* Wrapper obligatoire
+* ❌ heap / UI / système
+
+---
+
+## 15.3 Phases cache / MPU (STRICTES)
+
+### Phase 1 — Bring-up
+* I-Cache : ON
+* D-Cache : OFF
+* MPU : minimal
+* SDRAM : non-cacheable
+* Objectif : fonctionnement simple
+
+### Phase 2 — Validation
+* SDMMC
+* SDRAM
+* DMA simples
+* Toujours sans cache data
+
+### Phase 3 — Audio
+* SAI + DMA
+* SPI audio
+* Buffers strictement contrôlés
+
+### Phase 4 — Production
+* D-Cache : ON
+* MPU affiné
+* Maintenance cache explicite
+
+❗ Aucune phase ne peut être sautée.
+
+---
+
+## 15.4 Règles DMA
+
+* Buffer DMA :
+  - déclaré explicitement
+  - aligné 32 bytes
+  - non-cacheable OU maintenance explicite
+* ❌ DMA sur DTCM interdit
+
+---
+
+## 15.5 Attentes envers Codex / ChatGPT
+
+Lors d’une assistance :
+
+1. Identifier la phase actuelle
+2. Respecter STRICTEMENT cette phase
+3. Décrire clairement :
+   - mémoire utilisée
+   - mémoire interdite
+   - cache / MPU
+4. Générer du code uniquement sur demande
+5. Ne jamais modifier ce contrat
+
+---
+
+## 15.6 Objectif final
+
+> Garantir un firmware STM32H743 :
+> - déterministe
+> - live-safe
+> - compréhensible dans le temps
+> - robuste malgré génération automatique
+```
 
