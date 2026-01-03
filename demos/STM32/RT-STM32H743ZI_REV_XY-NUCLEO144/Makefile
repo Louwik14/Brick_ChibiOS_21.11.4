@@ -113,10 +113,8 @@ CSRC = $(ALLCSRC) \
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
        $(wildcard audio/*.c) \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_dma.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_gpio.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_rcc.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai_ex.c
        
@@ -151,7 +149,7 @@ CPPWARN = -Wall -Wextra -Wundef
 # User section
 #
 
-UDEFS  = -DSTM32_ENFORCE_H7_REV_XY
+UDEFS  = -DSTM32_ENFORCE_H7_REV_XY -DSTM32H743xx
 UADEFS =
 
 UINCDIR += $(CHIBIOS)/os/various
