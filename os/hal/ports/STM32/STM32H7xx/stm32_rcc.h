@@ -1870,6 +1870,47 @@ __STATIC_INLINE void rccResetAHB4(uint32_t mask) {
 /** @} */
 
 /**
+ * @name    SAI peripherals specific RCC operations
+ * @{
+ */
+#if defined(RCC_APB2ENR_SAI1EN)
+/**
+ * @brief   Enables the SAI1 peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableSAI1(lp) rccEnableAPB2(RCC_APB2ENR_SAI1EN, lp)
+
+/**
+ * @brief   Disables the SAI1 peripheral clock.
+ *
+ * @api
+ */
+#define rccDisableSAI1() rccDisableAPB2(RCC_APB2ENR_SAI1EN)
+#endif
+
+#if defined(RCC_APB2ENR_SAI2EN)
+/**
+ * @brief   Enables the SAI2 peripheral clock.
+ *
+ * @param[in] lp        low power enable flag
+ *
+ * @api
+ */
+#define rccEnableSAI2(lp) rccEnableAPB2(RCC_APB2ENR_SAI2EN, lp)
+
+/**
+ * @brief   Disables the SAI2 peripheral clock.
+ *
+ * @api
+ */
+#define rccDisableSAI2() rccDisableAPB2(RCC_APB2ENR_SAI2EN)
+#endif
+/** @} */
+
+/**
  * @name    TIM peripherals specific RCC operations
  * @{
  */
