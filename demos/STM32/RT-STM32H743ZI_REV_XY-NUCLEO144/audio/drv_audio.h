@@ -25,6 +25,7 @@ void drv_audio_init(void);
 void drv_audio_start(void);
 void drv_audio_stop(void);
 drv_audio_state_t drv_audio_get_state(void);
+void drv_audio_run_sai_hal_debug(void);
 
 const int32_t* drv_audio_get_input_buffer(uint8_t *index, size_t *frames);
 int32_t*       drv_audio_get_output_buffer(uint8_t *index, size_t *frames);
