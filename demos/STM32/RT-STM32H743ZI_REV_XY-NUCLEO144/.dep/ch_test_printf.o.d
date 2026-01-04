@@ -24,7 +24,6 @@ build/obj/ch_test_printf.o: ../../../os/test/src/ch_test_printf.c \
  ../../../os/rt/include/chport.h \
  ../../../os/common/ports/ARMv7-M/chcore.h \
  ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h \
- ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h \
  ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h \
@@ -51,8 +50,9 @@ build/obj/ch_test_printf.o: ../../../os/test/src/ch_test_printf.c \
  ../../../os/oslib/include/chobjcaches.h \
  ../../../os/oslib/include/chdelegates.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
- ../../../os/rt/include/chdynamic.h cfg/halconf.h cfg/mcuconf.h \
- ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
+ ../../../os/rt/include/chdynamic.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h cfg/halconf.h \
+ cfg/mcuconf.h ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
  ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h \
  ../../../os/hal/ports/common/ARMCMx/nvic.h \
  ../../../os/hal/ports/common/ARMCMx/cache.h \
@@ -88,7 +88,9 @@ build/obj/ch_test_printf.o: ../../../os/test/src/ch_test_printf.c \
  ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
- ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
+ ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_sai.h \
+ ../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h \
+ ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
  ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
@@ -152,7 +154,6 @@ cfg/chconf.h:
 ../../../os/rt/include/chport.h:
 ../../../os/common/ports/ARMv7-M/chcore.h:
 ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h:
-../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h:
 ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h:
@@ -190,6 +191,7 @@ cfg/chconf.h:
 ../../../os/oslib/include/chjobs.h:
 ../../../os/oslib/include/chfactory.h:
 ../../../os/rt/include/chdynamic.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h:
@@ -234,6 +236,8 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_mac.h:
 ../../../os/hal/include/hal_pwm.h:
 ../../../os/hal/include/hal_rtc.h:
+../../../os/hal/include/hal_sai.h:
+../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h:
 ../../../os/hal/include/hal_serial.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:

@@ -20,7 +20,6 @@ build/obj/drv_audio.o: audio/drv_audio.c audio/drv_audio.h \
  ../../../os/rt/include/chport.h \
  ../../../os/common/ports/ARMv7-M/chcore.h \
  ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h \
- ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h \
  ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h \
@@ -49,8 +48,9 @@ build/obj/drv_audio.o: audio/drv_audio.c audio/drv_audio.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdarg.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
  ../../../os/rt/include/chdynamic.h ../../../os/hal/include/hal.h \
- ../../../os/hal/osal/rt-nil/osal.h cfg/halconf.h cfg/mcuconf.h \
- ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
+ ../../../os/hal/osal/rt-nil/osal.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h cfg/halconf.h \
+ cfg/mcuconf.h ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
  ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h \
  ../../../os/hal/ports/common/ARMCMx/nvic.h \
  ../../../os/hal/ports/common/ARMCMx/cache.h \
@@ -86,7 +86,9 @@ build/obj/drv_audio.o: audio/drv_audio.c audio/drv_audio.h \
  ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
- ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
+ ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_sai.h \
+ ../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h \
+ ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
  ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
@@ -120,17 +122,31 @@ build/obj/drv_audio.o: audio/drv_audio.c audio/drv_audio.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  audio/audio_conf.h audio/audio_codec_ada1979.h \
  audio/audio_codec_pcm4104.h mpu/mpu_config.h mpu/mpu_map.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h \
+ ../../../os/hal/lib/streams/chprintf.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_conf.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_def.h \
+ drivers/stm32h7xx-hal-driver/Inc/Legacy/stm32_hal_legacy.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\math.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_gpio.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_gpio_ex.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_rcc.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_rcc_ex.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_dma.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_dma_ex.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_sai.h \
+ drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_sai_ex.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h
@@ -163,7 +179,6 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/rt/include/chport.h:
 ../../../os/common/ports/ARMv7-M/chcore.h:
 ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h:
-../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h:
 ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h:
@@ -204,6 +219,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/rt/include/chdynamic.h:
 ../../../os/hal/include/hal.h:
 ../../../os/hal/osal/rt-nil/osal.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h:
@@ -248,6 +264,8 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_mac.h:
 ../../../os/hal/include/hal_pwm.h:
 ../../../os/hal/include/hal_rtc.h:
+../../../os/hal/include/hal_sai.h:
+../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h:
 ../../../os/hal/include/hal_serial.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
@@ -289,17 +307,31 @@ audio/audio_codec_ada1979.h:
 audio/audio_codec_pcm4104.h:
 mpu/mpu_config.h:
 mpu/mpu_map.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h:
+../../../os/hal/lib/streams/chprintf.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_conf.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_def.h:
+drivers/stm32h7xx-hal-driver/Inc/Legacy/stm32_hal_legacy.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\math.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_gpio.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_gpio_ex.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_rcc.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_rcc_ex.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_dma.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_dma_ex.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_sai.h:
+drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_sai_ex.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h:
