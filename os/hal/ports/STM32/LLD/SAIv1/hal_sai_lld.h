@@ -192,8 +192,10 @@
  * @brief   Low level fields of the SAI driver structure.
  */
 #define sai_lld_driver_fields                                               \
-  /* Pointer to the SAIx registers block.*/                                 \
+  /* Pointer to the SAI global registers (CMSIS: stm32h743xx.h SAI_TypeDef).*/ \
   SAI_TypeDef              *sai;                                            \
+  /* Pointer to the SAI block registers (CMSIS: stm32h743xx.h SAI_Block_TypeDef).*/ \
+  SAI_Block_TypeDef        *blockp;                                         \
   /* Audio block selector (A/B).*/                                          \
   uint8_t                  block;                                          \
   /* Receive DMA stream.*/                                                  \

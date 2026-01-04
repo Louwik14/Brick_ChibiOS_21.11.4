@@ -30,16 +30,6 @@
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
 
-typedef struct {
-  __IO uint32_t *cr1;
-  __IO uint32_t *cr2;
-  __IO uint32_t *frcr;
-  __IO uint32_t *slotr;
-  __IO uint32_t *im;
-  __IO uint32_t *clrfr;
-  __IO uint32_t *dr;
-} sai_block_regs_t;
-
 #define SAI_MODE_RX_MASK (SAI_xCR1_MODE_0 | SAI_xCR1_MODE_1)
 
 #define SAI1A_DMA_REQUEST STM32_DMAMUX1_SAI1_A
@@ -77,29 +67,6 @@ static uint32_t sai2_ref = 0U;
 /*===========================================================================*/
 /* Driver local functions.                                                   */
 /*===========================================================================*/
-
-static void sai_lld_get_block_regs(const SAIDriver *saip,
-                                   sai_block_regs_t *regs) {
-
-  if (saip->block == STM32_SAI_BLOCK_A) {
-    regs->cr1 = &saip->sai->ACR1;
-    regs->cr2 = &saip->sai->ACR2;
-    regs->frcr = &saip->sai->AFRCR;
-    regs->slotr = &saip->sai->ASLOTR;
-    regs->im = &saip->sai->AIM;
-    regs->clrfr = &saip->sai->ACLRFR;
-    regs->dr = &saip->sai->ADR;
-  }
-  else {
-    regs->cr1 = &saip->sai->BCR1;
-    regs->cr2 = &saip->sai->BCR2;
-    regs->frcr = &saip->sai->BFRCR;
-    regs->slotr = &saip->sai->BSLOTR;
-    regs->im = &saip->sai->BIM;
-    regs->clrfr = &saip->sai->BCLRFR;
-    regs->dr = &saip->sai->BDR;
-  }
-}
 
 static bool sai_lld_is_rx(const SAIDriver *saip) {
   uint32_t mode = saip->config->cr1 & SAI_xCR1_MODE;
@@ -183,30 +150,37 @@ void sai_lld_init(void) {
 #if STM32_SAI_USE_SAI1A
   saiObjectInit(&SAID1A);
   SAID1A.sai = SAI1;
+  /* CMSIS mapping: stm32h743xx.h exposes SAI1_Block_A (SAI_Block_TypeDef). */
+  SAID1A.blockp = SAI1_Block_A;
   SAID1A.block = STM32_SAI_BLOCK_A;
 #endif
 
 #if STM32_SAI_USE_SAI1B
   saiObjectInit(&SAID1B);
   SAID1B.sai = SAI1;
+  /* CMSIS mapping: stm32h743xx.h exposes SAI1_Block_B (SAI_Block_TypeDef). */
+  SAID1B.blockp = SAI1_Block_B;
   SAID1B.block = STM32_SAI_BLOCK_B;
 #endif
 
 #if STM32_SAI_USE_SAI2A
   saiObjectInit(&SAID2A);
   SAID2A.sai = SAI2;
+  /* CMSIS mapping: stm32h743xx.h exposes SAI2_Block_A (SAI_Block_TypeDef). */
+  SAID2A.blockp = SAI2_Block_A;
   SAID2A.block = STM32_SAI_BLOCK_A;
 #endif
 
 #if STM32_SAI_USE_SAI2B
   saiObjectInit(&SAID2B);
   SAID2B.sai = SAI2;
+  /* CMSIS mapping: stm32h743xx.h exposes SAI2_Block_B (SAI_Block_TypeDef). */
+  SAID2B.blockp = SAI2_Block_B;
   SAID2B.block = STM32_SAI_BLOCK_B;
 #endif
 }
 
 void sai_lld_start(SAIDriver *saip) {
-  sai_block_regs_t regs;
   uint32_t cr1;
   bool is_rx;
 
@@ -242,33 +216,29 @@ void sai_lld_start(SAIDriver *saip) {
     }
   }
 
-  sai_lld_get_block_regs(saip, &regs);
-
   cr1 = saip->config->cr1 & ~(SAI_xCR1_SAIEN | SAI_xCR1_DMAEN);
-  *regs.cr1 &= ~SAI_xCR1_SAIEN;
-  while ((*regs.cr1 & SAI_xCR1_SAIEN) != 0U) {
+  saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
+  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
   }
-  *regs.cr1 &= ~SAI_xCR1_DMAEN;
-  *regs.cr1 &= ~SAI_xCR1_DMAEN;
+  saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
+  saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
   /* RM0433: SAI_GCR must be programmed when both blocks are disabled. */
+  /* CMSIS mapping (stm32h743xx.h): block registers are in SAI_Block_TypeDef. */
   saip->sai->GCR = saip->config->gcr;
-  *regs.cr1 = cr1;
-  *regs.cr2 = saip->config->cr2;
-  *regs.frcr = saip->config->frcr;
-  *regs.slotr = saip->config->slotr;
-  *regs.im = 0U;
-  *regs.clrfr = 0xFFFFFFFFU;
+  saip->blockp->CR1 = cr1;
+  saip->blockp->CR2 = saip->config->cr2;
+  saip->blockp->FRCR = saip->config->frcr;
+  saip->blockp->SLOTR = saip->config->slotr;
+  saip->blockp->IMR = 0U;
+  saip->blockp->CLRFR = 0xFFFFFFFFU;
 }
 
 void sai_lld_stop(SAIDriver *saip) {
-  sai_block_regs_t regs;
-
-  sai_lld_get_block_regs(saip, &regs);
-
-  *regs.cr1 &= ~SAI_xCR1_SAIEN;
-  while ((*regs.cr1 & SAI_xCR1_SAIEN) != 0U) {
+  saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
+  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
   }
+  saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
   if (saip->dmarx != NULL) {
     dmaStreamDisable(saip->dmarx);
@@ -298,7 +268,6 @@ void sai_lld_set_buffers(SAIDriver *saip,
                          const void *tx_buffer,
                          void *rx_buffer,
                          size_t size) {
-  sai_block_regs_t regs;
   uint32_t request;
   bool is_rx;
 
@@ -310,7 +279,6 @@ void sai_lld_set_buffers(SAIDriver *saip,
   saip->rxbuf = rx_buffer;
   saip->bufsize = size;
 
-  sai_lld_get_block_regs(saip, &regs);
   request = sai_lld_dma_request(saip);
   is_rx = sai_lld_is_rx(saip);
 
@@ -324,7 +292,7 @@ void sai_lld_set_buffers(SAIDriver *saip,
 #if STM32_DMA_SUPPORTS_DMAMUX == TRUE
     dmaSetRequestSource(saip->dmarx, request);
 #endif
-    dmaStreamSetPeripheral(saip->dmarx, regs.dr);
+    dmaStreamSetPeripheral(saip->dmarx, &saip->blockp->DR);
     dmaStreamSetMemory0(saip->dmarx, rx_buffer);
     dmaStreamSetTransactionSize(saip->dmarx, size);
     saip->rxdmamode = saip->config->dma_mode | STM32_DMA_CR_DIR_P2M |
@@ -345,7 +313,7 @@ void sai_lld_set_buffers(SAIDriver *saip,
 #if STM32_DMA_SUPPORTS_DMAMUX == TRUE
     dmaSetRequestSource(saip->dmatx, request);
 #endif
-    dmaStreamSetPeripheral(saip->dmatx, regs.dr);
+    dmaStreamSetPeripheral(saip->dmatx, &saip->blockp->DR);
     dmaStreamSetMemory0(saip->dmatx, tx_buffer);
     dmaStreamSetTransactionSize(saip->dmatx, size);
     saip->txdmamode = saip->config->dma_mode | STM32_DMA_CR_DIR_M2P |
@@ -359,25 +327,17 @@ void sai_lld_set_buffers(SAIDriver *saip,
 }
 
 void sai_lld_start_exchange(SAIDriver *saip) {
-  sai_block_regs_t regs;
-
-  sai_lld_get_block_regs(saip, &regs);
-
   osalDbgAssert(saip->bufsize > 0U, "buffers not set");
 
-  *regs.cr1 = (*regs.cr1 | SAI_xCR1_DMAEN) & ~SAI_xCR1_SAIEN;
-  *regs.cr1 |= SAI_xCR1_SAIEN;
+  saip->blockp->CR1 = (saip->blockp->CR1 | SAI_xCR1_DMAEN) & ~SAI_xCR1_SAIEN;
+  saip->blockp->CR1 |= SAI_xCR1_SAIEN;
 }
 
 void sai_lld_stop_exchange(SAIDriver *saip) {
-  sai_block_regs_t regs;
-
-  sai_lld_get_block_regs(saip, &regs);
-
-  *regs.cr1 &= ~SAI_xCR1_SAIEN;
-  while ((*regs.cr1 & SAI_xCR1_SAIEN) != 0U) {
+  saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
+  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
   }
-  *regs.cr1 &= ~SAI_xCR1_DMAEN;
+  saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
   if (saip->dmarx != NULL) {
     dmaStreamDisable(saip->dmarx);
