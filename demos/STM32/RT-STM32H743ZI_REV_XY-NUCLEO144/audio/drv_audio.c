@@ -7,6 +7,8 @@
 #include "audio_codec_ada1979.h"
 #include "audio_codec_pcm4104.h"
 #include "mpu_config.h"
+#include "chprintf.h"
+#include "stm32h7xx_hal_sai.h"
 #include <string.h>
 
 /* -------------------------------------------------------------------------- */
@@ -96,6 +98,11 @@ static void audio_dma_tx_cb(void *p, uint32_t flags);
 
 static THD_WORKING_AREA(audioThreadWA, AUDIO_THREAD_STACK_SIZE);
 static THD_FUNCTION(audioThread, arg);
+
+static void audio_sai_dump_regs(BaseSequentialStream *chp,
+                                const char *tag,
+                                const SAI_Block_TypeDef *block);
+static void audio_sai_hal_debug_test(void);
 
 /* -------------------------------------------------------------------------- */
 /* API publique                                                               */
@@ -508,6 +515,8 @@ static THD_FUNCTION(audioThread, arg) {
 
 static void audio_hw_configure_sai(void) {
 #if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
+    audio_sai_hal_debug_test();
+
     /* Active les horloges SAI et force la réinitialisation. */
     rccEnableSAI2(true);
     rccResetSAI2();
@@ -657,4 +666,71 @@ static void audio_dma_tx_cb(void *p, uint32_t flags) {
         uint8_t half = ((flags & STM32_DMA_ISR_HTIF) != 0U) ? 0U : 1U;
         audio_dma_sync_mark(half, AUDIO_SYNC_FLAG_TX);
     }
+}
+
+static void audio_sai_dump_regs(BaseSequentialStream *chp,
+                                const char *tag,
+                                const SAI_Block_TypeDef *block) {
+    chprintf(chp,
+             "[SAI %s] CR1=0x%08lx CR2=0x%08lx FRCR=0x%08lx SLOTR=0x%08lx IMR=0x%08lx SR=0x%08lx\r\n",
+             tag,
+             (unsigned long)block->CR1,
+             (unsigned long)block->CR2,
+             (unsigned long)block->FRCR,
+             (unsigned long)block->SLOTR,
+             (unsigned long)block->IMR,
+             (unsigned long)block->SR);
+}
+
+static void audio_sai_hal_debug_test(void) {
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
+    static bool ran = false;
+    if (ran) {
+        return;
+    }
+    ran = true;
+
+    BaseSequentialStream *chp = (BaseSequentialStream *)&SD1;
+    SAI_HandleTypeDef hsai;
+    memset(&hsai, 0, sizeof(hsai));
+
+    hsai.Instance = AUDIO_SAI_RX_BLOCK;
+    hsai.Init.AudioMode = SAI_MODEMASTER_RX;
+    hsai.Init.Synchro = SAI_ASYNCHRONOUS;
+    hsai.Init.OutputDrive = SAI_OUTPUTDRIVE_ENABLE;
+    hsai.Init.NoDivider = SAI_MASTERDIVIDER_ENABLE;
+    hsai.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_HF;
+    hsai.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_48K;
+    hsai.Init.Mckdiv = 0U;
+    hsai.Init.MckOverSampling = SAI_MCK_OVERSAMPLING_DISABLE;
+    hsai.Init.MonoStereoMode = SAI_STEREOMODE;
+    hsai.Init.CompandingMode = SAI_NOCOMPANDING;
+    hsai.Init.TriState = SAI_OUTPUT_NOTRELEASED;
+    hsai.Init.Protocol = SAI_FREE_PROTOCOL;
+    hsai.Init.DataSize = SAI_DATASIZE_24;
+    hsai.Init.FirstBit = SAI_FIRSTBIT_MSB;
+    hsai.Init.ClockStrobing = SAI_CLOCKSTROBING_RISINGEDGE;
+
+    hsai.FrameInit.FrameLength = 256U;
+    hsai.FrameInit.ActiveFrameLength = 128U;
+    hsai.FrameInit.FSDefinition = SAI_FS_CHANNEL_IDENTIFICATION;
+    hsai.FrameInit.FSPolarity = SAI_FS_ACTIVE_HIGH;
+    hsai.FrameInit.FSOffset = SAI_FS_BEFOREFIRSTBIT;
+
+    hsai.SlotInit.FirstBitOffset = 0U;
+    hsai.SlotInit.SlotSize = SAI_SLOTSIZE_32B;
+    hsai.SlotInit.SlotNumber = AUDIO_NUM_INPUT_CHANNELS;
+    hsai.SlotInit.SlotActive = 0x00FFU;
+
+    HAL_StatusTypeDef status = HAL_SAI_Init(&hsai);
+    chprintf(chp, "[SAI HAL] HAL_SAI_Init=%lu\r\n", (unsigned long)status);
+    audio_sai_dump_regs(chp, "post_init", AUDIO_SAI_RX_BLOCK);
+
+    AUDIO_SAI_RX_BLOCK->CR1 |= SAI_xCR1_SAIEN;
+    chThdSleepMilliseconds(1000);
+    chprintf(chp, "[SAI HAL] SR after SAIEN=0x%08lx\r\n",
+             (unsigned long)AUDIO_SAI_RX_BLOCK->SR);
+
+    AUDIO_SAI_RX_BLOCK->CR1 &= ~SAI_xCR1_SAIEN;
+#endif
 }
