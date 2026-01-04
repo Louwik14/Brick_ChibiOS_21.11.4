@@ -105,7 +105,8 @@ int main(void) {
     chThdSleepSeconds(5);
 
     saiStopExchange(&SAID2A);
-    sai_error_flags = SAID2A.sai->ASR;
+    /* CMSIS (stm32h743xx.h): status flags are in SAI_Block_TypeDef::SR. */
+    sai_error_flags = SAID2A.blockp->SR;
     chprintf((BaseSequentialStream *)&SD1,
              "SAI stopped ht=%lu tc=%lu dma_err=%lu sr=0x%08lx\r\n",
              ht_count, tc_count, dma_error_count, sai_error_flags);
