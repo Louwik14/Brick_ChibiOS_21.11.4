@@ -15,6 +15,13 @@
 extern "C" {
 #endif
 
+/* ########################### System Configuration ######################### */
+#define USE_RTOS          0
+#define USE_FULL_ASSERT   0U
+
+/* Core device/typedefs needed by HAL declarations. */
+#include "stm32h7xx_hal_def.h"
+
 /* ########################## Module Selection ############################## */
 #define HAL_MODULE_ENABLED
 #define HAL_GPIO_MODULE_ENABLED
@@ -57,10 +64,24 @@ extern "C" {
 /* ########################### System Configuration ######################### */
 #define VDD_VALUE         (3300UL)
 #define TICK_INT_PRIORITY (0x0FUL)
-#define USE_RTOS          0
-#define USE_FULL_ASSERT   0U
-
 #define USE_HAL_SAI_REGISTER_CALLBACKS 0U
+
+/* ########################### HAL Module Includes ########################## */
+#ifdef HAL_GPIO_MODULE_ENABLED
+#include "stm32h7xx_hal_gpio.h"
+#endif
+
+#ifdef HAL_RCC_MODULE_ENABLED
+#include "stm32h7xx_hal_rcc.h"
+#endif
+
+#ifdef HAL_DMA_MODULE_ENABLED
+#include "stm32h7xx_hal_dma.h"
+#endif
+
+#ifdef HAL_SAI_MODULE_ENABLED
+#include "stm32h7xx_hal_sai.h"
+#endif
 
 /* ########################### assert_param ################################# */
 #if (USE_FULL_ASSERT == 1U)
