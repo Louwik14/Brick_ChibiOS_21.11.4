@@ -176,6 +176,13 @@
 #endif
 
 /**
+ * @brief   Enables the SAI subsystem.
+ */
+#if !defined(HAL_USE_SAI) || defined(__DOXYGEN__)
+#define HAL_USE_SAI                         FALSE
+#endif
+
+/**
  * @brief   Enables the TRNG subsystem.
  */
 #if !defined(HAL_USE_TRNG) || defined(__DOXYGEN__)
