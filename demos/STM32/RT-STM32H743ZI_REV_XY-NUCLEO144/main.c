@@ -16,8 +16,10 @@ int main(void) {
 
   sdStart(&SD1, &uart_cfg);
   chprintf((BaseSequentialStream *)&SD1, "\r\nSAI HAL debug (no DMA, no codec)\r\n");
+  chprintf((BaseSequentialStream *)&SD1, "SAI HAL debug start\r\n");
 
-  drv_audio_init();
+  drv_audio_run_sai_hal_debug();
+
   chprintf((BaseSequentialStream *)&SD1, "SAI HAL debug done\r\n");
 
   while (true) {

@@ -152,6 +152,10 @@ void drv_audio_init(void) {
     audio_initialized = true;
 }
 
+void drv_audio_run_sai_hal_debug(void) {
+    audio_sai_hal_debug_test();
+}
+
 void drv_audio_start(void) {
     if (audio_state == DRV_AUDIO_RUNNING) {
         return;
