@@ -25,7 +25,7 @@
 #ifndef HAL_SAI_LLD_H
 #define HAL_SAI_LLD_H
 
-#if HAL_USE_SAI || defined(__DOXYGEN__)
+#if defined(HAL_USE_SAI) && (HAL_USE_SAI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver constants.                                                         */

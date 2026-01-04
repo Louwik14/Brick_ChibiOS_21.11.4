@@ -24,7 +24,7 @@
 
 #include "hal.h"
 
-#if HAL_USE_SAI || defined(__DOXYGEN__)
+#if defined(HAL_USE_SAI) && (HAL_USE_SAI == TRUE) || defined(__DOXYGEN__)
 
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
