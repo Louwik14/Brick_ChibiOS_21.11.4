@@ -20,7 +20,6 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/rt/include/chport.h \
  ../../../os/common/ports/ARMv7-M/chcore.h \
  ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h \
- ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h \
  ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h \
  ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h \
@@ -49,8 +48,9 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdarg.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
  ../../../os/rt/include/chdynamic.h ../../../os/hal/include/hal.h \
- ../../../os/hal/osal/rt-nil/osal.h cfg/halconf.h cfg/mcuconf.h \
- ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
+ ../../../os/hal/osal/rt-nil/osal.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h cfg/halconf.h \
+ cfg/mcuconf.h ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
  ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h \
  ../../../os/hal/ports/common/ARMCMx/nvic.h \
  ../../../os/hal/ports/common/ARMCMx/cache.h \
@@ -86,7 +86,9 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
- ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_serial.h \
+ ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_sai.h \
+ ../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h \
+ ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
  ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
@@ -118,7 +120,6 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- ../../../os/hal/lib/streams/chprintf.h audio/drv_audio.h \
  audio/audio_conf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
@@ -148,7 +149,6 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/rt/include/chport.h:
 ../../../os/common/ports/ARMv7-M/chcore.h:
 ../../../os/common/startup/ARMCMx/devices/STM32H7xx/cmparams.h:
-../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h7xx.h:
 ../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h:
 ../../../os/common/ext/ARM/CMSIS/Core/Include/core_cm7.h:
@@ -189,6 +189,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/rt/include/chdynamic.h:
 ../../../os/hal/include/hal.h:
 ../../../os/hal/osal/rt-nil/osal.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h:
@@ -233,6 +234,8 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_mac.h:
 ../../../os/hal/include/hal_pwm.h:
 ../../../os/hal/include/hal_rtc.h:
+../../../os/hal/include/hal_sai.h:
+../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h:
 ../../../os/hal/include/hal_serial.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
@@ -269,6 +272,4 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
-../../../os/hal/lib/streams/chprintf.h:
-audio/drv_audio.h:
 audio/audio_conf.h:
