@@ -8,7 +8,7 @@
 #include "audio_codec_pcm4104.h"
 #include "mpu_config.h"
 #include "chprintf.h"
-#include "stm32h7xx_hal_sai.h"
+#include "stm32h7xx_hal.h"
 #include <string.h>
 
 /* -------------------------------------------------------------------------- */
