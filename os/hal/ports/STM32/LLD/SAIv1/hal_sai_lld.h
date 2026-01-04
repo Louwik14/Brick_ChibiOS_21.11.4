@@ -260,6 +260,7 @@ extern "C" {
                            size_t size);
   void sai_lld_start_exchange(SAIDriver *saip);
   void sai_lld_stop_exchange(SAIDriver *saip);
+  void sai_dma_error_hook(SAIDriver *saip);
 #ifdef __cplusplus
 }
 #endif
