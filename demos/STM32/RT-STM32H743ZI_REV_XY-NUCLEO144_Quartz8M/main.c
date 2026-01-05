@@ -2,6 +2,7 @@
 #include "hal.h"
 #include "drivers/drivers.h"
 #include "drv_hall.h"
+#include "ui/ui_model.h"
 #include <stdio.h>
 
 /* ====================================================================== */
@@ -10,13 +11,32 @@
 
 static THD_WORKING_AREA(waHallTask, 512);
 
+enum {
+  HALL_TASK_PERIOD_MS = 20,
+  UI_TASK_PERIOD_MS = 100,
+  UI_FORCE_REFRESH_MS = 1000
+};
+
+static uint16_t build_hall_mask(void) {
+  uint16_t mask = 0;
+  for (uint8_t i = 0; i < 16U; ++i) {
+    if (drv_hall_is_pressed(i)) {
+      mask |= (uint16_t)(1U << i);
+    }
+  }
+  return mask;
+}
+
 static THD_FUNCTION(hallTask, arg) {
   (void)arg;
   chRegSetThreadName("HallTask");
+  systime_t next_wake = chVTGetSystemTimeX();
 
   while (!chThdShouldTerminateX()) {
     drv_hall_task();
-    chThdSleepMilliseconds(5);   /* lecture rapide ADC/MUX */
+    ui_model_set_hall_mask(build_hall_mask());
+    next_wake = chThdSleepUntilWindowed(next_wake,
+                                        next_wake + TIME_MS2I(HALL_TASK_PERIOD_MS));
   }
 
   chThdExit(MSG_OK);
@@ -26,7 +46,7 @@ static THD_FUNCTION(hallTask, arg) {
 /*                          AFFICHAGE OLED                                */
 /* ====================================================================== */
 
-static void draw_hall_states(void) {
+static void draw_hall_states(uint16_t hall_mask) {
   char line[16];
 
   drv_display_clear();
@@ -39,18 +59,44 @@ static void draw_hall_states(void) {
     snprintf(line, sizeof(line),
              "B%u:%s",
              (unsigned)(left + 1U),
-             drv_hall_is_pressed(left) ? "ON " : "OFF");
+             (hall_mask & (1U << left)) ? "ON " : "OFF");
     drv_display_draw_text(0, y, line);
 
     snprintf(line, sizeof(line),
              "B%u:%s",
              (unsigned)(right + 1U),
-             drv_hall_is_pressed(right) ? "ON " : "OFF");
+             (hall_mask & (1U << right)) ? "ON " : "OFF");
     drv_display_draw_text(64, y, line);
   }
 
-  /* 🔴 FLUSH EXPLICITE = PAS DE RACE CONDITION */
   drv_display_update();
+}
+
+static THD_WORKING_AREA(waUiTask, 512);
+
+static THD_FUNCTION(uiTask, arg) {
+  (void)arg;
+  chRegSetThreadName("UiTask");
+  systime_t next_wake = chVTGetSystemTimeX();
+  uint16_t last_mask = 0xFFFFU;
+  uint8_t refresh_ticks = 0;
+
+  while (!chThdShouldTerminateX()) {
+    uint16_t hall_mask = ui_model_get_hall_mask();
+    bool force_refresh = (refresh_ticks >= (UI_FORCE_REFRESH_MS / UI_TASK_PERIOD_MS));
+    if (hall_mask != last_mask || force_refresh) {
+      draw_hall_states(hall_mask);
+      last_mask = hall_mask;
+      refresh_ticks = 0;
+    } else {
+      refresh_ticks++;
+    }
+
+    next_wake = chThdSleepUntilWindowed(next_wake,
+                                        next_wake + TIME_MS2I(UI_TASK_PERIOD_MS));
+  }
+
+  chThdExit(MSG_OK);
 }
 
 /* ====================================================================== */
@@ -65,24 +111,24 @@ int main(void) {
   /* Init drivers globaux (GPIO, SPI, etc.) */
   drivers_init_all();
 
-  /* Init + thread OLED */
-  drv_display_start();
-
   /* Init Hall */
-  //drv_hall_init();
+  drv_hall_init();
 
   /* Thread Hall (lecture capteurs uniquement) */
-  /*chThdCreateStatic(waHallTask,
+  chThdCreateStatic(waHallTask,
                     sizeof(waHallTask),
                     NORMALPRIO,
                     hallTask,
-                    NULL); */
+                    NULL);
 
-  /* Boucle principale : affichage */
+  /* Thread UI (OLED best-effort, basse priorité) */
+  chThdCreateStatic(waUiTask,
+                    sizeof(waUiTask),
+                    LOWPRIO,
+                    uiTask,
+                    NULL);
+
   while (true) {
-    drv_display_clear();
-    drv_display_draw_text(0, 0, "DISPLAY ONLY");
-    drv_display_update();
-    chThdSleepMilliseconds(500);
+    chThdSleepMilliseconds(1000);
   }
 }
