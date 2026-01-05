@@ -81,7 +81,7 @@ include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.m
 include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32H7xx/platform.mk
-include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
+include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 
 include $(CHIBIOS)/os/rt/rt.mk
@@ -114,6 +114,7 @@ CSRC = $(ALLCSRC) \
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
        $(wildcard audio/*.c) \
+       $(wildcard drivers/HallEffect/*.c) \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_dma.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_gpio.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai.c \
@@ -129,6 +130,7 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
+INCDIR += drivers/HallEffect
 INCDIR += midi
 INCDIR += sdram
 INCDIR += mpu

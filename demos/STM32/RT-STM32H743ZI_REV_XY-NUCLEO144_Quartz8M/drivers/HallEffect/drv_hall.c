@@ -92,7 +92,7 @@ static inline uint8_t clamp_uint8(int32_t v) {
     if (v < 0) {
         return 0;
     }
-    if (v > HALL_NORMALIZE_MAX) {
+    if (v > (int32_t)HALL_NORMALIZE_MAX) {
         return HALL_NORMALIZE_MAX;
     }
     return (uint8_t)v;
