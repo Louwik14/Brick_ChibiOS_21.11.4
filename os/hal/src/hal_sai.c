@@ -52,6 +52,9 @@ void saiObjectInit(SAIDriver *saip) {
 
   saip->state  = SAI_STOP;
   saip->config = NULL;
+#if defined(SAI_LLD_ENHANCED_API)
+  saip->start_error = HAL_RET_SUCCESS;
+#endif
   saip->error_flags = 0U;
   saip->error_repeats = 0U;
 }
@@ -80,6 +83,10 @@ msg_t saiStart(SAIDriver *saip, const SAIConfig *config) {
   msg = sai_lld_start(saip);
   if (msg == HAL_RET_SUCCESS) {
     saip->state = SAI_READY;
+    if (saip->start_error != HAL_RET_SUCCESS) {
+      msg = saip->start_error;
+      saip->start_error = HAL_RET_SUCCESS;
+    }
   }
   else {
     saip->state = SAI_STOP;
@@ -113,6 +120,9 @@ void saiStop(SAIDriver *saip) {
   sai_lld_stop(saip);
   saip->config = NULL;
   saip->state  = SAI_STOP;
+#if defined(SAI_LLD_ENHANCED_API)
+  saip->start_error = HAL_RET_SUCCESS;
+#endif
 
   osalSysUnlock();
 }

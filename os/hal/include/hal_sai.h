@@ -75,6 +75,12 @@ struct hal_sai_driver {
    * @brief   Current configuration data.
    */
   const SAIConfig           *config;
+#if defined(SAI_LLD_ENHANCED_API)
+  /**
+   * @brief   Latched bring-up error for enhanced API reporting.
+   */
+  msg_t                     start_error;
+#endif
   /* End of the mandatory fields.*/
   sai_lld_driver_fields
 };
@@ -116,10 +122,27 @@ struct hal_sai_config {
  *
  * @iclass
  */
-#define saiStartExchangeI(saip) {                                           \
+#define saiStartExchangeI(saip) do {                                        \
+  uint32_t _sai_cr1;                                                         \
+  uint32_t _sai_sr;                                                          \
   sai_lld_start_exchange(saip);                                              \
-  (saip)->state = SAI_ACTIVE;                                                \
-}
+  /* RM: WCKCFG/OVRUDR can auto-disable SAIEN, see Safe Profile & Hardening.*/ \
+  _sai_cr1 = (saip)->blockp->CR1;                                            \
+  _sai_sr = (saip)->blockp->SR;                                              \
+  (void)_sai_sr;                                                             \
+  if ((_sai_cr1 & SAI_xCR1_SAIEN) != 0U) {                                   \
+    (saip)->state = SAI_ACTIVE;                                              \
+#if defined(SAI_LLD_ENHANCED_API)
+    (saip)->start_error = HAL_RET_SUCCESS;                                   \
+#endif
+  }                                                                          \
+  else {                                                                     \
+    (saip)->state = SAI_READY;                                               \
+#if defined(SAI_LLD_ENHANCED_API)
+    (saip)->start_error = HAL_RET_HW_FAILURE;                                \
+#endif
+  }                                                                          \
+} while (false)
 
 /**
  * @brief   Stops the ongoing data exchange.
