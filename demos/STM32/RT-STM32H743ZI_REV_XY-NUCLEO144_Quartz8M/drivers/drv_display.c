@@ -1,4 +1,3 @@
-
 #include "drv_display.h"
 #include "ch.h"
 #include "hal.h"
@@ -10,23 +9,7 @@
 /*                        CONFIGURATION MATÉRIELLE                        */
 /* ====================================================================== */
 
-/*
- * Port SPI2 demandé :
- *  - SCK  = PI1 (AF5)
- *  - MOSI = PI3 (AF5)
- *
- * Si ces lignes sont déjà définies ailleurs (board.h, etc.), ce #ifndef évite
- * les redéfinitions.
- */
-#ifndef LINE_SPI2_SCK
-#define LINE_SPI2_SCK                PAL_LINE(GPIOI, 1U)
-#endif
-
-#ifndef LINE_SPI2_MOSI
-#define LINE_SPI2_MOSI               PAL_LINE(GPIOI, 3U)
-#endif
-
-/* SPI2 - Configuration compatible ChibiOS récent */
+/* SPI5 - Configuration compatible ChibiOS récent */
 static const SPIConfig spicfg = {
     .circular = false,
     .slave    = false,
@@ -53,7 +36,6 @@ static thread_t *display_tp = NULL;
 /*                              UTILITAIRES GPIO                          */
 /* ====================================================================== */
 
-/* On laisse CS/DC/RES tels quels (déjà câblés et définis chez toi) */
 static inline void cs_low(void)  { palClearLine(LINE_SPI5_CS_OLED); }
 static inline void cs_high(void) { palSetLine  (LINE_SPI5_CS_OLED); }
 static inline void dc_cmd(void)  { palClearLine(LINE_SPI5_DC_OLED); }
@@ -86,6 +68,7 @@ static void send_data(const uint8_t *data, size_t len) {
 static volatile bool display_dirty = false;
 /* 1 bit par page (0..7) */
 static uint8_t dirty_pages = 0;
+
 
 /* ====================================================================== */
 /*                              FRAMEBUFFER                               */
@@ -152,6 +135,7 @@ void drv_display_fill_rect(int x, int y, int w, int h) {
     }
 }
 
+
 void drv_display_clear_rect(int x, int y, int w, int h) {
 
     if (w <= 0 || h <= 0)
@@ -163,6 +147,8 @@ void drv_display_clear_rect(int x, int y, int w, int h) {
         }
     }
 }
+
+
 
 /* ====================================================================== */
 /*                      INITIALISATION OLED                               */
@@ -179,7 +165,7 @@ void drv_display_init(void) {
     dc_data();
     palSetLine(LINE_SPI5_RES_OLED);
 
-    /* SPI2 pins forced to AF5 (STM32H7 specific) */
+    /* SPI5 pins forced to AF5 (STM32H7 specific) */
     palSetLineMode(LINE_SPI2_SCK,  PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
     palSetLineMode(LINE_SPI2_MOSI, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
 
