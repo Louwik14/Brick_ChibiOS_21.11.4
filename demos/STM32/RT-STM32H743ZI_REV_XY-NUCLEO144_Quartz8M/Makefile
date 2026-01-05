@@ -81,7 +81,7 @@ include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32h7xx.m
 include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32H7xx/platform.mk
-include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.mk
+include $(CHIBIOS)/os/hal/boards/STM32H743_LQFP176_CUSTOM/board.mk
 include $(CHIBIOS)/os/hal/osal/rt-nil/osal.mk
 
 include $(CHIBIOS)/os/rt/rt.mk
@@ -150,7 +150,7 @@ CPPWARN = -Wall -Wextra -Wundef
 # User section
 #
 
-UDEFS  = -DSTM32_ENFORCE_H7_REV_XY -DSTM32H743xx
+UDEFS  = -DSTM32_ENFORCE_H7_REV_XY -DSTM32H743xx -DSTM32_HSECLK=8000000U
 UADEFS =
 
 UINCDIR += $(CHIBIOS)/os/various
