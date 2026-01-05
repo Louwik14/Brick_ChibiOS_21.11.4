@@ -26,6 +26,21 @@ void drv_audio_start(void);
 void drv_audio_stop(void);
 drv_audio_state_t drv_audio_get_state(void);
 void drv_audio_run_sai_hal_debug(void);
+void drv_audio_reset_stats(void);
+
+uint32_t drv_audio_get_rx_half_count(void);
+uint32_t drv_audio_get_rx_full_count(void);
+uint32_t drv_audio_get_tx_half_count(void);
+uint32_t drv_audio_get_tx_full_count(void);
+uint32_t drv_audio_get_sync_error_count(void);
+uint32_t drv_audio_get_dma_error_count(void);
+uint32_t drv_audio_get_sai_error_count(void);
+uint32_t drv_audio_get_rx_checksum(uint8_t half);
+uint32_t drv_audio_get_rx_cr1_start(void);
+uint32_t drv_audio_get_rx_sr_start(void);
+uint32_t drv_audio_get_tx_cr1_start(void);
+uint32_t drv_audio_get_tx_sr_start(void);
+uint32_t drv_audio_get_sai_sr_live(void);
 
 const int32_t* drv_audio_get_input_buffer(uint8_t *index, size_t *frames);
 int32_t*       drv_audio_get_output_buffer(uint8_t *index, size_t *frames);
