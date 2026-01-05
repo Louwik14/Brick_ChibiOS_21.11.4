@@ -47,6 +47,8 @@
  * @name    Configuration options
  * @{
  */
+/* Deterministic DMA stream allocation is a bring-up requirement (Safe Profile
+ * & Hardening). Do not leave SAI DMA streams set to STM32_DMA_STREAM_ID_ANY. */
 #if !defined(STM32_SAI_USE_SAI1A) || defined(__DOXYGEN__)
 #define STM32_SAI_USE_SAI1A              FALSE
 #endif
@@ -142,6 +144,78 @@
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
+
+#if STM32_SAI_USE_SAI1A &&                                                  \
+    (STM32_SAI_SAI1A_RX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI1A RX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI1A RX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI1A &&                                                  \
+    (STM32_SAI_SAI1A_TX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI1A TX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI1A TX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI1B &&                                                  \
+    (STM32_SAI_SAI1B_RX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI1B RX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI1B RX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI1B &&                                                  \
+    (STM32_SAI_SAI1B_TX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI1B TX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI1B TX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI2A &&                                                  \
+    (STM32_SAI_SAI2A_RX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI2A RX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI2A RX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI2A &&                                                  \
+    (STM32_SAI_SAI2A_TX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI2A TX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI2A TX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI2B &&                                                  \
+    (STM32_SAI_SAI2B_RX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI2B RX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI2B RX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
+
+#if STM32_SAI_USE_SAI2B &&                                                  \
+    (STM32_SAI_SAI2B_TX_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+#if defined(BRING_UP_STRICT) && (BRING_UP_STRICT == TRUE)
+#error "SAI2B TX requires a deterministic DMA stream (bring-up requirement)"
+#else
+#warning "SAI2B TX uses STM32_DMA_STREAM_ID_ANY; deterministic allocation is a bring-up requirement"
+#endif
+#endif
 
 #if STM32_SAI_USE_SAI1A &&                                                  \
     !STM32_DMA_IS_VALID_STREAM(STM32_SAI_SAI1A_RX_DMA_STREAM)
