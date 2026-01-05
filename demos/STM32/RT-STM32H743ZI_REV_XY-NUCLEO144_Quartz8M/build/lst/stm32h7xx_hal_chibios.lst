@@ -1,0 +1,2509 @@
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"stm32h7xx_hal_chibios.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.port_timer_get_time,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.type	port_timer_get_time, %function
+  23              	port_timer_get_time:
+  24              	.LFB196:
+  25              		.file 1 "../../../os/hal/osal/rt-nil/chcore_timer.h"
+  26              		.loc 1 111 51
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              		.cfi_def_cfa_offset 8
+  32              		.cfi_offset 7, -8
+  33              		.cfi_offset 14, -4
+  34 0002 00AF     		add	r7, sp, #0
+  35              		.cfi_def_cfa_register 7
+  36              		.loc 1 113 10
+  37 0004 FFF7FEFF 		bl	stGetCounter
+  38 0008 0346     		mov	r3, r0
+  39              		.loc 1 114 1
+  40 000a 1846     		mov	r0, r3
+  41 000c 80BD     		pop	{r7, pc}
+  42              		.cfi_endproc
+  43              	.LFE196:
+  44              		.size	port_timer_get_time, .-port_timer_get_time
+  45              		.section	.text.chVTGetSystemTimeX,"ax",%progbits
+  46              		.align	1
+  47              		.syntax unified
+  48              		.thumb
+  49              		.thumb_func
+  50              		.type	chVTGetSystemTimeX, %function
+  51              	chVTGetSystemTimeX:
+  52              	.LFB209:
+  53              		.file 2 "../../../os/rt/include/chvt.h"
+  54              		.loc 2 122 50
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 1, uses_anonymous_args = 0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 2
+
+
+  58 0000 80B5     		push	{r7, lr}
+  59              		.cfi_def_cfa_offset 8
+  60              		.cfi_offset 7, -8
+  61              		.cfi_offset 14, -4
+  62 0002 00AF     		add	r7, sp, #0
+  63              		.cfi_def_cfa_register 7
+  64              		.loc 2 127 10
+  65 0004 FFF7FEFF 		bl	port_timer_get_time
+  66 0008 0346     		mov	r3, r0
+  67              		.loc 2 129 1
+  68 000a 1846     		mov	r0, r3
+  69 000c 80BD     		pop	{r7, pc}
+  70              		.cfi_endproc
+  71              	.LFE209:
+  72              		.size	chVTGetSystemTimeX, .-chVTGetSystemTimeX
+  73              		.global	uwTick
+  74              		.section	.bss.uwTick,"aw",%nobits
+  75              		.align	2
+  76              		.type	uwTick, %object
+  77              		.size	uwTick, 4
+  78              	uwTick:
+  79 0000 00000000 		.space	4
+  80              		.global	uwTickPrio
+  81              		.section	.bss.uwTickPrio,"aw",%nobits
+  82              		.align	2
+  83              		.type	uwTickPrio, %object
+  84              		.size	uwTickPrio, 4
+  85              	uwTickPrio:
+  86 0000 00000000 		.space	4
+  87              		.global	uwTickFreq
+  88              		.section	.data.uwTickFreq,"aw"
+  89              		.type	uwTickFreq, %object
+  90              		.size	uwTickFreq, 1
+  91              	uwTickFreq:
+  92 0000 01       		.byte	1
+  93              		.section	.text.HAL_Init,"ax",%progbits
+  94              		.align	1
+  95              		.global	HAL_Init
+  96              		.syntax unified
+  97              		.thumb
+  98              		.thumb_func
+  99              		.type	HAL_Init, %function
+ 100              	HAL_Init:
+ 101              	.LFB415:
+ 102              		.file 3 "drivers/stm32h7xx_hal_chibios.c"
+ 103              		.loc 3 29 34
+ 104              		.cfi_startproc
+ 105              		@ args = 0, pretend = 0, frame = 0
+ 106              		@ frame_needed = 1, uses_anonymous_args = 0
+ 107              		@ link register save eliminated.
+ 108 0000 80B4     		push	{r7}
+ 109              		.cfi_def_cfa_offset 4
+ 110              		.cfi_offset 7, -4
+ 111 0002 00AF     		add	r7, sp, #0
+ 112              		.cfi_def_cfa_register 7
+ 113              		.loc 3 30 10
+ 114 0004 0023     		movs	r3, #0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 3
+
+
+ 115              		.loc 3 31 1
+ 116 0006 1846     		mov	r0, r3
+ 117 0008 BD46     		mov	sp, r7
+ 118              		.cfi_def_cfa_register 13
+ 119              		@ sp needed
+ 120 000a 80BC     		pop	{r7}
+ 121              		.cfi_restore 7
+ 122              		.cfi_def_cfa_offset 0
+ 123 000c 7047     		bx	lr
+ 124              		.cfi_endproc
+ 125              	.LFE415:
+ 126              		.size	HAL_Init, .-HAL_Init
+ 127              		.section	.text.HAL_DeInit,"ax",%progbits
+ 128              		.align	1
+ 129              		.global	HAL_DeInit
+ 130              		.syntax unified
+ 131              		.thumb
+ 132              		.thumb_func
+ 133              		.type	HAL_DeInit, %function
+ 134              	HAL_DeInit:
+ 135              	.LFB416:
+ 136              		.loc 3 33 36
+ 137              		.cfi_startproc
+ 138              		@ args = 0, pretend = 0, frame = 0
+ 139              		@ frame_needed = 1, uses_anonymous_args = 0
+ 140              		@ link register save eliminated.
+ 141 0000 80B4     		push	{r7}
+ 142              		.cfi_def_cfa_offset 4
+ 143              		.cfi_offset 7, -4
+ 144 0002 00AF     		add	r7, sp, #0
+ 145              		.cfi_def_cfa_register 7
+ 146              		.loc 3 34 10
+ 147 0004 0023     		movs	r3, #0
+ 148              		.loc 3 35 1
+ 149 0006 1846     		mov	r0, r3
+ 150 0008 BD46     		mov	sp, r7
+ 151              		.cfi_def_cfa_register 13
+ 152              		@ sp needed
+ 153 000a 80BC     		pop	{r7}
+ 154              		.cfi_restore 7
+ 155              		.cfi_def_cfa_offset 0
+ 156 000c 7047     		bx	lr
+ 157              		.cfi_endproc
+ 158              	.LFE416:
+ 159              		.size	HAL_DeInit, .-HAL_DeInit
+ 160              		.section	.text.HAL_InitTick,"ax",%progbits
+ 161              		.align	1
+ 162              		.global	HAL_InitTick
+ 163              		.syntax unified
+ 164              		.thumb
+ 165              		.thumb_func
+ 166              		.type	HAL_InitTick, %function
+ 167              	HAL_InitTick:
+ 168              	.LFB417:
+ 169              		.loc 3 37 55
+ 170              		.cfi_startproc
+ 171              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 4
+
+
+ 172              		@ frame_needed = 1, uses_anonymous_args = 0
+ 173              		@ link register save eliminated.
+ 174 0000 80B4     		push	{r7}
+ 175              		.cfi_def_cfa_offset 4
+ 176              		.cfi_offset 7, -4
+ 177 0002 83B0     		sub	sp, sp, #12
+ 178              		.cfi_def_cfa_offset 16
+ 179 0004 00AF     		add	r7, sp, #0
+ 180              		.cfi_def_cfa_register 7
+ 181 0006 7860     		str	r0, [r7, #4]
+ 182              		.loc 3 39 10
+ 183 0008 0023     		movs	r3, #0
+ 184              		.loc 3 40 1
+ 185 000a 1846     		mov	r0, r3
+ 186 000c 0C37     		adds	r7, r7, #12
+ 187              		.cfi_def_cfa_offset 4
+ 188 000e BD46     		mov	sp, r7
+ 189              		.cfi_def_cfa_register 13
+ 190              		@ sp needed
+ 191 0010 80BC     		pop	{r7}
+ 192              		.cfi_restore 7
+ 193              		.cfi_def_cfa_offset 0
+ 194 0012 7047     		bx	lr
+ 195              		.cfi_endproc
+ 196              	.LFE417:
+ 197              		.size	HAL_InitTick, .-HAL_InitTick
+ 198              		.section	.text.HAL_IncTick,"ax",%progbits
+ 199              		.align	1
+ 200              		.global	HAL_IncTick
+ 201              		.syntax unified
+ 202              		.thumb
+ 203              		.thumb_func
+ 204              		.type	HAL_IncTick, %function
+ 205              	HAL_IncTick:
+ 206              	.LFB418:
+ 207              		.loc 3 42 24
+ 208              		.cfi_startproc
+ 209              		@ args = 0, pretend = 0, frame = 0
+ 210              		@ frame_needed = 1, uses_anonymous_args = 0
+ 211              		@ link register save eliminated.
+ 212 0000 80B4     		push	{r7}
+ 213              		.cfi_def_cfa_offset 4
+ 214              		.cfi_offset 7, -4
+ 215 0002 00AF     		add	r7, sp, #0
+ 216              		.cfi_def_cfa_register 7
+ 217              		.loc 3 44 1
+ 218 0004 00BF     		nop
+ 219 0006 BD46     		mov	sp, r7
+ 220              		.cfi_def_cfa_register 13
+ 221              		@ sp needed
+ 222 0008 80BC     		pop	{r7}
+ 223              		.cfi_restore 7
+ 224              		.cfi_def_cfa_offset 0
+ 225 000a 7047     		bx	lr
+ 226              		.cfi_endproc
+ 227              	.LFE418:
+ 228              		.size	HAL_IncTick, .-HAL_IncTick
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 5
+
+
+ 229              		.global	__aeabi_uldivmod
+ 230              		.section	.text.HAL_GetTick,"ax",%progbits
+ 231              		.align	1
+ 232              		.global	HAL_GetTick
+ 233              		.syntax unified
+ 234              		.thumb
+ 235              		.thumb_func
+ 236              		.type	HAL_GetTick, %function
+ 237              	HAL_GetTick:
+ 238              	.LFB419:
+ 239              		.loc 3 46 28
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 8
+ 242              		@ frame_needed = 1, uses_anonymous_args = 0
+ 243 0000 2DE9B04F 		push	{r4, r5, r7, r8, r9, r10, fp, lr}
+ 244              		.cfi_def_cfa_offset 32
+ 245              		.cfi_offset 4, -32
+ 246              		.cfi_offset 5, -28
+ 247              		.cfi_offset 7, -24
+ 248              		.cfi_offset 8, -20
+ 249              		.cfi_offset 9, -16
+ 250              		.cfi_offset 10, -12
+ 251              		.cfi_offset 11, -8
+ 252              		.cfi_offset 14, -4
+ 253 0004 82B0     		sub	sp, sp, #8
+ 254              		.cfi_def_cfa_offset 40
+ 255 0006 00AF     		add	r7, sp, #0
+ 256              		.cfi_def_cfa_register 7
+ 257              		.loc 3 47 12
+ 258 0008 FFF7FEFF 		bl	chVTGetSystemTimeX
+ 259 000c 0346     		mov	r3, r0
+ 260 000e 0022     		movs	r2, #0
+ 261 0010 9846     		mov	r8, r3
+ 262 0012 9146     		mov	r9, r2
+ 263 0014 4246     		mov	r2, r8
+ 264 0016 4B46     		mov	r3, r9
+ 265 0018 4FF00000 		mov	r0, #0
+ 266 001c 4FF00001 		mov	r1, #0
+ 267 0020 5901     		lsls	r1, r3, #5
+ 268 0022 41EAD261 		orr	r1, r1, r2, lsr #27
+ 269 0026 5001     		lsls	r0, r2, #5
+ 270 0028 0246     		mov	r2, r0
+ 271 002a 0B46     		mov	r3, r1
+ 272 002c B2EB0804 		subs	r4, r2, r8
+ 273 0030 63EB0905 		sbc	r5, r3, r9
+ 274 0034 4FF00002 		mov	r2, #0
+ 275 0038 4FF00003 		mov	r3, #0
+ 276 003c AB00     		lsls	r3, r5, #2
+ 277 003e 43EA9473 		orr	r3, r3, r4, lsr #30
+ 278 0042 A200     		lsls	r2, r4, #2
+ 279 0044 1446     		mov	r4, r2
+ 280 0046 1D46     		mov	r5, r3
+ 281 0048 14EB080A 		adds	r10, r4, r8
+ 282 004c 45EB090B 		adc	fp, r5, r9
+ 283 0050 4FF00002 		mov	r2, #0
+ 284 0054 4FF00003 		mov	r3, #0
+ 285 0058 4FEACB03 		lsl	r3, fp, #3
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 6
+
+
+ 286 005c 43EA5A73 		orr	r3, r3, r10, lsr #29
+ 287 0060 4FEACA02 		lsl	r2, r10, #3
+ 288 0064 9246     		mov	r10, r2
+ 289 0066 9B46     		mov	fp, r3
+ 290 0068 5246     		mov	r2, r10
+ 291 006a 5B46     		mov	r3, fp
+ 292 006c 42F20F71 		movw	r1, #9999
+ 293 0070 5118     		adds	r1, r2, r1
+ 294 0072 3960     		str	r1, [r7]
+ 295 0074 43F10003 		adc	r3, r3, #0
+ 296 0078 7B60     		str	r3, [r7, #4]
+ 297 007a 42F21072 		movw	r2, #10000
+ 298 007e 4FF00003 		mov	r3, #0
+ 299 0082 D7E90001 		ldrd	r0, [r7]
+ 300 0086 FFF7FEFF 		bl	__aeabi_uldivmod
+ 301 008a 0246     		mov	r2, r0
+ 302 008c 0B46     		mov	r3, r1
+ 303              		.loc 3 47 10
+ 304 008e 044B     		ldr	r3, .L14
+ 305 0090 1A60     		str	r2, [r3]
+ 306              		.loc 3 48 10
+ 307 0092 034B     		ldr	r3, .L14
+ 308 0094 1B68     		ldr	r3, [r3]
+ 309              		.loc 3 49 1
+ 310 0096 1846     		mov	r0, r3
+ 311 0098 0837     		adds	r7, r7, #8
+ 312              		.cfi_def_cfa_offset 32
+ 313 009a BD46     		mov	sp, r7
+ 314              		.cfi_def_cfa_register 13
+ 315              		@ sp needed
+ 316 009c BDE8B08F 		pop	{r4, r5, r7, r8, r9, r10, fp, pc}
+ 317              	.L15:
+ 318              		.align	2
+ 319              	.L14:
+ 320 00a0 00000000 		.word	uwTick
+ 321              		.cfi_endproc
+ 322              	.LFE419:
+ 323              		.size	HAL_GetTick, .-HAL_GetTick
+ 324              		.section	.text.HAL_Delay,"ax",%progbits
+ 325              		.align	1
+ 326              		.global	HAL_Delay
+ 327              		.syntax unified
+ 328              		.thumb
+ 329              		.thumb_func
+ 330              		.type	HAL_Delay, %function
+ 331              	HAL_Delay:
+ 332              	.LFB420:
+ 333              		.loc 3 51 32
+ 334              		.cfi_startproc
+ 335              		@ args = 0, pretend = 0, frame = 32
+ 336              		@ frame_needed = 1, uses_anonymous_args = 0
+ 337 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 338              		.cfi_def_cfa_offset 36
+ 339              		.cfi_offset 4, -36
+ 340              		.cfi_offset 5, -32
+ 341              		.cfi_offset 6, -28
+ 342              		.cfi_offset 7, -24
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 7
+
+
+ 343              		.cfi_offset 8, -20
+ 344              		.cfi_offset 9, -16
+ 345              		.cfi_offset 10, -12
+ 346              		.cfi_offset 11, -8
+ 347              		.cfi_offset 14, -4
+ 348 0004 89B0     		sub	sp, sp, #36
+ 349              		.cfi_def_cfa_offset 72
+ 350 0006 00AF     		add	r7, sp, #0
+ 351              		.cfi_def_cfa_register 7
+ 352 0008 F861     		str	r0, [r7, #28]
+ 353              		.loc 3 52 6
+ 354 000a F969     		ldr	r1, [r7, #28]
+ 355 000c 0029     		cmp	r1, #0
+ 356 000e 5DD0     		beq	.L19
+ 357              		.loc 3 55 3
+ 358 0010 F969     		ldr	r1, [r7, #28]
+ 359 0012 0020     		movs	r0, #0
+ 360 0014 8846     		mov	r8, r1
+ 361 0016 8146     		mov	r9, r0
+ 362 0018 C7E90289 		strd	r8, [r7, #8]
+ 363 001c 4FF00000 		mov	r0, #0
+ 364 0020 4FF00001 		mov	r1, #0
+ 365 0024 C7E90401 		strd	r0, [r7, #16]
+ 366 0028 F968     		ldr	r1, [r7, #12]
+ 367 002a 8E00     		lsls	r6, r1, #2
+ 368 002c 7E61     		str	r6, [r7, #20]
+ 369 002e 7969     		ldr	r1, [r7, #20]
+ 370 0030 B868     		ldr	r0, [r7, #8]
+ 371 0032 41EA9071 		orr	r1, r1, r0, lsr #30
+ 372 0036 7961     		str	r1, [r7, #20]
+ 373 0038 B968     		ldr	r1, [r7, #8]
+ 374 003a 8900     		lsls	r1, r1, #2
+ 375 003c 3961     		str	r1, [r7, #16]
+ 376 003e D7E90401 		ldrd	r0, [r7, #16]
+ 377 0042 0646     		mov	r6, r0
+ 378 0044 16EB0804 		adds	r4, r6, r8
+ 379 0048 41EB0905 		adc	r5, r1, r9
+ 380 004c 4FF00000 		mov	r0, #0
+ 381 0050 4FF00001 		mov	r1, #0
+ 382 0054 E900     		lsls	r1, r5, #3
+ 383 0056 41EA5471 		orr	r1, r1, r4, lsr #29
+ 384 005a E000     		lsls	r0, r4, #3
+ 385 005c 0446     		mov	r4, r0
+ 386 005e 0D46     		mov	r5, r1
+ 387 0060 B4EB0802 		subs	r2, r4, r8
+ 388 0064 65EB0903 		sbc	r3, r5, r9
+ 389 0068 4FF00000 		mov	r0, #0
+ 390 006c 4FF00001 		mov	r1, #0
+ 391 0070 1901     		lsls	r1, r3, #4
+ 392 0072 41EA1271 		orr	r1, r1, r2, lsr #28
+ 393 0076 1001     		lsls	r0, r2, #4
+ 394 0078 0246     		mov	r2, r0
+ 395 007a 0B46     		mov	r3, r1
+ 396 007c 12EB080A 		adds	r10, r2, r8
+ 397 0080 43EB090B 		adc	fp, r3, r9
+ 398 0084 4FF00002 		mov	r2, #0
+ 399 0088 4FF00003 		mov	r3, #0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 8
+
+
+ 400 008c 4FEA0B13 		lsl	r3, fp, #4
+ 401 0090 43EA1A73 		orr	r3, r3, r10, lsr #28
+ 402 0094 4FEA0A12 		lsl	r2, r10, #4
+ 403 0098 9246     		mov	r10, r2
+ 404 009a 9B46     		mov	fp, r3
+ 405 009c 5246     		mov	r2, r10
+ 406 009e 5B46     		mov	r3, fp
+ 407 00a0 40F2E731 		movw	r1, #999
+ 408 00a4 5118     		adds	r1, r2, r1
+ 409 00a6 3960     		str	r1, [r7]
+ 410 00a8 43F10003 		adc	r3, r3, #0
+ 411 00ac 7B60     		str	r3, [r7, #4]
+ 412 00ae 4FF47A72 		mov	r2, #1000
+ 413 00b2 4FF00003 		mov	r3, #0
+ 414 00b6 D7E90001 		ldrd	r0, [r7]
+ 415 00ba FFF7FEFF 		bl	__aeabi_uldivmod
+ 416 00be 0246     		mov	r2, r0
+ 417 00c0 0B46     		mov	r3, r1
+ 418 00c2 1346     		mov	r3, r2
+ 419 00c4 1846     		mov	r0, r3
+ 420 00c6 FFF7FEFF 		bl	chThdSleep
+ 421 00ca 00E0     		b	.L16
+ 422              	.L19:
+ 423              		.loc 3 53 5
+ 424 00cc 00BF     		nop
+ 425              	.L16:
+ 426              		.loc 3 56 1
+ 427 00ce 2437     		adds	r7, r7, #36
+ 428              		.cfi_def_cfa_offset 36
+ 429 00d0 BD46     		mov	sp, r7
+ 430              		.cfi_def_cfa_register 13
+ 431              		@ sp needed
+ 432 00d2 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 433              		.cfi_endproc
+ 434              	.LFE420:
+ 435              		.size	HAL_Delay, .-HAL_Delay
+ 436              		.section	.text.HAL_SetTickFreq,"ax",%progbits
+ 437              		.align	1
+ 438              		.global	HAL_SetTickFreq
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 442              		.type	HAL_SetTickFreq, %function
+ 443              	HAL_SetTickFreq:
+ 444              	.LFB421:
+ 445              		.loc 3 58 61
+ 446              		.cfi_startproc
+ 447              		@ args = 0, pretend = 0, frame = 8
+ 448              		@ frame_needed = 1, uses_anonymous_args = 0
+ 449              		@ link register save eliminated.
+ 450 0000 80B4     		push	{r7}
+ 451              		.cfi_def_cfa_offset 4
+ 452              		.cfi_offset 7, -4
+ 453 0002 83B0     		sub	sp, sp, #12
+ 454              		.cfi_def_cfa_offset 16
+ 455 0004 00AF     		add	r7, sp, #0
+ 456              		.cfi_def_cfa_register 7
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 9
+
+
+ 457 0006 0346     		mov	r3, r0
+ 458 0008 FB71     		strb	r3, [r7, #7]
+ 459              		.loc 3 59 14
+ 460 000a 044A     		ldr	r2, .L22
+ 461 000c FB79     		ldrb	r3, [r7, #7]
+ 462 000e 1370     		strb	r3, [r2]
+ 463              		.loc 3 60 10
+ 464 0010 0023     		movs	r3, #0
+ 465              		.loc 3 61 1
+ 466 0012 1846     		mov	r0, r3
+ 467 0014 0C37     		adds	r7, r7, #12
+ 468              		.cfi_def_cfa_offset 4
+ 469 0016 BD46     		mov	sp, r7
+ 470              		.cfi_def_cfa_register 13
+ 471              		@ sp needed
+ 472 0018 80BC     		pop	{r7}
+ 473              		.cfi_restore 7
+ 474              		.cfi_def_cfa_offset 0
+ 475 001a 7047     		bx	lr
+ 476              	.L23:
+ 477              		.align	2
+ 478              	.L22:
+ 479 001c 00000000 		.word	uwTickFreq
+ 480              		.cfi_endproc
+ 481              	.LFE421:
+ 482              		.size	HAL_SetTickFreq, .-HAL_SetTickFreq
+ 483              		.section	.text.HAL_GetTickFreq,"ax",%progbits
+ 484              		.align	1
+ 485              		.global	HAL_GetTickFreq
+ 486              		.syntax unified
+ 487              		.thumb
+ 488              		.thumb_func
+ 489              		.type	HAL_GetTickFreq, %function
+ 490              	HAL_GetTickFreq:
+ 491              	.LFB422:
+ 492              		.loc 3 63 43
+ 493              		.cfi_startproc
+ 494              		@ args = 0, pretend = 0, frame = 0
+ 495              		@ frame_needed = 1, uses_anonymous_args = 0
+ 496              		@ link register save eliminated.
+ 497 0000 80B4     		push	{r7}
+ 498              		.cfi_def_cfa_offset 4
+ 499              		.cfi_offset 7, -4
+ 500 0002 00AF     		add	r7, sp, #0
+ 501              		.cfi_def_cfa_register 7
+ 502              		.loc 3 64 10
+ 503 0004 024B     		ldr	r3, .L26
+ 504 0006 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 505              		.loc 3 65 1
+ 506 0008 1846     		mov	r0, r3
+ 507 000a BD46     		mov	sp, r7
+ 508              		.cfi_def_cfa_register 13
+ 509              		@ sp needed
+ 510 000c 80BC     		pop	{r7}
+ 511              		.cfi_restore 7
+ 512              		.cfi_def_cfa_offset 0
+ 513 000e 7047     		bx	lr
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 10
+
+
+ 514              	.L27:
+ 515              		.align	2
+ 516              	.L26:
+ 517 0010 00000000 		.word	uwTickFreq
+ 518              		.cfi_endproc
+ 519              	.LFE422:
+ 520              		.size	HAL_GetTickFreq, .-HAL_GetTickFreq
+ 521              		.section	.text.HAL_GetTickPrio,"ax",%progbits
+ 522              		.align	1
+ 523              		.global	HAL_GetTickPrio
+ 524              		.syntax unified
+ 525              		.thumb
+ 526              		.thumb_func
+ 527              		.type	HAL_GetTickPrio, %function
+ 528              	HAL_GetTickPrio:
+ 529              	.LFB423:
+ 530              		.loc 3 67 32
+ 531              		.cfi_startproc
+ 532              		@ args = 0, pretend = 0, frame = 0
+ 533              		@ frame_needed = 1, uses_anonymous_args = 0
+ 534              		@ link register save eliminated.
+ 535 0000 80B4     		push	{r7}
+ 536              		.cfi_def_cfa_offset 4
+ 537              		.cfi_offset 7, -4
+ 538 0002 00AF     		add	r7, sp, #0
+ 539              		.cfi_def_cfa_register 7
+ 540              		.loc 3 68 10
+ 541 0004 024B     		ldr	r3, .L30
+ 542 0006 1B68     		ldr	r3, [r3]
+ 543              		.loc 3 69 1
+ 544 0008 1846     		mov	r0, r3
+ 545 000a BD46     		mov	sp, r7
+ 546              		.cfi_def_cfa_register 13
+ 547              		@ sp needed
+ 548 000c 80BC     		pop	{r7}
+ 549              		.cfi_restore 7
+ 550              		.cfi_def_cfa_offset 0
+ 551 000e 7047     		bx	lr
+ 552              	.L31:
+ 553              		.align	2
+ 554              	.L30:
+ 555 0010 00000000 		.word	uwTickPrio
+ 556              		.cfi_endproc
+ 557              	.LFE423:
+ 558              		.size	HAL_GetTickPrio, .-HAL_GetTickPrio
+ 559              		.section	.text.HAL_GetHalVersion,"ax",%progbits
+ 560              		.align	1
+ 561              		.global	HAL_GetHalVersion
+ 562              		.syntax unified
+ 563              		.thumb
+ 564              		.thumb_func
+ 565              		.type	HAL_GetHalVersion, %function
+ 566              	HAL_GetHalVersion:
+ 567              	.LFB424:
+ 568              		.loc 3 71 34
+ 569              		.cfi_startproc
+ 570              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 11
+
+
+ 571              		@ frame_needed = 1, uses_anonymous_args = 0
+ 572              		@ link register save eliminated.
+ 573 0000 80B4     		push	{r7}
+ 574              		.cfi_def_cfa_offset 4
+ 575              		.cfi_offset 7, -4
+ 576 0002 00AF     		add	r7, sp, #0
+ 577              		.cfi_def_cfa_register 7
+ 578              		.loc 3 72 10
+ 579 0004 024B     		ldr	r3, .L34
+ 580              		.loc 3 73 1
+ 581 0006 1846     		mov	r0, r3
+ 582 0008 BD46     		mov	sp, r7
+ 583              		.cfi_def_cfa_register 13
+ 584              		@ sp needed
+ 585 000a 80BC     		pop	{r7}
+ 586              		.cfi_restore 7
+ 587              		.cfi_def_cfa_offset 0
+ 588 000c 7047     		bx	lr
+ 589              	.L35:
+ 590 000e 00BF     		.align	2
+ 591              	.L34:
+ 592 0010 00050B01 		.word	17499392
+ 593              		.cfi_endproc
+ 594              	.LFE424:
+ 595              		.size	HAL_GetHalVersion, .-HAL_GetHalVersion
+ 596              		.section	.text.HAL_GetREVID,"ax",%progbits
+ 597              		.align	1
+ 598              		.global	HAL_GetREVID
+ 599              		.syntax unified
+ 600              		.thumb
+ 601              		.thumb_func
+ 602              		.type	HAL_GetREVID, %function
+ 603              	HAL_GetREVID:
+ 604              	.LFB425:
+ 605              		.loc 3 75 29
+ 606              		.cfi_startproc
+ 607              		@ args = 0, pretend = 0, frame = 0
+ 608              		@ frame_needed = 1, uses_anonymous_args = 0
+ 609              		@ link register save eliminated.
+ 610 0000 80B4     		push	{r7}
+ 611              		.cfi_def_cfa_offset 4
+ 612              		.cfi_offset 7, -4
+ 613 0002 00AF     		add	r7, sp, #0
+ 614              		.cfi_def_cfa_register 7
+ 615              		.loc 3 76 18
+ 616 0004 034B     		ldr	r3, .L38
+ 617 0006 1B68     		ldr	r3, [r3]
+ 618              		.loc 3 76 28
+ 619 0008 1B0C     		lsrs	r3, r3, #16
+ 620              		.loc 3 77 1
+ 621 000a 1846     		mov	r0, r3
+ 622 000c BD46     		mov	sp, r7
+ 623              		.cfi_def_cfa_register 13
+ 624              		@ sp needed
+ 625 000e 80BC     		pop	{r7}
+ 626              		.cfi_restore 7
+ 627              		.cfi_def_cfa_offset 0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 12
+
+
+ 628 0010 7047     		bx	lr
+ 629              	.L39:
+ 630 0012 00BF     		.align	2
+ 631              	.L38:
+ 632 0014 0010005C 		.word	1543507968
+ 633              		.cfi_endproc
+ 634              	.LFE425:
+ 635              		.size	HAL_GetREVID, .-HAL_GetREVID
+ 636              		.section	.text.HAL_GetDEVID,"ax",%progbits
+ 637              		.align	1
+ 638              		.global	HAL_GetDEVID
+ 639              		.syntax unified
+ 640              		.thumb
+ 641              		.thumb_func
+ 642              		.type	HAL_GetDEVID, %function
+ 643              	HAL_GetDEVID:
+ 644              	.LFB426:
+ 645              		.loc 3 79 29
+ 646              		.cfi_startproc
+ 647              		@ args = 0, pretend = 0, frame = 0
+ 648              		@ frame_needed = 1, uses_anonymous_args = 0
+ 649              		@ link register save eliminated.
+ 650 0000 80B4     		push	{r7}
+ 651              		.cfi_def_cfa_offset 4
+ 652              		.cfi_offset 7, -4
+ 653 0002 00AF     		add	r7, sp, #0
+ 654              		.cfi_def_cfa_register 7
+ 655              		.loc 3 80 17
+ 656 0004 034B     		ldr	r3, .L42
+ 657 0006 1B68     		ldr	r3, [r3]
+ 658              		.loc 3 80 26
+ 659 0008 C3F30B03 		ubfx	r3, r3, #0, #12
+ 660              		.loc 3 81 1
+ 661 000c 1846     		mov	r0, r3
+ 662 000e BD46     		mov	sp, r7
+ 663              		.cfi_def_cfa_register 13
+ 664              		@ sp needed
+ 665 0010 80BC     		pop	{r7}
+ 666              		.cfi_restore 7
+ 667              		.cfi_def_cfa_offset 0
+ 668 0012 7047     		bx	lr
+ 669              	.L43:
+ 670              		.align	2
+ 671              	.L42:
+ 672 0014 0010005C 		.word	1543507968
+ 673              		.cfi_endproc
+ 674              	.LFE426:
+ 675              		.size	HAL_GetDEVID, .-HAL_GetDEVID
+ 676              		.section	.text.HAL_GetUIDw0,"ax",%progbits
+ 677              		.align	1
+ 678              		.global	HAL_GetUIDw0
+ 679              		.syntax unified
+ 680              		.thumb
+ 681              		.thumb_func
+ 682              		.type	HAL_GetUIDw0, %function
+ 683              	HAL_GetUIDw0:
+ 684              	.LFB427:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 13
+
+
+ 685              		.loc 3 83 29
+ 686              		.cfi_startproc
+ 687              		@ args = 0, pretend = 0, frame = 0
+ 688              		@ frame_needed = 1, uses_anonymous_args = 0
+ 689              		@ link register save eliminated.
+ 690 0000 80B4     		push	{r7}
+ 691              		.cfi_def_cfa_offset 4
+ 692              		.cfi_offset 7, -4
+ 693 0002 00AF     		add	r7, sp, #0
+ 694              		.cfi_def_cfa_register 7
+ 695              		.loc 3 84 10
+ 696 0004 024B     		ldr	r3, .L46
+ 697 0006 1B68     		ldr	r3, [r3]
+ 698              		.loc 3 85 1
+ 699 0008 1846     		mov	r0, r3
+ 700 000a BD46     		mov	sp, r7
+ 701              		.cfi_def_cfa_register 13
+ 702              		@ sp needed
+ 703 000c 80BC     		pop	{r7}
+ 704              		.cfi_restore 7
+ 705              		.cfi_def_cfa_offset 0
+ 706 000e 7047     		bx	lr
+ 707              	.L47:
+ 708              		.align	2
+ 709              	.L46:
+ 710 0010 00E8F11F 		.word	535947264
+ 711              		.cfi_endproc
+ 712              	.LFE427:
+ 713              		.size	HAL_GetUIDw0, .-HAL_GetUIDw0
+ 714              		.section	.text.HAL_GetUIDw1,"ax",%progbits
+ 715              		.align	1
+ 716              		.global	HAL_GetUIDw1
+ 717              		.syntax unified
+ 718              		.thumb
+ 719              		.thumb_func
+ 720              		.type	HAL_GetUIDw1, %function
+ 721              	HAL_GetUIDw1:
+ 722              	.LFB428:
+ 723              		.loc 3 87 29
+ 724              		.cfi_startproc
+ 725              		@ args = 0, pretend = 0, frame = 0
+ 726              		@ frame_needed = 1, uses_anonymous_args = 0
+ 727              		@ link register save eliminated.
+ 728 0000 80B4     		push	{r7}
+ 729              		.cfi_def_cfa_offset 4
+ 730              		.cfi_offset 7, -4
+ 731 0002 00AF     		add	r7, sp, #0
+ 732              		.cfi_def_cfa_register 7
+ 733              		.loc 3 88 10
+ 734 0004 024B     		ldr	r3, .L50
+ 735 0006 1B68     		ldr	r3, [r3]
+ 736              		.loc 3 89 1
+ 737 0008 1846     		mov	r0, r3
+ 738 000a BD46     		mov	sp, r7
+ 739              		.cfi_def_cfa_register 13
+ 740              		@ sp needed
+ 741 000c 80BC     		pop	{r7}
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 14
+
+
+ 742              		.cfi_restore 7
+ 743              		.cfi_def_cfa_offset 0
+ 744 000e 7047     		bx	lr
+ 745              	.L51:
+ 746              		.align	2
+ 747              	.L50:
+ 748 0010 04E8F11F 		.word	535947268
+ 749              		.cfi_endproc
+ 750              	.LFE428:
+ 751              		.size	HAL_GetUIDw1, .-HAL_GetUIDw1
+ 752              		.section	.text.HAL_GetUIDw2,"ax",%progbits
+ 753              		.align	1
+ 754              		.global	HAL_GetUIDw2
+ 755              		.syntax unified
+ 756              		.thumb
+ 757              		.thumb_func
+ 758              		.type	HAL_GetUIDw2, %function
+ 759              	HAL_GetUIDw2:
+ 760              	.LFB429:
+ 761              		.loc 3 91 29
+ 762              		.cfi_startproc
+ 763              		@ args = 0, pretend = 0, frame = 0
+ 764              		@ frame_needed = 1, uses_anonymous_args = 0
+ 765              		@ link register save eliminated.
+ 766 0000 80B4     		push	{r7}
+ 767              		.cfi_def_cfa_offset 4
+ 768              		.cfi_offset 7, -4
+ 769 0002 00AF     		add	r7, sp, #0
+ 770              		.cfi_def_cfa_register 7
+ 771              		.loc 3 92 10
+ 772 0004 024B     		ldr	r3, .L54
+ 773 0006 1B68     		ldr	r3, [r3]
+ 774              		.loc 3 93 1
+ 775 0008 1846     		mov	r0, r3
+ 776 000a BD46     		mov	sp, r7
+ 777              		.cfi_def_cfa_register 13
+ 778              		@ sp needed
+ 779 000c 80BC     		pop	{r7}
+ 780              		.cfi_restore 7
+ 781              		.cfi_def_cfa_offset 0
+ 782 000e 7047     		bx	lr
+ 783              	.L55:
+ 784              		.align	2
+ 785              	.L54:
+ 786 0010 08E8F11F 		.word	535947272
+ 787              		.cfi_endproc
+ 788              	.LFE429:
+ 789              		.size	HAL_GetUIDw2, .-HAL_GetUIDw2
+ 790              		.section	.text.HAL_RCCEx_GetPeriphCLKFreq,"ax",%progbits
+ 791              		.align	1
+ 792              		.global	HAL_RCCEx_GetPeriphCLKFreq
+ 793              		.syntax unified
+ 794              		.thumb
+ 795              		.thumb_func
+ 796              		.type	HAL_RCCEx_GetPeriphCLKFreq, %function
+ 797              	HAL_RCCEx_GetPeriphCLKFreq:
+ 798              	.LFB430:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 15
+
+
+ 799              		.loc 3 95 57
+ 800              		.cfi_startproc
+ 801              		@ args = 0, pretend = 0, frame = 8
+ 802              		@ frame_needed = 1, uses_anonymous_args = 0
+ 803              		@ link register save eliminated.
+ 804 0000 80B4     		push	{r7}
+ 805              		.cfi_def_cfa_offset 4
+ 806              		.cfi_offset 7, -4
+ 807 0002 83B0     		sub	sp, sp, #12
+ 808              		.cfi_def_cfa_offset 16
+ 809 0004 00AF     		add	r7, sp, #0
+ 810              		.cfi_def_cfa_register 7
+ 811 0006 C7E90001 		strd	r0, [r7]
+ 812              		.loc 3 96 3
+ 813 000a D7E90023 		ldrd	r2, [r7]
+ 814 000e A2F50061 		sub	r1, r2, #2048
+ 815 0012 0B43     		orrs	r3, r3, r1
+ 816 0014 28D0     		beq	.L57
+ 817 0016 D7E90023 		ldrd	r2, [r7]
+ 818 001a 40F60101 		movw	r1, #2049
+ 819 001e 8A42     		cmp	r2, r1
+ 820 0020 73F10003 		sbcs	r3, r3, #0
+ 821 0024 22D2     		bcs	.L58
+ 822 0026 D7E90023 		ldrd	r2, [r7]
+ 823 002a A2F58061 		sub	r1, r2, #1024
+ 824 002e 0B43     		orrs	r3, r3, r1
+ 825 0030 18D0     		beq	.L59
+ 826 0032 D7E90023 		ldrd	r2, [r7]
+ 827 0036 40F20141 		movw	r1, #1025
+ 828 003a 8A42     		cmp	r2, r1
+ 829 003c 73F10003 		sbcs	r3, r3, #0
+ 830 0040 14D2     		bcs	.L58
+ 831 0042 D7E90023 		ldrd	r2, [r7]
+ 832 0046 A2F58071 		sub	r1, r2, #256
+ 833 004a 0B43     		orrs	r3, r3, r1
+ 834 004c 06D0     		beq	.L60
+ 835 004e D7E90023 		ldrd	r2, [r7]
+ 836 0052 A2F50071 		sub	r1, r2, #512
+ 837 0056 0B43     		orrs	r3, r3, r1
+ 838 0058 02D0     		beq	.L61
+ 839 005a 07E0     		b	.L58
+ 840              	.L60:
+ 841              		.loc 3 98 14
+ 842 005c 064B     		ldr	r3, .L63
+ 843 005e 06E0     		b	.L62
+ 844              	.L61:
+ 845              		.loc 3 101 14
+ 846 0060 064B     		ldr	r3, .L63+4
+ 847 0062 04E0     		b	.L62
+ 848              	.L59:
+ 849              		.loc 3 117 14
+ 850 0064 044B     		ldr	r3, .L63
+ 851 0066 02E0     		b	.L62
+ 852              	.L57:
+ 853              		.loc 3 121 14
+ 854 0068 034B     		ldr	r3, .L63
+ 855 006a 00E0     		b	.L62
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 16
+
+
+ 856              	.L58:
+ 857              		.loc 3 124 14
+ 858 006c 0023     		movs	r3, #0
+ 859              	.L62:
+ 860              		.loc 3 126 1
+ 861 006e 1846     		mov	r0, r3
+ 862 0070 0C37     		adds	r7, r7, #12
+ 863              		.cfi_def_cfa_offset 4
+ 864 0072 BD46     		mov	sp, r7
+ 865              		.cfi_def_cfa_register 13
+ 866              		@ sp needed
+ 867 0074 80BC     		pop	{r7}
+ 868              		.cfi_restore 7
+ 869              		.cfi_def_cfa_offset 0
+ 870 0076 7047     		bx	lr
+ 871              	.L64:
+ 872              		.align	2
+ 873              	.L63:
+ 874 0078 00B4C404 		.word	80000000
+ 875 007c 40AEEB02 		.word	49000000
+ 876              		.cfi_endproc
+ 877              	.LFE430:
+ 878              		.size	HAL_RCCEx_GetPeriphCLKFreq, .-HAL_RCCEx_GetPeriphCLKFreq
+ 879              		.text
+ 880              	.Letext0:
+ 881              		.file 4 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\mac
+ 882              		.file 5 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\sys
+ 883              		.file 6 "../../../os/rt/include/chtime.h"
+ 884              		.file 7 "../../../os/common/ext/ST/STM32H7xx/stm32h743xx.h"
+ 885              		.file 8 "drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal_def.h"
+ 886              		.file 9 "drivers/stm32h7xx-hal-driver/Inc/stm32h7xx_hal.h"
+ 887              		.file 10 "../../../os/rt/include/chthreads.h"
+ 888              		.section	.debug_info,"",%progbits
+ 889              	.Ldebug_info0:
+ 890 0000 40040000 		.4byte	0x440
+ 891 0004 0500     		.2byte	0x5
+ 892 0006 01       		.byte	0x1
+ 893 0007 04       		.byte	0x4
+ 894 0008 00000000 		.4byte	.Ldebug_abbrev0
+ 895 000c 0C       		.uleb128 0xc
+ 896 000d 2E000000 		.4byte	.LASF67
+ 897 0011 1D       		.byte	0x1d
+ 898 0012 79030000 		.4byte	.LASF68
+ 899 0016 FB010000 		.4byte	.LASF69
+ 900 001a 0C000000 		.4byte	.LLRL0
+ 901 001e 00000000 		.4byte	0
+ 902 0022 00000000 		.4byte	.Ldebug_line0
+ 903 0026 0D       		.uleb128 0xd
+ 904 0027 04       		.byte	0x4
+ 905 0028 05       		.byte	0x5
+ 906 0029 696E7400 		.ascii	"int\000"
+ 907 002d 01       		.uleb128 0x1
+ 908 002e 04       		.byte	0x4
+ 909 002f 07       		.byte	0x7
+ 910 0030 B7020000 		.4byte	.LASF0
+ 911 0034 01       		.uleb128 0x1
+ 912 0035 08       		.byte	0x8
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 17
+
+
+ 913 0036 05       		.byte	0x5
+ 914 0037 97010000 		.4byte	.LASF1
+ 915 003b 01       		.uleb128 0x1
+ 916 003c 08       		.byte	0x8
+ 917 003d 04       		.byte	0x4
+ 918 003e 27010000 		.4byte	.LASF2
+ 919 0042 01       		.uleb128 0x1
+ 920 0043 01       		.byte	0x1
+ 921 0044 06       		.byte	0x6
+ 922 0045 8D020000 		.4byte	.LASF3
+ 923 0049 01       		.uleb128 0x1
+ 924 004a 01       		.byte	0x1
+ 925 004b 08       		.byte	0x8
+ 926 004c 72020000 		.4byte	.LASF4
+ 927 0050 01       		.uleb128 0x1
+ 928 0051 02       		.byte	0x2
+ 929 0052 05       		.byte	0x5
+ 930 0053 C2000000 		.4byte	.LASF5
+ 931 0057 01       		.uleb128 0x1
+ 932 0058 02       		.byte	0x2
+ 933 0059 07       		.byte	0x7
+ 934 005a 03030000 		.4byte	.LASF6
+ 935 005e 01       		.uleb128 0x1
+ 936 005f 04       		.byte	0x4
+ 937 0060 05       		.byte	0x5
+ 938 0061 D7010000 		.4byte	.LASF7
+ 939 0065 03       		.uleb128 0x3
+ 940 0066 0C040000 		.4byte	.LASF9
+ 941 006a 04       		.byte	0x4
+ 942 006b 4F       		.byte	0x4f
+ 943 006c 19       		.byte	0x19
+ 944 006d 71000000 		.4byte	0x71
+ 945 0071 01       		.uleb128 0x1
+ 946 0072 04       		.byte	0x4
+ 947 0073 07       		.byte	0x7
+ 948 0074 C9030000 		.4byte	.LASF8
+ 949 0078 03       		.uleb128 0x3
+ 950 0079 6E030000 		.4byte	.LASF10
+ 951 007d 04       		.byte	0x4
+ 952 007e 69       		.byte	0x69
+ 953 007f 19       		.byte	0x19
+ 954 0080 84000000 		.4byte	0x84
+ 955 0084 01       		.uleb128 0x1
+ 956 0085 08       		.byte	0x8
+ 957 0086 07       		.byte	0x7
+ 958 0087 A5010000 		.4byte	.LASF11
+ 959 008b 03       		.uleb128 0x3
+ 960 008c A3020000 		.4byte	.LASF12
+ 961 0090 05       		.byte	0x5
+ 962 0091 30       		.byte	0x30
+ 963 0092 14       		.byte	0x14
+ 964 0093 65000000 		.4byte	0x65
+ 965 0097 0E       		.uleb128 0xe
+ 966 0098 8B000000 		.4byte	0x8b
+ 967 009c 03       		.uleb128 0x3
+ 968 009d B9000000 		.4byte	.LASF13
+ 969 00a1 05       		.byte	0x5
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 18
+
+
+ 970 00a2 3C       		.byte	0x3c
+ 971 00a3 14       		.byte	0x14
+ 972 00a4 78000000 		.4byte	0x78
+ 973 00a8 01       		.uleb128 0x1
+ 974 00a9 01       		.byte	0x1
+ 975 00aa 08       		.byte	0x8
+ 976 00ab 2D030000 		.4byte	.LASF14
+ 977 00af 03       		.uleb128 0x3
+ 978 00b0 23030000 		.4byte	.LASF15
+ 979 00b4 06       		.byte	0x6
+ 980 00b5 6D       		.byte	0x6d
+ 981 00b6 12       		.byte	0x12
+ 982 00b7 8B000000 		.4byte	0x8b
+ 983 00bb 03       		.uleb128 0x3
+ 984 00bc E2020000 		.4byte	.LASF16
+ 985 00c0 06       		.byte	0x6
+ 986 00c1 79       		.byte	0x79
+ 987 00c2 12       		.byte	0x12
+ 988 00c3 8B000000 		.4byte	0x8b
+ 989 00c7 03       		.uleb128 0x3
+ 990 00c8 CC000000 		.4byte	.LASF17
+ 991 00cc 06       		.byte	0x6
+ 992 00cd 8E       		.byte	0x8e
+ 993 00ce 12       		.byte	0x12
+ 994 00cf 8B000000 		.4byte	0x8b
+ 995 00d3 03       		.uleb128 0x3
+ 996 00d4 1E040000 		.4byte	.LASF18
+ 997 00d8 06       		.byte	0x6
+ 998 00d9 9B       		.byte	0x9b
+ 999 00da 12       		.byte	0x12
+ 1000 00db 9C000000 		.4byte	0x9c
+ 1001 00df 0F       		.uleb128 0xf
+ 1002 00e0 58       		.byte	0x58
+ 1003 00e1 07       		.byte	0x7
+ 1004 00e2 0A02     		.2byte	0x20a
+ 1005 00e4 09       		.byte	0x9
+ 1006 00e5 86010000 		.4byte	0x186
+ 1007 00e9 02       		.uleb128 0x2
+ 1008 00ea 17040000 		.4byte	.LASF19
+ 1009 00ee 0C02     		.2byte	0x20c
+ 1010 00f0 11       		.byte	0x11
+ 1011 00f1 97000000 		.4byte	0x97
+ 1012 00f5 00       		.byte	0
+ 1013 00f6 10       		.uleb128 0x10
+ 1014 00f7 435200   		.ascii	"CR\000"
+ 1015 00fa 07       		.byte	0x7
+ 1016 00fb 0D02     		.2byte	0x20d
+ 1017 00fd 11       		.byte	0x11
+ 1018 00fe 97000000 		.4byte	0x97
+ 1019 0102 04       		.byte	0x4
+ 1020 0103 02       		.uleb128 0x2
+ 1021 0104 B5030000 		.4byte	.LASF20
+ 1022 0108 0E02     		.2byte	0x20e
+ 1023 010a 0C       		.byte	0xc
+ 1024 010b 86010000 		.4byte	0x186
+ 1025 010f 08       		.byte	0x8
+ 1026 0110 02       		.uleb128 0x2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 19
+
+
+ 1027 0111 99030000 		.4byte	.LASF21
+ 1028 0115 0F02     		.2byte	0x20f
+ 1029 0117 11       		.byte	0x11
+ 1030 0118 97000000 		.4byte	0x97
+ 1031 011c 34       		.byte	0x34
+ 1032 011d 02       		.uleb128 0x2
+ 1033 011e BF030000 		.4byte	.LASF22
+ 1034 0122 1002     		.2byte	0x210
+ 1035 0124 0C       		.byte	0xc
+ 1036 0125 8B000000 		.4byte	0x8b
+ 1037 0129 38       		.byte	0x38
+ 1038 012a 02       		.uleb128 0x2
+ 1039 012b 69020000 		.4byte	.LASF23
+ 1040 012f 1102     		.2byte	0x211
+ 1041 0131 11       		.byte	0x11
+ 1042 0132 97000000 		.4byte	0x97
+ 1043 0136 3C       		.byte	0x3c
+ 1044 0137 02       		.uleb128 0x2
+ 1045 0138 73010000 		.4byte	.LASF24
+ 1046 013c 1202     		.2byte	0x212
+ 1047 013e 0C       		.byte	0xc
+ 1048 013f 8B000000 		.4byte	0x8b
+ 1049 0143 40       		.byte	0x40
+ 1050 0144 02       		.uleb128 0x2
+ 1051 0145 E0010000 		.4byte	.LASF25
+ 1052 0149 1302     		.2byte	0x213
+ 1053 014b 11       		.byte	0x11
+ 1054 014c 97000000 		.4byte	0x97
+ 1055 0150 44       		.byte	0x44
+ 1056 0151 02       		.uleb128 0x2
+ 1057 0152 DB030000 		.4byte	.LASF26
+ 1058 0156 1402     		.2byte	0x214
+ 1059 0158 0C       		.byte	0xc
+ 1060 0159 8B000000 		.4byte	0x8b
+ 1061 015d 48       		.byte	0x48
+ 1062 015e 02       		.uleb128 0x2
+ 1063 015f 61020000 		.4byte	.LASF27
+ 1064 0163 1502     		.2byte	0x215
+ 1065 0165 11       		.byte	0x11
+ 1066 0166 97000000 		.4byte	0x97
+ 1067 016a 4C       		.byte	0x4c
+ 1068 016b 02       		.uleb128 0x2
+ 1069 016c E5030000 		.4byte	.LASF28
+ 1070 0170 1602     		.2byte	0x216
+ 1071 0172 0C       		.byte	0xc
+ 1072 0173 8B000000 		.4byte	0x8b
+ 1073 0177 50       		.byte	0x50
+ 1074 0178 02       		.uleb128 0x2
+ 1075 0179 5A040000 		.4byte	.LASF29
+ 1076 017d 1702     		.2byte	0x217
+ 1077 017f 11       		.byte	0x11
+ 1078 0180 97000000 		.4byte	0x97
+ 1079 0184 54       		.byte	0x54
+ 1080 0185 00       		.byte	0
+ 1081 0186 11       		.uleb128 0x11
+ 1082 0187 8B000000 		.4byte	0x8b
+ 1083 018b 96010000 		.4byte	0x196
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 20
+
+
+ 1084 018f 12       		.uleb128 0x12
+ 1085 0190 2D000000 		.4byte	0x2d
+ 1086 0194 0A       		.byte	0xa
+ 1087 0195 00       		.byte	0
+ 1088 0196 13       		.uleb128 0x13
+ 1089 0197 32030000 		.4byte	.LASF30
+ 1090 019b 07       		.byte	0x7
+ 1091 019c 1802     		.2byte	0x218
+ 1092 019e 02       		.byte	0x2
+ 1093 019f DF000000 		.4byte	0xdf
+ 1094 01a3 01       		.uleb128 0x1
+ 1095 01a4 01       		.byte	0x1
+ 1096 01a5 02       		.byte	0x2
+ 1097 01a6 41030000 		.4byte	.LASF31
+ 1098 01aa 01       		.uleb128 0x1
+ 1099 01ab 04       		.byte	0x4
+ 1100 01ac 04       		.byte	0x4
+ 1101 01ad 91010000 		.4byte	.LASF32
+ 1102 01b1 01       		.uleb128 0x1
+ 1103 01b2 08       		.byte	0x8
+ 1104 01b3 04       		.byte	0x4
+ 1105 01b4 37040000 		.4byte	.LASF33
+ 1106 01b8 0A       		.uleb128 0xa
+ 1107 01b9 49000000 		.4byte	0x49
+ 1108 01bd 08       		.byte	0x8
+ 1109 01be 28       		.byte	0x28
+ 1110 01bf DC010000 		.4byte	0x1dc
+ 1111 01c3 05       		.uleb128 0x5
+ 1112 01c4 65010000 		.4byte	.LASF34
+ 1113 01c8 00       		.byte	0
+ 1114 01c9 05       		.uleb128 0x5
+ 1115 01ca 00000000 		.4byte	.LASF35
+ 1116 01ce 01       		.byte	0x1
+ 1117 01cf 05       		.uleb128 0x5
+ 1118 01d0 7D010000 		.4byte	.LASF36
+ 1119 01d4 02       		.byte	0x2
+ 1120 01d5 05       		.uleb128 0x5
+ 1121 01d6 0A000000 		.4byte	.LASF37
+ 1122 01da 03       		.byte	0x3
+ 1123 01db 00       		.byte	0
+ 1124 01dc 03       		.uleb128 0x3
+ 1125 01dd E9010000 		.4byte	.LASF38
+ 1126 01e1 08       		.byte	0x8
+ 1127 01e2 2D       		.byte	0x2d
+ 1128 01e3 03       		.byte	0x3
+ 1129 01e4 B8010000 		.4byte	0x1b8
+ 1130 01e8 0A       		.uleb128 0xa
+ 1131 01e9 49000000 		.4byte	0x49
+ 1132 01ed 09       		.byte	0x9
+ 1133 01ee 2C       		.byte	0x2c
+ 1134 01ef 0C020000 		.4byte	0x20c
+ 1135 01f3 05       		.uleb128 0x5
+ 1136 01f4 1B000000 		.4byte	.LASF39
+ 1137 01f8 64       		.byte	0x64
+ 1138 01f9 05       		.uleb128 0x5
+ 1139 01fa 5A030000 		.4byte	.LASF40
+ 1140 01fe 0A       		.byte	0xa
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 21
+
+
+ 1141 01ff 05       		.uleb128 0x5
+ 1142 0200 F0020000 		.4byte	.LASF41
+ 1143 0204 01       		.byte	0x1
+ 1144 0205 05       		.uleb128 0x5
+ 1145 0206 44040000 		.4byte	.LASF42
+ 1146 020a 01       		.byte	0x1
+ 1147 020b 00       		.byte	0
+ 1148 020c 03       		.uleb128 0x3
+ 1149 020d CE020000 		.4byte	.LASF43
+ 1150 0211 09       		.byte	0x9
+ 1151 0212 31       		.byte	0x31
+ 1152 0213 03       		.byte	0x3
+ 1153 0214 E8010000 		.4byte	0x1e8
+ 1154 0218 07       		.uleb128 0x7
+ 1155 0219 6C010000 		.4byte	.LASF44
+ 1156 021d 1A04     		.2byte	0x41a
+ 1157 021f 16       		.byte	0x16
+ 1158 0220 97000000 		.4byte	0x97
+ 1159 0224 07       		.uleb128 0x7
+ 1160 0225 5A010000 		.4byte	.LASF45
+ 1161 0229 1B04     		.2byte	0x41b
+ 1162 022b 11       		.byte	0x11
+ 1163 022c 8B000000 		.4byte	0x8b
+ 1164 0230 07       		.uleb128 0x7
+ 1165 0231 AC020000 		.4byte	.LASF46
+ 1166 0235 1C04     		.2byte	0x41c
+ 1167 0237 1C       		.byte	0x1c
+ 1168 0238 0C020000 		.4byte	0x20c
+ 1169 023c 08       		.uleb128 0x8
+ 1170 023d 18020000 		.4byte	0x218
+ 1171 0241 19       		.byte	0x19
+ 1172 0242 0F       		.byte	0xf
+ 1173 0243 05       		.uleb128 0x5
+ 1174 0244 03       		.byte	0x3
+ 1175 0245 00000000 		.4byte	uwTick
+ 1176 0249 08       		.uleb128 0x8
+ 1177 024a 24020000 		.4byte	0x224
+ 1178 024e 1A       		.byte	0x1a
+ 1179 024f 0A       		.byte	0xa
+ 1180 0250 05       		.uleb128 0x5
+ 1181 0251 03       		.byte	0x3
+ 1182 0252 00000000 		.4byte	uwTickPrio
+ 1183 0256 08       		.uleb128 0x8
+ 1184 0257 30020000 		.4byte	0x230
+ 1185 025b 1B       		.byte	0x1b
+ 1186 025c 15       		.byte	0x15
+ 1187 025d 05       		.uleb128 0x5
+ 1188 025e 03       		.byte	0x3
+ 1189 025f 00000000 		.4byte	uwTickFreq
+ 1190 0263 14       		.uleb128 0x14
+ 1191 0264 1C010000 		.4byte	.LASF70
+ 1192 0268 0A       		.byte	0xa
+ 1193 0269 4201     		.2byte	0x142
+ 1194 026b 08       		.byte	0x8
+ 1195 026c 76020000 		.4byte	0x276
+ 1196 0270 15       		.uleb128 0x15
+ 1197 0271 BB000000 		.4byte	0xbb
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 22
+
+
+ 1198 0275 00       		.byte	0
+ 1199 0276 16       		.uleb128 0x16
+ 1200 0277 62040000 		.4byte	.LASF71
+ 1201 027b 01       		.byte	0x1
+ 1202 027c 3A       		.byte	0x3a
+ 1203 027d 0D       		.byte	0xd
+ 1204 027e AF000000 		.4byte	0xaf
+ 1205 0282 09       		.uleb128 0x9
+ 1206 0283 BC010000 		.4byte	.LASF55
+ 1207 0287 5F       		.byte	0x5f
+ 1208 0288 0A       		.byte	0xa
+ 1209 0289 8B000000 		.4byte	0x8b
+ 1210 028d 00000000 		.4byte	.LFB430
+ 1211 0291 80000000 		.4byte	.LFE430-.LFB430
+ 1212 0295 01       		.uleb128 0x1
+ 1213 0296 9C       		.byte	0x9c
+ 1214 0297 AA020000 		.4byte	0x2aa
+ 1215 029b 06       		.uleb128 0x6
+ 1216 029c C4020000 		.4byte	.LASF57
+ 1217 02a0 5F       		.byte	0x5f
+ 1218 02a1 2E       		.byte	0x2e
+ 1219 02a2 9C000000 		.4byte	0x9c
+ 1220 02a6 02       		.uleb128 0x2
+ 1221 02a7 91       		.byte	0x91
+ 1222 02a8 70       		.sleb128 -16
+ 1223 02a9 00       		.byte	0
+ 1224 02aa 04       		.uleb128 0x4
+ 1225 02ab 0F010000 		.4byte	.LASF47
+ 1226 02af 5B       		.byte	0x5b
+ 1227 02b0 0A       		.byte	0xa
+ 1228 02b1 8B000000 		.4byte	0x8b
+ 1229 02b5 00000000 		.4byte	.LFB429
+ 1230 02b9 14000000 		.4byte	.LFE429-.LFB429
+ 1231 02bd 01       		.uleb128 0x1
+ 1232 02be 9C       		.byte	0x9c
+ 1233 02bf 04       		.uleb128 0x4
+ 1234 02c0 02010000 		.4byte	.LASF48
+ 1235 02c4 57       		.byte	0x57
+ 1236 02c5 0A       		.byte	0xa
+ 1237 02c6 8B000000 		.4byte	0x8b
+ 1238 02ca 00000000 		.4byte	.LFB428
+ 1239 02ce 14000000 		.4byte	.LFE428-.LFB428
+ 1240 02d2 01       		.uleb128 0x1
+ 1241 02d3 9C       		.byte	0x9c
+ 1242 02d4 04       		.uleb128 0x4
+ 1243 02d5 F5000000 		.4byte	.LASF49
+ 1244 02d9 53       		.byte	0x53
+ 1245 02da 0A       		.byte	0xa
+ 1246 02db 8B000000 		.4byte	0x8b
+ 1247 02df 00000000 		.4byte	.LFB427
+ 1248 02e3 14000000 		.4byte	.LFE427-.LFB427
+ 1249 02e7 01       		.uleb128 0x1
+ 1250 02e8 9C       		.byte	0x9c
+ 1251 02e9 04       		.uleb128 0x4
+ 1252 02ea 2A040000 		.4byte	.LASF50
+ 1253 02ee 4F       		.byte	0x4f
+ 1254 02ef 0A       		.byte	0xa
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 23
+
+
+ 1255 02f0 8B000000 		.4byte	0x8b
+ 1256 02f4 00000000 		.4byte	.LFB426
+ 1257 02f8 18000000 		.4byte	.LFE426-.LFB426
+ 1258 02fc 01       		.uleb128 0x1
+ 1259 02fd 9C       		.byte	0x9c
+ 1260 02fe 04       		.uleb128 0x4
+ 1261 02ff EF030000 		.4byte	.LASF51
+ 1262 0303 4B       		.byte	0x4b
+ 1263 0304 0A       		.byte	0xa
+ 1264 0305 8B000000 		.4byte	0x8b
+ 1265 0309 00000000 		.4byte	.LFB425
+ 1266 030d 18000000 		.4byte	.LFE425-.LFB425
+ 1267 0311 01       		.uleb128 0x1
+ 1268 0312 9C       		.byte	0x9c
+ 1269 0313 04       		.uleb128 0x4
+ 1270 0314 33010000 		.4byte	.LASF52
+ 1271 0318 47       		.byte	0x47
+ 1272 0319 0A       		.byte	0xa
+ 1273 031a 8B000000 		.4byte	0x8b
+ 1274 031e 00000000 		.4byte	.LFB424
+ 1275 0322 14000000 		.4byte	.LFE424-.LFB424
+ 1276 0326 01       		.uleb128 0x1
+ 1277 0327 9C       		.byte	0x9c
+ 1278 0328 04       		.uleb128 0x4
+ 1279 0329 FC030000 		.4byte	.LASF53
+ 1280 032d 43       		.byte	0x43
+ 1281 032e 0A       		.byte	0xa
+ 1282 032f 8B000000 		.4byte	0x8b
+ 1283 0333 00000000 		.4byte	.LFB423
+ 1284 0337 14000000 		.4byte	.LFE423-.LFB423
+ 1285 033b 01       		.uleb128 0x1
+ 1286 033c 9C       		.byte	0x9c
+ 1287 033d 04       		.uleb128 0x4
+ 1288 033e E5000000 		.4byte	.LASF54
+ 1289 0342 3F       		.byte	0x3f
+ 1290 0343 15       		.byte	0x15
+ 1291 0344 0C020000 		.4byte	0x20c
+ 1292 0348 00000000 		.4byte	.LFB422
+ 1293 034c 14000000 		.4byte	.LFE422-.LFB422
+ 1294 0350 01       		.uleb128 0x1
+ 1295 0351 9C       		.byte	0x9c
+ 1296 0352 09       		.uleb128 0x9
+ 1297 0353 51020000 		.4byte	.LASF56
+ 1298 0357 3A       		.byte	0x3a
+ 1299 0358 13       		.byte	0x13
+ 1300 0359 DC010000 		.4byte	0x1dc
+ 1301 035d 00000000 		.4byte	.LFB421
+ 1302 0361 20000000 		.4byte	.LFE421-.LFB421
+ 1303 0365 01       		.uleb128 0x1
+ 1304 0366 9C       		.byte	0x9c
+ 1305 0367 7A030000 		.4byte	0x37a
+ 1306 036b 06       		.uleb128 0x6
+ 1307 036c 16000000 		.4byte	.LASF58
+ 1308 0370 3A       		.byte	0x3a
+ 1309 0371 37       		.byte	0x37
+ 1310 0372 0C020000 		.4byte	0x20c
+ 1311 0376 02       		.uleb128 0x2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 24
+
+
+ 1312 0377 91       		.byte	0x91
+ 1313 0378 77       		.sleb128 -9
+ 1314 0379 00       		.byte	0
+ 1315 037a 17       		.uleb128 0x17
+ 1316 037b 99020000 		.4byte	.LASF72
+ 1317 037f 03       		.byte	0x3
+ 1318 0380 33       		.byte	0x33
+ 1319 0381 06       		.byte	0x6
+ 1320 0382 00000000 		.4byte	.LFB420
+ 1321 0386 D6000000 		.4byte	.LFE420-.LFB420
+ 1322 038a 01       		.uleb128 0x1
+ 1323 038b 9C       		.byte	0x9c
+ 1324 038c 9F030000 		.4byte	0x39f
+ 1325 0390 06       		.uleb128 0x6
+ 1326 0391 3E040000 		.4byte	.LASF59
+ 1327 0395 33       		.byte	0x33
+ 1328 0396 19       		.byte	0x19
+ 1329 0397 8B000000 		.4byte	0x8b
+ 1330 039b 02       		.uleb128 0x2
+ 1331 039c 91       		.byte	0x91
+ 1332 039d 54       		.sleb128 -44
+ 1333 039e 00       		.byte	0
+ 1334 039f 18       		.uleb128 0x18
+ 1335 03a0 45010000 		.4byte	.LASF60
+ 1336 03a4 03       		.byte	0x3
+ 1337 03a5 2E       		.byte	0x2e
+ 1338 03a6 0A       		.byte	0xa
+ 1339 03a7 8B000000 		.4byte	0x8b
+ 1340 03ab 00000000 		.4byte	.LFB419
+ 1341 03af A4000000 		.4byte	.LFE419-.LFB419
+ 1342 03b3 01       		.uleb128 0x1
+ 1343 03b4 9C       		.byte	0x9c
+ 1344 03b5 19       		.uleb128 0x19
+ 1345 03b6 D9000000 		.4byte	.LASF73
+ 1346 03ba 03       		.byte	0x3
+ 1347 03bb 2A       		.byte	0x2a
+ 1348 03bc 06       		.byte	0x6
+ 1349 03bd 00000000 		.4byte	.LFB418
+ 1350 03c1 0C000000 		.4byte	.LFE418-.LFB418
+ 1351 03c5 01       		.uleb128 0x1
+ 1352 03c6 9C       		.byte	0x9c
+ 1353 03c7 09       		.uleb128 0x9
+ 1354 03c8 16030000 		.4byte	.LASF61
+ 1355 03cc 25       		.byte	0x25
+ 1356 03cd 13       		.byte	0x13
+ 1357 03ce DC010000 		.4byte	0x1dc
+ 1358 03d2 00000000 		.4byte	.LFB417
+ 1359 03d6 14000000 		.4byte	.LFE417-.LFB417
+ 1360 03da 01       		.uleb128 0x1
+ 1361 03db 9C       		.byte	0x9c
+ 1362 03dc EF030000 		.4byte	0x3ef
+ 1363 03e0 06       		.uleb128 0x6
+ 1364 03e1 80020000 		.4byte	.LASF62
+ 1365 03e5 25       		.byte	0x25
+ 1366 03e6 29       		.byte	0x29
+ 1367 03e7 8B000000 		.4byte	0x8b
+ 1368 03eb 02       		.uleb128 0x2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 25
+
+
+ 1369 03ec 91       		.byte	0x91
+ 1370 03ed 74       		.sleb128 -12
+ 1371 03ee 00       		.byte	0
+ 1372 03ef 04       		.uleb128 0x4
+ 1373 03f0 86010000 		.4byte	.LASF63
+ 1374 03f4 21       		.byte	0x21
+ 1375 03f5 13       		.byte	0x13
+ 1376 03f6 DC010000 		.4byte	0x1dc
+ 1377 03fa 00000000 		.4byte	.LFB416
+ 1378 03fe 0E000000 		.4byte	.LFE416-.LFB416
+ 1379 0402 01       		.uleb128 0x1
+ 1380 0403 9C       		.byte	0x9c
+ 1381 0404 04       		.uleb128 0x4
+ 1382 0405 51010000 		.4byte	.LASF64
+ 1383 0409 1D       		.byte	0x1d
+ 1384 040a 13       		.byte	0x13
+ 1385 040b DC010000 		.4byte	0x1dc
+ 1386 040f 00000000 		.4byte	.LFB415
+ 1387 0413 0E000000 		.4byte	.LFE415-.LFB415
+ 1388 0417 01       		.uleb128 0x1
+ 1389 0418 9C       		.byte	0x9c
+ 1390 0419 0B       		.uleb128 0xb
+ 1391 041a 47030000 		.4byte	.LASF65
+ 1392 041e 02       		.byte	0x2
+ 1393 041f 7A       		.byte	0x7a
+ 1394 0420 AF000000 		.4byte	0xaf
+ 1395 0424 00000000 		.4byte	.LFB209
+ 1396 0428 0E000000 		.4byte	.LFE209-.LFB209
+ 1397 042c 01       		.uleb128 0x1
+ 1398 042d 9C       		.byte	0x9c
+ 1399 042e 0B       		.uleb128 0xb
+ 1400 042f A1030000 		.4byte	.LASF66
+ 1401 0433 01       		.byte	0x1
+ 1402 0434 6F       		.byte	0x6f
+ 1403 0435 AF000000 		.4byte	0xaf
+ 1404 0439 00000000 		.4byte	.LFB196
+ 1405 043d 0E000000 		.4byte	.LFE196-.LFB196
+ 1406 0441 01       		.uleb128 0x1
+ 1407 0442 9C       		.byte	0x9c
+ 1408 0443 00       		.byte	0
+ 1409              		.section	.debug_abbrev,"",%progbits
+ 1410              	.Ldebug_abbrev0:
+ 1411 0000 01       		.uleb128 0x1
+ 1412 0001 24       		.uleb128 0x24
+ 1413 0002 00       		.byte	0
+ 1414 0003 0B       		.uleb128 0xb
+ 1415 0004 0B       		.uleb128 0xb
+ 1416 0005 3E       		.uleb128 0x3e
+ 1417 0006 0B       		.uleb128 0xb
+ 1418 0007 03       		.uleb128 0x3
+ 1419 0008 0E       		.uleb128 0xe
+ 1420 0009 00       		.byte	0
+ 1421 000a 00       		.byte	0
+ 1422 000b 02       		.uleb128 0x2
+ 1423 000c 0D       		.uleb128 0xd
+ 1424 000d 00       		.byte	0
+ 1425 000e 03       		.uleb128 0x3
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 26
+
+
+ 1426 000f 0E       		.uleb128 0xe
+ 1427 0010 3A       		.uleb128 0x3a
+ 1428 0011 21       		.uleb128 0x21
+ 1429 0012 07       		.sleb128 7
+ 1430 0013 3B       		.uleb128 0x3b
+ 1431 0014 05       		.uleb128 0x5
+ 1432 0015 39       		.uleb128 0x39
+ 1433 0016 0B       		.uleb128 0xb
+ 1434 0017 49       		.uleb128 0x49
+ 1435 0018 13       		.uleb128 0x13
+ 1436 0019 38       		.uleb128 0x38
+ 1437 001a 0B       		.uleb128 0xb
+ 1438 001b 00       		.byte	0
+ 1439 001c 00       		.byte	0
+ 1440 001d 03       		.uleb128 0x3
+ 1441 001e 16       		.uleb128 0x16
+ 1442 001f 00       		.byte	0
+ 1443 0020 03       		.uleb128 0x3
+ 1444 0021 0E       		.uleb128 0xe
+ 1445 0022 3A       		.uleb128 0x3a
+ 1446 0023 0B       		.uleb128 0xb
+ 1447 0024 3B       		.uleb128 0x3b
+ 1448 0025 0B       		.uleb128 0xb
+ 1449 0026 39       		.uleb128 0x39
+ 1450 0027 0B       		.uleb128 0xb
+ 1451 0028 49       		.uleb128 0x49
+ 1452 0029 13       		.uleb128 0x13
+ 1453 002a 00       		.byte	0
+ 1454 002b 00       		.byte	0
+ 1455 002c 04       		.uleb128 0x4
+ 1456 002d 2E       		.uleb128 0x2e
+ 1457 002e 00       		.byte	0
+ 1458 002f 3F       		.uleb128 0x3f
+ 1459 0030 19       		.uleb128 0x19
+ 1460 0031 03       		.uleb128 0x3
+ 1461 0032 0E       		.uleb128 0xe
+ 1462 0033 3A       		.uleb128 0x3a
+ 1463 0034 21       		.uleb128 0x21
+ 1464 0035 03       		.sleb128 3
+ 1465 0036 3B       		.uleb128 0x3b
+ 1466 0037 0B       		.uleb128 0xb
+ 1467 0038 39       		.uleb128 0x39
+ 1468 0039 0B       		.uleb128 0xb
+ 1469 003a 27       		.uleb128 0x27
+ 1470 003b 19       		.uleb128 0x19
+ 1471 003c 49       		.uleb128 0x49
+ 1472 003d 13       		.uleb128 0x13
+ 1473 003e 11       		.uleb128 0x11
+ 1474 003f 01       		.uleb128 0x1
+ 1475 0040 12       		.uleb128 0x12
+ 1476 0041 06       		.uleb128 0x6
+ 1477 0042 40       		.uleb128 0x40
+ 1478 0043 18       		.uleb128 0x18
+ 1479 0044 7A       		.uleb128 0x7a
+ 1480 0045 19       		.uleb128 0x19
+ 1481 0046 00       		.byte	0
+ 1482 0047 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 27
+
+
+ 1483 0048 05       		.uleb128 0x5
+ 1484 0049 28       		.uleb128 0x28
+ 1485 004a 00       		.byte	0
+ 1486 004b 03       		.uleb128 0x3
+ 1487 004c 0E       		.uleb128 0xe
+ 1488 004d 1C       		.uleb128 0x1c
+ 1489 004e 0B       		.uleb128 0xb
+ 1490 004f 00       		.byte	0
+ 1491 0050 00       		.byte	0
+ 1492 0051 06       		.uleb128 0x6
+ 1493 0052 05       		.uleb128 0x5
+ 1494 0053 00       		.byte	0
+ 1495 0054 03       		.uleb128 0x3
+ 1496 0055 0E       		.uleb128 0xe
+ 1497 0056 3A       		.uleb128 0x3a
+ 1498 0057 21       		.uleb128 0x21
+ 1499 0058 03       		.sleb128 3
+ 1500 0059 3B       		.uleb128 0x3b
+ 1501 005a 0B       		.uleb128 0xb
+ 1502 005b 39       		.uleb128 0x39
+ 1503 005c 0B       		.uleb128 0xb
+ 1504 005d 49       		.uleb128 0x49
+ 1505 005e 13       		.uleb128 0x13
+ 1506 005f 02       		.uleb128 0x2
+ 1507 0060 18       		.uleb128 0x18
+ 1508 0061 00       		.byte	0
+ 1509 0062 00       		.byte	0
+ 1510 0063 07       		.uleb128 0x7
+ 1511 0064 34       		.uleb128 0x34
+ 1512 0065 00       		.byte	0
+ 1513 0066 03       		.uleb128 0x3
+ 1514 0067 0E       		.uleb128 0xe
+ 1515 0068 3A       		.uleb128 0x3a
+ 1516 0069 21       		.uleb128 0x21
+ 1517 006a 09       		.sleb128 9
+ 1518 006b 3B       		.uleb128 0x3b
+ 1519 006c 05       		.uleb128 0x5
+ 1520 006d 39       		.uleb128 0x39
+ 1521 006e 0B       		.uleb128 0xb
+ 1522 006f 49       		.uleb128 0x49
+ 1523 0070 13       		.uleb128 0x13
+ 1524 0071 3F       		.uleb128 0x3f
+ 1525 0072 19       		.uleb128 0x19
+ 1526 0073 3C       		.uleb128 0x3c
+ 1527 0074 19       		.uleb128 0x19
+ 1528 0075 00       		.byte	0
+ 1529 0076 00       		.byte	0
+ 1530 0077 08       		.uleb128 0x8
+ 1531 0078 34       		.uleb128 0x34
+ 1532 0079 00       		.byte	0
+ 1533 007a 47       		.uleb128 0x47
+ 1534 007b 13       		.uleb128 0x13
+ 1535 007c 3A       		.uleb128 0x3a
+ 1536 007d 21       		.uleb128 0x21
+ 1537 007e 03       		.sleb128 3
+ 1538 007f 3B       		.uleb128 0x3b
+ 1539 0080 0B       		.uleb128 0xb
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 28
+
+
+ 1540 0081 39       		.uleb128 0x39
+ 1541 0082 0B       		.uleb128 0xb
+ 1542 0083 02       		.uleb128 0x2
+ 1543 0084 18       		.uleb128 0x18
+ 1544 0085 00       		.byte	0
+ 1545 0086 00       		.byte	0
+ 1546 0087 09       		.uleb128 0x9
+ 1547 0088 2E       		.uleb128 0x2e
+ 1548 0089 01       		.byte	0x1
+ 1549 008a 3F       		.uleb128 0x3f
+ 1550 008b 19       		.uleb128 0x19
+ 1551 008c 03       		.uleb128 0x3
+ 1552 008d 0E       		.uleb128 0xe
+ 1553 008e 3A       		.uleb128 0x3a
+ 1554 008f 21       		.uleb128 0x21
+ 1555 0090 03       		.sleb128 3
+ 1556 0091 3B       		.uleb128 0x3b
+ 1557 0092 0B       		.uleb128 0xb
+ 1558 0093 39       		.uleb128 0x39
+ 1559 0094 0B       		.uleb128 0xb
+ 1560 0095 27       		.uleb128 0x27
+ 1561 0096 19       		.uleb128 0x19
+ 1562 0097 49       		.uleb128 0x49
+ 1563 0098 13       		.uleb128 0x13
+ 1564 0099 11       		.uleb128 0x11
+ 1565 009a 01       		.uleb128 0x1
+ 1566 009b 12       		.uleb128 0x12
+ 1567 009c 06       		.uleb128 0x6
+ 1568 009d 40       		.uleb128 0x40
+ 1569 009e 18       		.uleb128 0x18
+ 1570 009f 7A       		.uleb128 0x7a
+ 1571 00a0 19       		.uleb128 0x19
+ 1572 00a1 01       		.uleb128 0x1
+ 1573 00a2 13       		.uleb128 0x13
+ 1574 00a3 00       		.byte	0
+ 1575 00a4 00       		.byte	0
+ 1576 00a5 0A       		.uleb128 0xa
+ 1577 00a6 04       		.uleb128 0x4
+ 1578 00a7 01       		.byte	0x1
+ 1579 00a8 3E       		.uleb128 0x3e
+ 1580 00a9 21       		.uleb128 0x21
+ 1581 00aa 07       		.sleb128 7
+ 1582 00ab 0B       		.uleb128 0xb
+ 1583 00ac 21       		.uleb128 0x21
+ 1584 00ad 01       		.sleb128 1
+ 1585 00ae 49       		.uleb128 0x49
+ 1586 00af 13       		.uleb128 0x13
+ 1587 00b0 3A       		.uleb128 0x3a
+ 1588 00b1 0B       		.uleb128 0xb
+ 1589 00b2 3B       		.uleb128 0x3b
+ 1590 00b3 0B       		.uleb128 0xb
+ 1591 00b4 39       		.uleb128 0x39
+ 1592 00b5 21       		.uleb128 0x21
+ 1593 00b6 01       		.sleb128 1
+ 1594 00b7 01       		.uleb128 0x1
+ 1595 00b8 13       		.uleb128 0x13
+ 1596 00b9 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 29
+
+
+ 1597 00ba 00       		.byte	0
+ 1598 00bb 0B       		.uleb128 0xb
+ 1599 00bc 2E       		.uleb128 0x2e
+ 1600 00bd 00       		.byte	0
+ 1601 00be 03       		.uleb128 0x3
+ 1602 00bf 0E       		.uleb128 0xe
+ 1603 00c0 3A       		.uleb128 0x3a
+ 1604 00c1 0B       		.uleb128 0xb
+ 1605 00c2 3B       		.uleb128 0x3b
+ 1606 00c3 0B       		.uleb128 0xb
+ 1607 00c4 39       		.uleb128 0x39
+ 1608 00c5 21       		.uleb128 0x21
+ 1609 00c6 19       		.sleb128 25
+ 1610 00c7 27       		.uleb128 0x27
+ 1611 00c8 19       		.uleb128 0x19
+ 1612 00c9 49       		.uleb128 0x49
+ 1613 00ca 13       		.uleb128 0x13
+ 1614 00cb 11       		.uleb128 0x11
+ 1615 00cc 01       		.uleb128 0x1
+ 1616 00cd 12       		.uleb128 0x12
+ 1617 00ce 06       		.uleb128 0x6
+ 1618 00cf 40       		.uleb128 0x40
+ 1619 00d0 18       		.uleb128 0x18
+ 1620 00d1 7C       		.uleb128 0x7c
+ 1621 00d2 19       		.uleb128 0x19
+ 1622 00d3 00       		.byte	0
+ 1623 00d4 00       		.byte	0
+ 1624 00d5 0C       		.uleb128 0xc
+ 1625 00d6 11       		.uleb128 0x11
+ 1626 00d7 01       		.byte	0x1
+ 1627 00d8 25       		.uleb128 0x25
+ 1628 00d9 0E       		.uleb128 0xe
+ 1629 00da 13       		.uleb128 0x13
+ 1630 00db 0B       		.uleb128 0xb
+ 1631 00dc 03       		.uleb128 0x3
+ 1632 00dd 0E       		.uleb128 0xe
+ 1633 00de 1B       		.uleb128 0x1b
+ 1634 00df 0E       		.uleb128 0xe
+ 1635 00e0 55       		.uleb128 0x55
+ 1636 00e1 17       		.uleb128 0x17
+ 1637 00e2 11       		.uleb128 0x11
+ 1638 00e3 01       		.uleb128 0x1
+ 1639 00e4 10       		.uleb128 0x10
+ 1640 00e5 17       		.uleb128 0x17
+ 1641 00e6 00       		.byte	0
+ 1642 00e7 00       		.byte	0
+ 1643 00e8 0D       		.uleb128 0xd
+ 1644 00e9 24       		.uleb128 0x24
+ 1645 00ea 00       		.byte	0
+ 1646 00eb 0B       		.uleb128 0xb
+ 1647 00ec 0B       		.uleb128 0xb
+ 1648 00ed 3E       		.uleb128 0x3e
+ 1649 00ee 0B       		.uleb128 0xb
+ 1650 00ef 03       		.uleb128 0x3
+ 1651 00f0 08       		.uleb128 0x8
+ 1652 00f1 00       		.byte	0
+ 1653 00f2 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 30
+
+
+ 1654 00f3 0E       		.uleb128 0xe
+ 1655 00f4 35       		.uleb128 0x35
+ 1656 00f5 00       		.byte	0
+ 1657 00f6 49       		.uleb128 0x49
+ 1658 00f7 13       		.uleb128 0x13
+ 1659 00f8 00       		.byte	0
+ 1660 00f9 00       		.byte	0
+ 1661 00fa 0F       		.uleb128 0xf
+ 1662 00fb 13       		.uleb128 0x13
+ 1663 00fc 01       		.byte	0x1
+ 1664 00fd 0B       		.uleb128 0xb
+ 1665 00fe 0B       		.uleb128 0xb
+ 1666 00ff 3A       		.uleb128 0x3a
+ 1667 0100 0B       		.uleb128 0xb
+ 1668 0101 3B       		.uleb128 0x3b
+ 1669 0102 05       		.uleb128 0x5
+ 1670 0103 39       		.uleb128 0x39
+ 1671 0104 0B       		.uleb128 0xb
+ 1672 0105 01       		.uleb128 0x1
+ 1673 0106 13       		.uleb128 0x13
+ 1674 0107 00       		.byte	0
+ 1675 0108 00       		.byte	0
+ 1676 0109 10       		.uleb128 0x10
+ 1677 010a 0D       		.uleb128 0xd
+ 1678 010b 00       		.byte	0
+ 1679 010c 03       		.uleb128 0x3
+ 1680 010d 08       		.uleb128 0x8
+ 1681 010e 3A       		.uleb128 0x3a
+ 1682 010f 0B       		.uleb128 0xb
+ 1683 0110 3B       		.uleb128 0x3b
+ 1684 0111 05       		.uleb128 0x5
+ 1685 0112 39       		.uleb128 0x39
+ 1686 0113 0B       		.uleb128 0xb
+ 1687 0114 49       		.uleb128 0x49
+ 1688 0115 13       		.uleb128 0x13
+ 1689 0116 38       		.uleb128 0x38
+ 1690 0117 0B       		.uleb128 0xb
+ 1691 0118 00       		.byte	0
+ 1692 0119 00       		.byte	0
+ 1693 011a 11       		.uleb128 0x11
+ 1694 011b 01       		.uleb128 0x1
+ 1695 011c 01       		.byte	0x1
+ 1696 011d 49       		.uleb128 0x49
+ 1697 011e 13       		.uleb128 0x13
+ 1698 011f 01       		.uleb128 0x1
+ 1699 0120 13       		.uleb128 0x13
+ 1700 0121 00       		.byte	0
+ 1701 0122 00       		.byte	0
+ 1702 0123 12       		.uleb128 0x12
+ 1703 0124 21       		.uleb128 0x21
+ 1704 0125 00       		.byte	0
+ 1705 0126 49       		.uleb128 0x49
+ 1706 0127 13       		.uleb128 0x13
+ 1707 0128 2F       		.uleb128 0x2f
+ 1708 0129 0B       		.uleb128 0xb
+ 1709 012a 00       		.byte	0
+ 1710 012b 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 31
+
+
+ 1711 012c 13       		.uleb128 0x13
+ 1712 012d 16       		.uleb128 0x16
+ 1713 012e 00       		.byte	0
+ 1714 012f 03       		.uleb128 0x3
+ 1715 0130 0E       		.uleb128 0xe
+ 1716 0131 3A       		.uleb128 0x3a
+ 1717 0132 0B       		.uleb128 0xb
+ 1718 0133 3B       		.uleb128 0x3b
+ 1719 0134 05       		.uleb128 0x5
+ 1720 0135 39       		.uleb128 0x39
+ 1721 0136 0B       		.uleb128 0xb
+ 1722 0137 49       		.uleb128 0x49
+ 1723 0138 13       		.uleb128 0x13
+ 1724 0139 00       		.byte	0
+ 1725 013a 00       		.byte	0
+ 1726 013b 14       		.uleb128 0x14
+ 1727 013c 2E       		.uleb128 0x2e
+ 1728 013d 01       		.byte	0x1
+ 1729 013e 3F       		.uleb128 0x3f
+ 1730 013f 19       		.uleb128 0x19
+ 1731 0140 03       		.uleb128 0x3
+ 1732 0141 0E       		.uleb128 0xe
+ 1733 0142 3A       		.uleb128 0x3a
+ 1734 0143 0B       		.uleb128 0xb
+ 1735 0144 3B       		.uleb128 0x3b
+ 1736 0145 05       		.uleb128 0x5
+ 1737 0146 39       		.uleb128 0x39
+ 1738 0147 0B       		.uleb128 0xb
+ 1739 0148 27       		.uleb128 0x27
+ 1740 0149 19       		.uleb128 0x19
+ 1741 014a 3C       		.uleb128 0x3c
+ 1742 014b 19       		.uleb128 0x19
+ 1743 014c 01       		.uleb128 0x1
+ 1744 014d 13       		.uleb128 0x13
+ 1745 014e 00       		.byte	0
+ 1746 014f 00       		.byte	0
+ 1747 0150 15       		.uleb128 0x15
+ 1748 0151 05       		.uleb128 0x5
+ 1749 0152 00       		.byte	0
+ 1750 0153 49       		.uleb128 0x49
+ 1751 0154 13       		.uleb128 0x13
+ 1752 0155 00       		.byte	0
+ 1753 0156 00       		.byte	0
+ 1754 0157 16       		.uleb128 0x16
+ 1755 0158 2E       		.uleb128 0x2e
+ 1756 0159 00       		.byte	0
+ 1757 015a 3F       		.uleb128 0x3f
+ 1758 015b 19       		.uleb128 0x19
+ 1759 015c 03       		.uleb128 0x3
+ 1760 015d 0E       		.uleb128 0xe
+ 1761 015e 3A       		.uleb128 0x3a
+ 1762 015f 0B       		.uleb128 0xb
+ 1763 0160 3B       		.uleb128 0x3b
+ 1764 0161 0B       		.uleb128 0xb
+ 1765 0162 39       		.uleb128 0x39
+ 1766 0163 0B       		.uleb128 0xb
+ 1767 0164 27       		.uleb128 0x27
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 32
+
+
+ 1768 0165 19       		.uleb128 0x19
+ 1769 0166 49       		.uleb128 0x49
+ 1770 0167 13       		.uleb128 0x13
+ 1771 0168 3C       		.uleb128 0x3c
+ 1772 0169 19       		.uleb128 0x19
+ 1773 016a 00       		.byte	0
+ 1774 016b 00       		.byte	0
+ 1775 016c 17       		.uleb128 0x17
+ 1776 016d 2E       		.uleb128 0x2e
+ 1777 016e 01       		.byte	0x1
+ 1778 016f 3F       		.uleb128 0x3f
+ 1779 0170 19       		.uleb128 0x19
+ 1780 0171 03       		.uleb128 0x3
+ 1781 0172 0E       		.uleb128 0xe
+ 1782 0173 3A       		.uleb128 0x3a
+ 1783 0174 0B       		.uleb128 0xb
+ 1784 0175 3B       		.uleb128 0x3b
+ 1785 0176 0B       		.uleb128 0xb
+ 1786 0177 39       		.uleb128 0x39
+ 1787 0178 0B       		.uleb128 0xb
+ 1788 0179 27       		.uleb128 0x27
+ 1789 017a 19       		.uleb128 0x19
+ 1790 017b 11       		.uleb128 0x11
+ 1791 017c 01       		.uleb128 0x1
+ 1792 017d 12       		.uleb128 0x12
+ 1793 017e 06       		.uleb128 0x6
+ 1794 017f 40       		.uleb128 0x40
+ 1795 0180 18       		.uleb128 0x18
+ 1796 0181 7C       		.uleb128 0x7c
+ 1797 0182 19       		.uleb128 0x19
+ 1798 0183 01       		.uleb128 0x1
+ 1799 0184 13       		.uleb128 0x13
+ 1800 0185 00       		.byte	0
+ 1801 0186 00       		.byte	0
+ 1802 0187 18       		.uleb128 0x18
+ 1803 0188 2E       		.uleb128 0x2e
+ 1804 0189 00       		.byte	0
+ 1805 018a 3F       		.uleb128 0x3f
+ 1806 018b 19       		.uleb128 0x19
+ 1807 018c 03       		.uleb128 0x3
+ 1808 018d 0E       		.uleb128 0xe
+ 1809 018e 3A       		.uleb128 0x3a
+ 1810 018f 0B       		.uleb128 0xb
+ 1811 0190 3B       		.uleb128 0x3b
+ 1812 0191 0B       		.uleb128 0xb
+ 1813 0192 39       		.uleb128 0x39
+ 1814 0193 0B       		.uleb128 0xb
+ 1815 0194 27       		.uleb128 0x27
+ 1816 0195 19       		.uleb128 0x19
+ 1817 0196 49       		.uleb128 0x49
+ 1818 0197 13       		.uleb128 0x13
+ 1819 0198 11       		.uleb128 0x11
+ 1820 0199 01       		.uleb128 0x1
+ 1821 019a 12       		.uleb128 0x12
+ 1822 019b 06       		.uleb128 0x6
+ 1823 019c 40       		.uleb128 0x40
+ 1824 019d 18       		.uleb128 0x18
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 33
+
+
+ 1825 019e 7C       		.uleb128 0x7c
+ 1826 019f 19       		.uleb128 0x19
+ 1827 01a0 00       		.byte	0
+ 1828 01a1 00       		.byte	0
+ 1829 01a2 19       		.uleb128 0x19
+ 1830 01a3 2E       		.uleb128 0x2e
+ 1831 01a4 00       		.byte	0
+ 1832 01a5 3F       		.uleb128 0x3f
+ 1833 01a6 19       		.uleb128 0x19
+ 1834 01a7 03       		.uleb128 0x3
+ 1835 01a8 0E       		.uleb128 0xe
+ 1836 01a9 3A       		.uleb128 0x3a
+ 1837 01aa 0B       		.uleb128 0xb
+ 1838 01ab 3B       		.uleb128 0x3b
+ 1839 01ac 0B       		.uleb128 0xb
+ 1840 01ad 39       		.uleb128 0x39
+ 1841 01ae 0B       		.uleb128 0xb
+ 1842 01af 27       		.uleb128 0x27
+ 1843 01b0 19       		.uleb128 0x19
+ 1844 01b1 11       		.uleb128 0x11
+ 1845 01b2 01       		.uleb128 0x1
+ 1846 01b3 12       		.uleb128 0x12
+ 1847 01b4 06       		.uleb128 0x6
+ 1848 01b5 40       		.uleb128 0x40
+ 1849 01b6 18       		.uleb128 0x18
+ 1850 01b7 7A       		.uleb128 0x7a
+ 1851 01b8 19       		.uleb128 0x19
+ 1852 01b9 00       		.byte	0
+ 1853 01ba 00       		.byte	0
+ 1854 01bb 00       		.byte	0
+ 1855              		.section	.debug_aranges,"",%progbits
+ 1856 0000 A4000000 		.4byte	0xa4
+ 1857 0004 0200     		.2byte	0x2
+ 1858 0006 00000000 		.4byte	.Ldebug_info0
+ 1859 000a 04       		.byte	0x4
+ 1860 000b 00       		.byte	0
+ 1861 000c 0000     		.2byte	0
+ 1862 000e 0000     		.2byte	0
+ 1863 0010 00000000 		.4byte	.LFB196
+ 1864 0014 0E000000 		.4byte	.LFE196-.LFB196
+ 1865 0018 00000000 		.4byte	.LFB209
+ 1866 001c 0E000000 		.4byte	.LFE209-.LFB209
+ 1867 0020 00000000 		.4byte	.LFB415
+ 1868 0024 0E000000 		.4byte	.LFE415-.LFB415
+ 1869 0028 00000000 		.4byte	.LFB416
+ 1870 002c 0E000000 		.4byte	.LFE416-.LFB416
+ 1871 0030 00000000 		.4byte	.LFB417
+ 1872 0034 14000000 		.4byte	.LFE417-.LFB417
+ 1873 0038 00000000 		.4byte	.LFB418
+ 1874 003c 0C000000 		.4byte	.LFE418-.LFB418
+ 1875 0040 00000000 		.4byte	.LFB419
+ 1876 0044 A4000000 		.4byte	.LFE419-.LFB419
+ 1877 0048 00000000 		.4byte	.LFB420
+ 1878 004c D6000000 		.4byte	.LFE420-.LFB420
+ 1879 0050 00000000 		.4byte	.LFB421
+ 1880 0054 20000000 		.4byte	.LFE421-.LFB421
+ 1881 0058 00000000 		.4byte	.LFB422
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 34
+
+
+ 1882 005c 14000000 		.4byte	.LFE422-.LFB422
+ 1883 0060 00000000 		.4byte	.LFB423
+ 1884 0064 14000000 		.4byte	.LFE423-.LFB423
+ 1885 0068 00000000 		.4byte	.LFB424
+ 1886 006c 14000000 		.4byte	.LFE424-.LFB424
+ 1887 0070 00000000 		.4byte	.LFB425
+ 1888 0074 18000000 		.4byte	.LFE425-.LFB425
+ 1889 0078 00000000 		.4byte	.LFB426
+ 1890 007c 18000000 		.4byte	.LFE426-.LFB426
+ 1891 0080 00000000 		.4byte	.LFB427
+ 1892 0084 14000000 		.4byte	.LFE427-.LFB427
+ 1893 0088 00000000 		.4byte	.LFB428
+ 1894 008c 14000000 		.4byte	.LFE428-.LFB428
+ 1895 0090 00000000 		.4byte	.LFB429
+ 1896 0094 14000000 		.4byte	.LFE429-.LFB429
+ 1897 0098 00000000 		.4byte	.LFB430
+ 1898 009c 80000000 		.4byte	.LFE430-.LFB430
+ 1899 00a0 00000000 		.4byte	0
+ 1900 00a4 00000000 		.4byte	0
+ 1901              		.section	.debug_rnglists,"",%progbits
+ 1902              	.Ldebug_ranges0:
+ 1903 0000 78000000 		.4byte	.Ldebug_ranges3-.Ldebug_ranges2
+ 1904              	.Ldebug_ranges2:
+ 1905 0004 0500     		.2byte	0x5
+ 1906 0006 04       		.byte	0x4
+ 1907 0007 00       		.byte	0
+ 1908 0008 00000000 		.4byte	0
+ 1909              	.LLRL0:
+ 1910 000c 07       		.byte	0x7
+ 1911 000d 00000000 		.4byte	.LFB196
+ 1912 0011 0E       		.uleb128 .LFE196-.LFB196
+ 1913 0012 07       		.byte	0x7
+ 1914 0013 00000000 		.4byte	.LFB209
+ 1915 0017 0E       		.uleb128 .LFE209-.LFB209
+ 1916 0018 07       		.byte	0x7
+ 1917 0019 00000000 		.4byte	.LFB415
+ 1918 001d 0E       		.uleb128 .LFE415-.LFB415
+ 1919 001e 07       		.byte	0x7
+ 1920 001f 00000000 		.4byte	.LFB416
+ 1921 0023 0E       		.uleb128 .LFE416-.LFB416
+ 1922 0024 07       		.byte	0x7
+ 1923 0025 00000000 		.4byte	.LFB417
+ 1924 0029 14       		.uleb128 .LFE417-.LFB417
+ 1925 002a 07       		.byte	0x7
+ 1926 002b 00000000 		.4byte	.LFB418
+ 1927 002f 0C       		.uleb128 .LFE418-.LFB418
+ 1928 0030 07       		.byte	0x7
+ 1929 0031 00000000 		.4byte	.LFB419
+ 1930 0035 A401     		.uleb128 .LFE419-.LFB419
+ 1931 0037 07       		.byte	0x7
+ 1932 0038 00000000 		.4byte	.LFB420
+ 1933 003c D601     		.uleb128 .LFE420-.LFB420
+ 1934 003e 07       		.byte	0x7
+ 1935 003f 00000000 		.4byte	.LFB421
+ 1936 0043 20       		.uleb128 .LFE421-.LFB421
+ 1937 0044 07       		.byte	0x7
+ 1938 0045 00000000 		.4byte	.LFB422
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 35
+
+
+ 1939 0049 14       		.uleb128 .LFE422-.LFB422
+ 1940 004a 07       		.byte	0x7
+ 1941 004b 00000000 		.4byte	.LFB423
+ 1942 004f 14       		.uleb128 .LFE423-.LFB423
+ 1943 0050 07       		.byte	0x7
+ 1944 0051 00000000 		.4byte	.LFB424
+ 1945 0055 14       		.uleb128 .LFE424-.LFB424
+ 1946 0056 07       		.byte	0x7
+ 1947 0057 00000000 		.4byte	.LFB425
+ 1948 005b 18       		.uleb128 .LFE425-.LFB425
+ 1949 005c 07       		.byte	0x7
+ 1950 005d 00000000 		.4byte	.LFB426
+ 1951 0061 18       		.uleb128 .LFE426-.LFB426
+ 1952 0062 07       		.byte	0x7
+ 1953 0063 00000000 		.4byte	.LFB427
+ 1954 0067 14       		.uleb128 .LFE427-.LFB427
+ 1955 0068 07       		.byte	0x7
+ 1956 0069 00000000 		.4byte	.LFB428
+ 1957 006d 14       		.uleb128 .LFE428-.LFB428
+ 1958 006e 07       		.byte	0x7
+ 1959 006f 00000000 		.4byte	.LFB429
+ 1960 0073 14       		.uleb128 .LFE429-.LFB429
+ 1961 0074 07       		.byte	0x7
+ 1962 0075 00000000 		.4byte	.LFB430
+ 1963 0079 8001     		.uleb128 .LFE430-.LFB430
+ 1964 007b 00       		.byte	0
+ 1965              	.Ldebug_ranges3:
+ 1966              		.section	.debug_line,"",%progbits
+ 1967              	.Ldebug_line0:
+ 1968 0000 DA030000 		.section	.debug_str,"MS",%progbits,1
+ 1968      0300EB01 
+ 1968      00000201 
+ 1968      FB0E0D00 
+ 1968      01010101 
+ 1969              	.LASF35:
+ 1970 0000 48414C5F 		.ascii	"HAL_ERROR\000"
+ 1970      4552524F 
+ 1970      5200
+ 1971              	.LASF37:
+ 1972 000a 48414C5F 		.ascii	"HAL_TIMEOUT\000"
+ 1972      54494D45 
+ 1972      4F555400 
+ 1973              	.LASF58:
+ 1974 0016 46726571 		.ascii	"Freq\000"
+ 1974      00
+ 1975              	.LASF39:
+ 1976 001b 48414C5F 		.ascii	"HAL_TICK_FREQ_10HZ\000"
+ 1976      5449434B 
+ 1976      5F465245 
+ 1976      515F3130 
+ 1976      485A00
+ 1977              	.LASF67:
+ 1978 002e 474E5520 		.ascii	"GNU C17 11.3.1 20220712 -mcpu=cortex-m7 -mthumb -mf"
+ 1978      43313720 
+ 1978      31312E33 
+ 1978      2E312032 
+ 1978      30323230 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 36
+
+
+ 1979 0061 6C6F6174 		.ascii	"loat-abi=soft -march=armv7e-m -ggdb -O0 -ffunction-"
+ 1979      2D616269 
+ 1979      3D736F66 
+ 1979      74202D6D 
+ 1979      61726368 
+ 1980 0094 73656374 		.ascii	"sections -fdata-sections -fno-common\000"
+ 1980      696F6E73 
+ 1980      202D6664 
+ 1980      6174612D 
+ 1980      73656374 
+ 1981              	.LASF13:
+ 1982 00b9 75696E74 		.ascii	"uint64_t\000"
+ 1982      36345F74 
+ 1982      00
+ 1983              	.LASF5:
+ 1984 00c2 73686F72 		.ascii	"short int\000"
+ 1984      7420696E 
+ 1984      7400
+ 1985              	.LASF17:
+ 1986 00cc 74696D65 		.ascii	"time_msecs_t\000"
+ 1986      5F6D7365 
+ 1986      63735F74 
+ 1986      00
+ 1987              	.LASF73:
+ 1988 00d9 48414C5F 		.ascii	"HAL_IncTick\000"
+ 1988      496E6354 
+ 1988      69636B00 
+ 1989              	.LASF54:
+ 1990 00e5 48414C5F 		.ascii	"HAL_GetTickFreq\000"
+ 1990      47657454 
+ 1990      69636B46 
+ 1990      72657100 
+ 1991              	.LASF49:
+ 1992 00f5 48414C5F 		.ascii	"HAL_GetUIDw0\000"
+ 1992      47657455 
+ 1992      49447730 
+ 1992      00
+ 1993              	.LASF48:
+ 1994 0102 48414C5F 		.ascii	"HAL_GetUIDw1\000"
+ 1994      47657455 
+ 1994      49447731 
+ 1994      00
+ 1995              	.LASF47:
+ 1996 010f 48414C5F 		.ascii	"HAL_GetUIDw2\000"
+ 1996      47657455 
+ 1996      49447732 
+ 1996      00
+ 1997              	.LASF70:
+ 1998 011c 63685468 		.ascii	"chThdSleep\000"
+ 1998      64536C65 
+ 1998      657000
+ 1999              	.LASF2:
+ 2000 0127 6C6F6E67 		.ascii	"long double\000"
+ 2000      20646F75 
+ 2000      626C6500 
+ 2001              	.LASF52:
+ 2002 0133 48414C5F 		.ascii	"HAL_GetHalVersion\000"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 37
+
+
+ 2002      47657448 
+ 2002      616C5665 
+ 2002      7273696F 
+ 2002      6E00
+ 2003              	.LASF60:
+ 2004 0145 48414C5F 		.ascii	"HAL_GetTick\000"
+ 2004      47657454 
+ 2004      69636B00 
+ 2005              	.LASF64:
+ 2006 0151 48414C5F 		.ascii	"HAL_Init\000"
+ 2006      496E6974 
+ 2006      00
+ 2007              	.LASF45:
+ 2008 015a 75775469 		.ascii	"uwTickPrio\000"
+ 2008      636B5072 
+ 2008      696F00
+ 2009              	.LASF34:
+ 2010 0165 48414C5F 		.ascii	"HAL_OK\000"
+ 2010      4F4B00
+ 2011              	.LASF44:
+ 2012 016c 75775469 		.ascii	"uwTick\000"
+ 2012      636B00
+ 2013              	.LASF24:
+ 2014 0173 52455345 		.ascii	"RESERVED6\000"
+ 2014      52564544 
+ 2014      3600
+ 2015              	.LASF36:
+ 2016 017d 48414C5F 		.ascii	"HAL_BUSY\000"
+ 2016      42555359 
+ 2016      00
+ 2017              	.LASF63:
+ 2018 0186 48414C5F 		.ascii	"HAL_DeInit\000"
+ 2018      4465496E 
+ 2018      697400
+ 2019              	.LASF32:
+ 2020 0191 666C6F61 		.ascii	"float\000"
+ 2020      7400
+ 2021              	.LASF1:
+ 2022 0197 6C6F6E67 		.ascii	"long long int\000"
+ 2022      206C6F6E 
+ 2022      6720696E 
+ 2022      7400
+ 2023              	.LASF11:
+ 2024 01a5 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2024      206C6F6E 
+ 2024      6720756E 
+ 2024      7369676E 
+ 2024      65642069 
+ 2025              	.LASF55:
+ 2026 01bc 48414C5F 		.ascii	"HAL_RCCEx_GetPeriphCLKFreq\000"
+ 2026      52434345 
+ 2026      785F4765 
+ 2026      74506572 
+ 2026      69706843 
+ 2027              	.LASF7:
+ 2028 01d7 6C6F6E67 		.ascii	"long int\000"
+ 2028      20696E74 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 38
+
+
+ 2028      00
+ 2029              	.LASF25:
+ 2030 01e0 41504231 		.ascii	"APB1HFZ1\000"
+ 2030      48465A31 
+ 2030      00
+ 2031              	.LASF38:
+ 2032 01e9 48414C5F 		.ascii	"HAL_StatusTypeDef\000"
+ 2032      53746174 
+ 2032      75735479 
+ 2032      70654465 
+ 2032      6600
+ 2033              	.LASF69:
+ 2034 01fb 433A5C50 		.ascii	"C:\\PROJET\\ChibiOS project\\ChibiOS_21.11.4\\demos"
+ 2034      524F4A45 
+ 2034      545C4368 
+ 2034      6962694F 
+ 2034      53207072 
+ 2035 022a 5C53544D 		.ascii	"\\STM32\\RT-STM32H743ZI_REV_XY-NUCLEO144\000"
+ 2035      33325C52 
+ 2035      542D5354 
+ 2035      4D333248 
+ 2035      3734335A 
+ 2036              	.LASF56:
+ 2037 0251 48414C5F 		.ascii	"HAL_SetTickFreq\000"
+ 2037      53657454 
+ 2037      69636B46 
+ 2037      72657100 
+ 2038              	.LASF27:
+ 2039 0261 41504232 		.ascii	"APB2FZ1\000"
+ 2039      465A3100 
+ 2040              	.LASF23:
+ 2041 0269 41504231 		.ascii	"APB1LFZ1\000"
+ 2041      4C465A31 
+ 2041      00
+ 2042              	.LASF4:
+ 2043 0272 756E7369 		.ascii	"unsigned char\000"
+ 2043      676E6564 
+ 2043      20636861 
+ 2043      7200
+ 2044              	.LASF62:
+ 2045 0280 5469636B 		.ascii	"TickPriority\000"
+ 2045      5072696F 
+ 2045      72697479 
+ 2045      00
+ 2046              	.LASF3:
+ 2047 028d 7369676E 		.ascii	"signed char\000"
+ 2047      65642063 
+ 2047      68617200 
+ 2048              	.LASF72:
+ 2049 0299 48414C5F 		.ascii	"HAL_Delay\000"
+ 2049      44656C61 
+ 2049      7900
+ 2050              	.LASF12:
+ 2051 02a3 75696E74 		.ascii	"uint32_t\000"
+ 2051      33325F74 
+ 2051      00
+ 2052              	.LASF46:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 39
+
+
+ 2053 02ac 75775469 		.ascii	"uwTickFreq\000"
+ 2053      636B4672 
+ 2053      657100
+ 2054              	.LASF0:
+ 2055 02b7 756E7369 		.ascii	"unsigned int\000"
+ 2055      676E6564 
+ 2055      20696E74 
+ 2055      00
+ 2056              	.LASF57:
+ 2057 02c4 50657269 		.ascii	"PeriphClk\000"
+ 2057      7068436C 
+ 2057      6B00
+ 2058              	.LASF43:
+ 2059 02ce 48414C5F 		.ascii	"HAL_TickFreqTypeDef\000"
+ 2059      5469636B 
+ 2059      46726571 
+ 2059      54797065 
+ 2059      44656600 
+ 2060              	.LASF16:
+ 2061 02e2 73797369 		.ascii	"sysinterval_t\000"
+ 2061      6E746572 
+ 2061      76616C5F 
+ 2061      7400
+ 2062              	.LASF41:
+ 2063 02f0 48414C5F 		.ascii	"HAL_TICK_FREQ_1KHZ\000"
+ 2063      5449434B 
+ 2063      5F465245 
+ 2063      515F314B 
+ 2063      485A00
+ 2064              	.LASF6:
+ 2065 0303 73686F72 		.ascii	"short unsigned int\000"
+ 2065      7420756E 
+ 2065      7369676E 
+ 2065      65642069 
+ 2065      6E7400
+ 2066              	.LASF61:
+ 2067 0316 48414C5F 		.ascii	"HAL_InitTick\000"
+ 2067      496E6974 
+ 2067      5469636B 
+ 2067      00
+ 2068              	.LASF15:
+ 2069 0323 73797374 		.ascii	"systime_t\000"
+ 2069      696D655F 
+ 2069      7400
+ 2070              	.LASF14:
+ 2071 032d 63686172 		.ascii	"char\000"
+ 2071      00
+ 2072              	.LASF30:
+ 2073 0332 4442474D 		.ascii	"DBGMCU_TypeDef\000"
+ 2073      43555F54 
+ 2073      79706544 
+ 2073      656600
+ 2074              	.LASF31:
+ 2075 0341 5F426F6F 		.ascii	"_Bool\000"
+ 2075      6C00
+ 2076              	.LASF65:
+ 2077 0347 63685654 		.ascii	"chVTGetSystemTimeX\000"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 40
+
+
+ 2077      47657453 
+ 2077      79737465 
+ 2077      6D54696D 
+ 2077      655800
+ 2078              	.LASF40:
+ 2079 035a 48414C5F 		.ascii	"HAL_TICK_FREQ_100HZ\000"
+ 2079      5449434B 
+ 2079      5F465245 
+ 2079      515F3130 
+ 2079      30485A00 
+ 2080              	.LASF10:
+ 2081 036e 5F5F7569 		.ascii	"__uint64_t\000"
+ 2081      6E743634 
+ 2081      5F7400
+ 2082              	.LASF68:
+ 2083 0379 64726976 		.ascii	"drivers/stm32h7xx_hal_chibios.c\000"
+ 2083      6572732F 
+ 2083      73746D33 
+ 2083      32683778 
+ 2083      785F6861 
+ 2084              	.LASF21:
+ 2085 0399 41504233 		.ascii	"APB3FZ1\000"
+ 2085      465A3100 
+ 2086              	.LASF66:
+ 2087 03a1 706F7274 		.ascii	"port_timer_get_time\000"
+ 2087      5F74696D 
+ 2087      65725F67 
+ 2087      65745F74 
+ 2087      696D6500 
+ 2088              	.LASF20:
+ 2089 03b5 52455345 		.ascii	"RESERVED4\000"
+ 2089      52564544 
+ 2089      3400
+ 2090              	.LASF22:
+ 2091 03bf 52455345 		.ascii	"RESERVED5\000"
+ 2091      52564544 
+ 2091      3500
+ 2092              	.LASF8:
+ 2093 03c9 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2093      20756E73 
+ 2093      69676E65 
+ 2093      6420696E 
+ 2093      7400
+ 2094              	.LASF26:
+ 2095 03db 52455345 		.ascii	"RESERVED7\000"
+ 2095      52564544 
+ 2095      3700
+ 2096              	.LASF28:
+ 2097 03e5 52455345 		.ascii	"RESERVED8\000"
+ 2097      52564544 
+ 2097      3800
+ 2098              	.LASF51:
+ 2099 03ef 48414C5F 		.ascii	"HAL_GetREVID\000"
+ 2099      47657452 
+ 2099      45564944 
+ 2099      00
+ 2100              	.LASF53:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 41
+
+
+ 2101 03fc 48414C5F 		.ascii	"HAL_GetTickPrio\000"
+ 2101      47657454 
+ 2101      69636B50 
+ 2101      72696F00 
+ 2102              	.LASF9:
+ 2103 040c 5F5F7569 		.ascii	"__uint32_t\000"
+ 2103      6E743332 
+ 2103      5F7400
+ 2104              	.LASF19:
+ 2105 0417 4944434F 		.ascii	"IDCODE\000"
+ 2105      444500
+ 2106              	.LASF18:
+ 2107 041e 74696D65 		.ascii	"time_conv_t\000"
+ 2107      5F636F6E 
+ 2107      765F7400 
+ 2108              	.LASF50:
+ 2109 042a 48414C5F 		.ascii	"HAL_GetDEVID\000"
+ 2109      47657444 
+ 2109      45564944 
+ 2109      00
+ 2110              	.LASF33:
+ 2111 0437 646F7562 		.ascii	"double\000"
+ 2111      6C6500
+ 2112              	.LASF59:
+ 2113 043e 44656C61 		.ascii	"Delay\000"
+ 2113      7900
+ 2114              	.LASF42:
+ 2115 0444 48414C5F 		.ascii	"HAL_TICK_FREQ_DEFAULT\000"
+ 2115      5449434B 
+ 2115      5F465245 
+ 2115      515F4445 
+ 2115      4641554C 
+ 2116              	.LASF29:
+ 2117 045a 41504234 		.ascii	"APB4FZ1\000"
+ 2117      465A3100 
+ 2118              	.LASF71:
+ 2119 0462 73744765 		.ascii	"stGetCounter\000"
+ 2119      74436F75 
+ 2119      6E746572 
+ 2119      00
+ 2120              		.ident	"GCC: (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 42
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32h7xx_hal_chibios.c
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:18     .text.port_timer_get_time:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:23     .text.port_timer_get_time:00000000 port_timer_get_time
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:46     .text.chVTGetSystemTimeX:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:51     .text.chVTGetSystemTimeX:00000000 chVTGetSystemTimeX
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:78     .bss.uwTick:00000000 uwTick
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:75     .bss.uwTick:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:85     .bss.uwTickPrio:00000000 uwTickPrio
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:82     .bss.uwTickPrio:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:91     .data.uwTickFreq:00000000 uwTickFreq
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:94     .text.HAL_Init:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:100    .text.HAL_Init:00000000 HAL_Init
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:128    .text.HAL_DeInit:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:134    .text.HAL_DeInit:00000000 HAL_DeInit
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:161    .text.HAL_InitTick:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:167    .text.HAL_InitTick:00000000 HAL_InitTick
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:199    .text.HAL_IncTick:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:205    .text.HAL_IncTick:00000000 HAL_IncTick
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:231    .text.HAL_GetTick:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:237    .text.HAL_GetTick:00000000 HAL_GetTick
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:320    .text.HAL_GetTick:000000a0 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:325    .text.HAL_Delay:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:331    .text.HAL_Delay:00000000 HAL_Delay
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:437    .text.HAL_SetTickFreq:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:443    .text.HAL_SetTickFreq:00000000 HAL_SetTickFreq
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:479    .text.HAL_SetTickFreq:0000001c $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:484    .text.HAL_GetTickFreq:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:490    .text.HAL_GetTickFreq:00000000 HAL_GetTickFreq
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:517    .text.HAL_GetTickFreq:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:522    .text.HAL_GetTickPrio:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:528    .text.HAL_GetTickPrio:00000000 HAL_GetTickPrio
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:555    .text.HAL_GetTickPrio:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:560    .text.HAL_GetHalVersion:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:566    .text.HAL_GetHalVersion:00000000 HAL_GetHalVersion
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:592    .text.HAL_GetHalVersion:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:597    .text.HAL_GetREVID:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:603    .text.HAL_GetREVID:00000000 HAL_GetREVID
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:632    .text.HAL_GetREVID:00000014 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:637    .text.HAL_GetDEVID:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:643    .text.HAL_GetDEVID:00000000 HAL_GetDEVID
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:672    .text.HAL_GetDEVID:00000014 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:677    .text.HAL_GetUIDw0:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:683    .text.HAL_GetUIDw0:00000000 HAL_GetUIDw0
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:710    .text.HAL_GetUIDw0:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:715    .text.HAL_GetUIDw1:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:721    .text.HAL_GetUIDw1:00000000 HAL_GetUIDw1
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:748    .text.HAL_GetUIDw1:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:753    .text.HAL_GetUIDw2:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:759    .text.HAL_GetUIDw2:00000000 HAL_GetUIDw2
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:786    .text.HAL_GetUIDw2:00000010 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:791    .text.HAL_RCCEx_GetPeriphCLKFreq:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:797    .text.HAL_RCCEx_GetPeriphCLKFreq:00000000 HAL_RCCEx_GetPeriphCLKFreq
+C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s:874    .text.HAL_RCCEx_GetPeriphCLKFreq:00000078 $d
+
+UNDEFINED SYMBOLS
+stGetCounter
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccPDtiub.s 			page 43
+
+
+__aeabi_uldivmod
+chThdSleep

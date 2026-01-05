@@ -1,0 +1,2635 @@
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"rt_test_sequence_004.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.chTimeAddX,"ax",%progbits
+  18              		.align	1
+  19              		.syntax unified
+  20              		.thumb
+  21              		.thumb_func
+  22              		.type	chTimeAddX, %function
+  23              	chTimeAddX:
+  24              	.LFB8:
+  25              		.file 1 "../../../os/rt/include/chtime.h"
+  26              		.loc 1 443 60
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              		.cfi_def_cfa_offset 4
+  33              		.cfi_offset 7, -4
+  34 0002 83B0     		sub	sp, sp, #12
+  35              		.cfi_def_cfa_offset 16
+  36 0004 00AF     		add	r7, sp, #0
+  37              		.cfi_def_cfa_register 7
+  38 0006 7860     		str	r0, [r7, #4]
+  39 0008 3960     		str	r1, [r7]
+  40              		.loc 1 449 18
+  41 000a 7A68     		ldr	r2, [r7, #4]
+  42 000c 3B68     		ldr	r3, [r7]
+  43 000e 1344     		add	r3, r3, r2
+  44              		.loc 1 450 1
+  45 0010 1846     		mov	r0, r3
+  46 0012 0C37     		adds	r7, r7, #12
+  47              		.cfi_def_cfa_offset 4
+  48 0014 BD46     		mov	sp, r7
+  49              		.cfi_def_cfa_register 13
+  50              		@ sp needed
+  51 0016 80BC     		pop	{r7}
+  52              		.cfi_restore 7
+  53              		.cfi_def_cfa_offset 0
+  54 0018 7047     		bx	lr
+  55              		.cfi_endproc
+  56              	.LFE8:
+  57              		.size	chTimeAddX, .-chTimeAddX
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 2
+
+
+  58              		.section	.text.chTimeIsInRangeX,"ax",%progbits
+  59              		.align	1
+  60              		.syntax unified
+  61              		.thumb
+  62              		.thumb_func
+  63              		.type	chTimeIsInRangeX, %function
+  64              	chTimeIsInRangeX:
+  65              	.LFB10:
+  66              		.loc 1 486 52
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 16
+  69              		@ frame_needed = 1, uses_anonymous_args = 0
+  70              		@ link register save eliminated.
+  71 0000 80B4     		push	{r7}
+  72              		.cfi_def_cfa_offset 4
+  73              		.cfi_offset 7, -4
+  74 0002 85B0     		sub	sp, sp, #20
+  75              		.cfi_def_cfa_offset 24
+  76 0004 00AF     		add	r7, sp, #0
+  77              		.cfi_def_cfa_register 7
+  78 0006 F860     		str	r0, [r7, #12]
+  79 0008 B960     		str	r1, [r7, #8]
+  80 000a 7A60     		str	r2, [r7, #4]
+  81              		.loc 1 488 17
+  82 000c FA68     		ldr	r2, [r7, #12]
+  83 000e BB68     		ldr	r3, [r7, #8]
+  84 0010 D21A     		subs	r2, r2, r3
+  85              		.loc 1 489 17
+  86 0012 7968     		ldr	r1, [r7, #4]
+  87 0014 BB68     		ldr	r3, [r7, #8]
+  88 0016 CB1A     		subs	r3, r1, r3
+  89              		.loc 1 488 10
+  90 0018 9A42     		cmp	r2, r3
+  91 001a 34BF     		ite	cc
+  92 001c 0123     		movcc	r3, #1
+  93 001e 0023     		movcs	r3, #0
+  94 0020 DBB2     		uxtb	r3, r3
+  95              		.loc 1 490 1
+  96 0022 1846     		mov	r0, r3
+  97 0024 1437     		adds	r7, r7, #20
+  98              		.cfi_def_cfa_offset 4
+  99 0026 BD46     		mov	sp, r7
+ 100              		.cfi_def_cfa_register 13
+ 101              		@ sp needed
+ 102 0028 80BC     		pop	{r7}
+ 103              		.cfi_restore 7
+ 104              		.cfi_def_cfa_offset 0
+ 105 002a 7047     		bx	lr
+ 106              		.cfi_endproc
+ 107              	.LFE10:
+ 108              		.size	chTimeIsInRangeX, .-chTimeIsInRangeX
+ 109              		.section	.text.port_timer_get_time,"ax",%progbits
+ 110              		.align	1
+ 111              		.syntax unified
+ 112              		.thumb
+ 113              		.thumb_func
+ 114              		.type	port_timer_get_time, %function
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 3
+
+
+ 115              	port_timer_get_time:
+ 116              	.LFB196:
+ 117              		.file 2 "../../../os/hal/osal/rt-nil/chcore_timer.h"
+ 118              		.loc 2 111 51
+ 119              		.cfi_startproc
+ 120              		@ args = 0, pretend = 0, frame = 0
+ 121              		@ frame_needed = 1, uses_anonymous_args = 0
+ 122 0000 80B5     		push	{r7, lr}
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 7, -8
+ 125              		.cfi_offset 14, -4
+ 126 0002 00AF     		add	r7, sp, #0
+ 127              		.cfi_def_cfa_register 7
+ 128              		.loc 2 113 10
+ 129 0004 FFF7FEFF 		bl	stGetCounter
+ 130 0008 0346     		mov	r3, r0
+ 131              		.loc 2 114 1
+ 132 000a 1846     		mov	r0, r3
+ 133 000c 80BD     		pop	{r7, pc}
+ 134              		.cfi_endproc
+ 135              	.LFE196:
+ 136              		.size	port_timer_get_time, .-port_timer_get_time
+ 137              		.section	.text.chSysLock,"ax",%progbits
+ 138              		.align	1
+ 139              		.syntax unified
+ 140              		.thumb
+ 141              		.thumb_func
+ 142              		.type	chSysLock, %function
+ 143              	chSysLock:
+ 144              	.LFB202:
+ 145              		.file 3 "../../../os/rt/include/chsys.h"
+ 146              		.loc 3 407 36
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 8
+ 149              		@ frame_needed = 1, uses_anonymous_args = 0
+ 150              		@ link register save eliminated.
+ 151 0000 80B4     		push	{r7}
+ 152              		.cfi_def_cfa_offset 4
+ 153              		.cfi_offset 7, -4
+ 154 0002 83B0     		sub	sp, sp, #12
+ 155              		.cfi_def_cfa_offset 16
+ 156 0004 00AF     		add	r7, sp, #0
+ 157              		.cfi_def_cfa_register 7
+ 158 0006 3023     		movs	r3, #48
+ 159 0008 7B60     		str	r3, [r7, #4]
+ 160              	.LBB14:
+ 161              	.LBB15:
+ 162              	.LBB16:
+ 163              	.LBB17:
+ 164              		.file 4 "../../../os/common/ext/ARM/CMSIS/Core/Include/cmsis_gcc.h"
+ 165              		.loc 4 493 3
+ 166 000a 7B68     		ldr	r3, [r7, #4]
+ 167              		.syntax unified
+ 168              	@ 493 "../../../os/common/ext/ARM/CMSIS/Core/Include/cmsis_gcc.h" 1
+ 169 000c 83F31188 		MSR basepri, r3
+ 170              	@ 0 "" 2
+ 171              		.loc 4 494 1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 4
+
+
+ 172              		.thumb
+ 173              		.syntax unified
+ 174 0010 00BF     		nop
+ 175              	.LBE17:
+ 176              	.LBE16:
+ 177              		.file 5 "../../../os/common/ports/ARMv7-M/chcore.h"
+ 178              		.loc 5 840 1
+ 179 0012 00BF     		nop
+ 180              	.LBE15:
+ 181              	.LBE14:
+ 182              		.loc 3 412 1
+ 183 0014 00BF     		nop
+ 184 0016 0C37     		adds	r7, r7, #12
+ 185              		.cfi_def_cfa_offset 4
+ 186 0018 BD46     		mov	sp, r7
+ 187              		.cfi_def_cfa_register 13
+ 188              		@ sp needed
+ 189 001a 80BC     		pop	{r7}
+ 190              		.cfi_restore 7
+ 191              		.cfi_def_cfa_offset 0
+ 192 001c 7047     		bx	lr
+ 193              		.cfi_endproc
+ 194              	.LFE202:
+ 195              		.size	chSysLock, .-chSysLock
+ 196              		.section	.text.chSysUnlock,"ax",%progbits
+ 197              		.align	1
+ 198              		.syntax unified
+ 199              		.thumb
+ 200              		.thumb_func
+ 201              		.type	chSysUnlock, %function
+ 202              	chSysUnlock:
+ 203              	.LFB203:
+ 204              		.loc 3 421 38
+ 205              		.cfi_startproc
+ 206              		@ args = 0, pretend = 0, frame = 8
+ 207              		@ frame_needed = 1, uses_anonymous_args = 0
+ 208              		@ link register save eliminated.
+ 209 0000 80B4     		push	{r7}
+ 210              		.cfi_def_cfa_offset 4
+ 211              		.cfi_offset 7, -4
+ 212 0002 83B0     		sub	sp, sp, #12
+ 213              		.cfi_def_cfa_offset 16
+ 214 0004 00AF     		add	r7, sp, #0
+ 215              		.cfi_def_cfa_register 7
+ 216 0006 0023     		movs	r3, #0
+ 217 0008 7B60     		str	r3, [r7, #4]
+ 218              	.LBB18:
+ 219              	.LBB19:
+ 220              	.LBB20:
+ 221              	.LBB21:
+ 222              		.loc 4 493 3
+ 223 000a 7B68     		ldr	r3, [r7, #4]
+ 224              		.syntax unified
+ 225              	@ 493 "../../../os/common/ext/ARM/CMSIS/Core/Include/cmsis_gcc.h" 1
+ 226 000c 83F31188 		MSR basepri, r3
+ 227              	@ 0 "" 2
+ 228              		.loc 4 494 1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 5
+
+
+ 229              		.thumb
+ 230              		.syntax unified
+ 231 0010 00BF     		nop
+ 232              	.LBE21:
+ 233              	.LBE20:
+ 234              		.loc 5 854 1
+ 235 0012 00BF     		nop
+ 236              	.LBE19:
+ 237              	.LBE18:
+ 238              		.loc 3 435 1
+ 239 0014 00BF     		nop
+ 240 0016 0C37     		adds	r7, r7, #12
+ 241              		.cfi_def_cfa_offset 4
+ 242 0018 BD46     		mov	sp, r7
+ 243              		.cfi_def_cfa_register 13
+ 244              		@ sp needed
+ 245 001a 80BC     		pop	{r7}
+ 246              		.cfi_restore 7
+ 247              		.cfi_def_cfa_offset 0
+ 248 001c 7047     		bx	lr
+ 249              		.cfi_endproc
+ 250              	.LFE203:
+ 251              		.size	chSysUnlock, .-chSysUnlock
+ 252              		.section	.text.chVTGetSystemTimeX,"ax",%progbits
+ 253              		.align	1
+ 254              		.syntax unified
+ 255              		.thumb
+ 256              		.thumb_func
+ 257              		.type	chVTGetSystemTimeX, %function
+ 258              	chVTGetSystemTimeX:
+ 259              	.LFB209:
+ 260              		.file 6 "../../../os/rt/include/chvt.h"
+ 261              		.loc 6 122 50
+ 262              		.cfi_startproc
+ 263              		@ args = 0, pretend = 0, frame = 0
+ 264              		@ frame_needed = 1, uses_anonymous_args = 0
+ 265 0000 80B5     		push	{r7, lr}
+ 266              		.cfi_def_cfa_offset 8
+ 267              		.cfi_offset 7, -8
+ 268              		.cfi_offset 14, -4
+ 269 0002 00AF     		add	r7, sp, #0
+ 270              		.cfi_def_cfa_register 7
+ 271              		.loc 6 127 10
+ 272 0004 FFF7FEFF 		bl	port_timer_get_time
+ 273 0008 0346     		mov	r3, r0
+ 274              		.loc 6 129 1
+ 275 000a 1846     		mov	r0, r3
+ 276 000c 80BD     		pop	{r7, pc}
+ 277              		.cfi_endproc
+ 278              	.LFE209:
+ 279              		.size	chVTGetSystemTimeX, .-chVTGetSystemTimeX
+ 280              		.section	.text.chVTIsSystemTimeWithinX,"ax",%progbits
+ 281              		.align	1
+ 282              		.syntax unified
+ 283              		.thumb
+ 284              		.thumb_func
+ 285              		.type	chVTIsSystemTimeWithinX, %function
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 6
+
+
+ 286              	chVTIsSystemTimeWithinX:
+ 287              	.LFB212:
+ 288              		.loc 6 177 76
+ 289              		.cfi_startproc
+ 290              		@ args = 0, pretend = 0, frame = 8
+ 291              		@ frame_needed = 1, uses_anonymous_args = 0
+ 292 0000 80B5     		push	{r7, lr}
+ 293              		.cfi_def_cfa_offset 8
+ 294              		.cfi_offset 7, -8
+ 295              		.cfi_offset 14, -4
+ 296 0002 82B0     		sub	sp, sp, #8
+ 297              		.cfi_def_cfa_offset 16
+ 298 0004 00AF     		add	r7, sp, #0
+ 299              		.cfi_def_cfa_register 7
+ 300 0006 7860     		str	r0, [r7, #4]
+ 301 0008 3960     		str	r1, [r7]
+ 302              		.loc 6 179 10
+ 303 000a FFF7FEFF 		bl	chVTGetSystemTimeX
+ 304 000e 0346     		mov	r3, r0
+ 305 0010 3A68     		ldr	r2, [r7]
+ 306 0012 7968     		ldr	r1, [r7, #4]
+ 307 0014 1846     		mov	r0, r3
+ 308 0016 FFF7FEFF 		bl	chTimeIsInRangeX
+ 309 001a 0346     		mov	r3, r0
+ 310              		.loc 6 180 1
+ 311 001c 1846     		mov	r0, r3
+ 312 001e 0837     		adds	r7, r7, #8
+ 313              		.cfi_def_cfa_offset 8
+ 314 0020 BD46     		mov	sp, r7
+ 315              		.cfi_def_cfa_register 13
+ 316              		@ sp needed
+ 317 0022 80BD     		pop	{r7, pc}
+ 318              		.cfi_endproc
+ 319              	.LFE212:
+ 320              		.size	chVTIsSystemTimeWithinX, .-chVTIsSystemTimeWithinX
+ 321              		.section	.text.chVTGetTimeStamp,"ax",%progbits
+ 322              		.align	1
+ 323              		.syntax unified
+ 324              		.thumb
+ 325              		.thumb_func
+ 326              		.type	chVTGetTimeStamp, %function
+ 327              	chVTGetTimeStamp:
+ 328              	.LFB225:
+ 329              		.loc 6 474 53
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 8
+ 332              		@ frame_needed = 1, uses_anonymous_args = 0
+ 333 0000 80B5     		push	{r7, lr}
+ 334              		.cfi_def_cfa_offset 8
+ 335              		.cfi_offset 7, -8
+ 336              		.cfi_offset 14, -4
+ 337 0002 82B0     		sub	sp, sp, #8
+ 338              		.cfi_def_cfa_offset 16
+ 339 0004 00AF     		add	r7, sp, #0
+ 340              		.cfi_def_cfa_register 7
+ 341              		.loc 6 477 3
+ 342 0006 FFF7FEFF 		bl	chSysLock
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 7
+
+
+ 343              		.loc 6 479 11
+ 344 000a FFF7FEFF 		bl	chVTGetTimeStampI
+ 345 000e C7E90001 		strd	r0, [r7]
+ 346              		.loc 6 481 3
+ 347 0012 FFF7FEFF 		bl	chSysUnlock
+ 348              		.loc 6 483 10
+ 349 0016 D7E90023 		ldrd	r2, [r7]
+ 350              		.loc 6 484 1
+ 351 001a 1046     		mov	r0, r2
+ 352 001c 1946     		mov	r1, r3
+ 353 001e 0837     		adds	r7, r7, #8
+ 354              		.cfi_def_cfa_offset 8
+ 355 0020 BD46     		mov	sp, r7
+ 356              		.cfi_def_cfa_register 13
+ 357              		@ sp needed
+ 358 0022 80BD     		pop	{r7, pc}
+ 359              		.cfi_endproc
+ 360              	.LFE225:
+ 361              		.size	chVTGetTimeStamp, .-chVTGetTimeStamp
+ 362              		.section	.rodata
+ 363              		.align	2
+ 364              	.LC0:
+ 365 0000 6E6F7420 		.ascii	"not monotonic\000"
+ 365      6D6F6E6F 
+ 365      746F6E69 
+ 365      6300
+ 366              		.section	.text.rt_test_004_001_execute,"ax",%progbits
+ 367              		.align	1
+ 368              		.syntax unified
+ 369              		.thumb
+ 370              		.thumb_func
+ 371              		.type	rt_test_004_001_execute, %function
+ 372              	rt_test_004_001_execute:
+ 373              	.LFB436:
+ 374              		.file 7 "../../../test/rt/source/test/rt_test_sequence_004.c"
+ 375              		.loc 7 66 43
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 32
+ 378              		@ frame_needed = 1, uses_anonymous_args = 0
+ 379 0000 80B5     		push	{r7, lr}
+ 380              		.cfi_def_cfa_offset 8
+ 381              		.cfi_offset 7, -8
+ 382              		.cfi_offset 14, -4
+ 383 0002 88B0     		sub	sp, sp, #32
+ 384              		.cfi_def_cfa_offset 40
+ 385 0004 00AF     		add	r7, sp, #0
+ 386              		.cfi_def_cfa_register 7
+ 387              		.loc 7 69 3
+ 388 0006 1F4B     		ldr	r3, .L20
+ 389 0008 0122     		movs	r2, #1
+ 390 000a 1A60     		str	r2, [r3]
+ 391              	.LBB22:
+ 392              		.loc 7 75 12
+ 393 000c FFF7FEFF 		bl	chVTGetTimeStamp
+ 394 0010 C7E90601 		strd	r0, [r7, #24]
+ 395              		.loc 7 76 13
+ 396 0014 FFF7FEFF 		bl	test_wait_tick
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 8
+
+
+ 397 0018 3861     		str	r0, [r7, #16]
+ 398              		.loc 7 77 14
+ 399 001a 6FF00043 		mvn	r3, #-2147483648
+ 400 001e 7B61     		str	r3, [r7, #20]
+ 401              		.loc 7 78 8
+ 402 0020 7B69     		ldr	r3, [r7, #20]
+ 403 0022 42F21072 		movw	r2, #10000
+ 404 0026 9342     		cmp	r3, r2
+ 405 0028 02D9     		bls	.L16
+ 406              		.loc 7 79 16
+ 407 002a 42F21073 		movw	r3, #10000
+ 408 002e 7B61     		str	r3, [r7, #20]
+ 409              	.L16:
+ 410              		.loc 7 81 11
+ 411 0030 7969     		ldr	r1, [r7, #20]
+ 412 0032 3869     		ldr	r0, [r7, #16]
+ 413 0034 FFF7FEFF 		bl	chTimeAddX
+ 414 0038 F860     		str	r0, [r7, #12]
+ 415              	.L19:
+ 416              		.loc 7 83 13
+ 417 003a FFF7FEFF 		bl	chVTGetTimeStamp
+ 418 003e C7E90001 		strd	r0, [r7]
+ 419              		.loc 7 84 7
+ 420 0042 D7E90623 		ldrd	r2, [r7, #24]
+ 421 0046 D7E90001 		ldrd	r0, [r7]
+ 422 004a 9042     		cmp	r0, r2
+ 423 004c 71EB0303 		sbcs	r3, r1, r3
+ 424 0050 2CBF     		ite	cs
+ 425 0052 0123     		movcs	r3, #1
+ 426 0054 0023     		movcc	r3, #0
+ 427 0056 DBB2     		uxtb	r3, r3
+ 428 0058 0B49     		ldr	r1, .L20+4
+ 429 005a 1846     		mov	r0, r3
+ 430 005c FFF7FEFF 		bl	__test_assert
+ 431 0060 0346     		mov	r3, r0
+ 432 0062 002B     		cmp	r3, #0
+ 433 0064 0AD1     		bne	.L15
+ 434              		.loc 7 85 12
+ 435 0066 D7E90023 		ldrd	r2, [r7]
+ 436 006a C7E90623 		strd	r2, [r7, #24]
+ 437              		.loc 7 89 14
+ 438 006e F968     		ldr	r1, [r7, #12]
+ 439 0070 3869     		ldr	r0, [r7, #16]
+ 440 0072 FFF7FEFF 		bl	chVTIsSystemTimeWithinX
+ 441 0076 0346     		mov	r3, r0
+ 442 0078 002B     		cmp	r3, #0
+ 443 007a DED1     		bne	.L19
+ 444              	.L15:
+ 445              	.LBE22:
+ 446              		.loc 7 92 1
+ 447 007c 2037     		adds	r7, r7, #32
+ 448              		.cfi_def_cfa_offset 8
+ 449 007e BD46     		mov	sp, r7
+ 450              		.cfi_def_cfa_register 13
+ 451              		@ sp needed
+ 452 0080 80BD     		pop	{r7, pc}
+ 453              	.L21:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 9
+
+
+ 454 0082 00BF     		.align	2
+ 455              	.L20:
+ 456 0084 00000000 		.word	chtest
+ 457 0088 00000000 		.word	.LC0
+ 458              		.cfi_endproc
+ 459              	.LFE436:
+ 460              		.size	rt_test_004_001_execute, .-rt_test_004_001_execute
+ 461              		.section	.rodata
+ 462 000e 0000     		.align	2
+ 463              	.LC1:
+ 464 0010 54696D65 		.ascii	"Time Stamps functionality\000"
+ 464      20537461 
+ 464      6D707320 
+ 464      66756E63 
+ 464      74696F6E 
+ 465              		.section	.rodata.rt_test_004_001,"a"
+ 466              		.align	2
+ 467              		.type	rt_test_004_001, %object
+ 468              		.size	rt_test_004_001, 16
+ 469              	rt_test_004_001:
+ 470 0000 10000000 		.word	.LC1
+ 471 0004 00000000 		.word	0
+ 472 0008 00000000 		.word	0
+ 473 000c 00000000 		.word	rt_test_004_001_execute
+ 474              		.global	rt_test_sequence_004_array
+ 475              		.section	.rodata.rt_test_sequence_004_array,"a"
+ 476              		.align	2
+ 477              		.type	rt_test_sequence_004_array, %object
+ 478              		.size	rt_test_sequence_004_array, 8
+ 479              	rt_test_sequence_004_array:
+ 480 0000 00000000 		.word	rt_test_004_001
+ 481 0004 00000000 		.word	0
+ 482              		.global	rt_test_sequence_004
+ 483              		.section	.rodata
+ 484 002a 0000     		.align	2
+ 485              	.LC2:
+ 486 002c 54696D65 		.ascii	"Time Stamps Functionality\000"
+ 486      20537461 
+ 486      6D707320 
+ 486      46756E63 
+ 486      74696F6E 
+ 487              		.section	.rodata.rt_test_sequence_004,"a"
+ 488              		.align	2
+ 489              		.type	rt_test_sequence_004, %object
+ 490              		.size	rt_test_sequence_004, 8
+ 491              	rt_test_sequence_004:
+ 492 0000 2C000000 		.word	.LC2
+ 493 0004 00000000 		.word	rt_test_sequence_004_array
+ 494              		.text
+ 495              	.Letext0:
+ 496              		.file 8 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\lib\\gcc\\arm-none-eabi\\11
+ 497              		.file 9 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\mac
+ 498              		.file 10 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\sy
+ 499              		.file 11 "../../../os/rt/include/chearly.h"
+ 500              		.file 12 "../../../os/hal/include/hal_streams.h"
+ 501              		.file 13 "../../../os/test/include/ch_test.h"
+ 502              		.file 14 "../../../test/rt/source/test/rt_test_sequence_004.h"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 10
+
+
+ 503              		.file 15 "../../../os/hal/include/hal_st.h"
+ 504              		.file 16 "../../../test/rt/source/test/rt_test_root.h"
+ 505              		.section	.debug_info,"",%progbits
+ 506              	.Ldebug_info0:
+ 507 0000 4D060000 		.4byte	0x64d
+ 508 0004 0500     		.2byte	0x5
+ 509 0006 01       		.byte	0x1
+ 510 0007 04       		.byte	0x4
+ 511 0008 00000000 		.4byte	.Ldebug_abbrev0
+ 512 000c 15       		.uleb128 0x15
+ 513 000d 4A000000 		.4byte	.LASF72
+ 514 0011 1D       		.byte	0x1d
+ 515 0012 08040000 		.4byte	.LASF73
+ 516 0016 81020000 		.4byte	.LASF74
+ 517 001a 0C000000 		.4byte	.LLRL0
+ 518 001e 00000000 		.4byte	0
+ 519 0022 00000000 		.4byte	.Ldebug_line0
+ 520 0026 16       		.uleb128 0x16
+ 521 0027 04       		.byte	0x4
+ 522 0028 05       		.byte	0x5
+ 523 0029 696E7400 		.ascii	"int\000"
+ 524 002d 01       		.uleb128 0x1
+ 525 002e E8000000 		.4byte	.LASF4
+ 526 0032 08       		.byte	0x8
+ 527 0033 D1       		.byte	0xd1
+ 528 0034 17       		.byte	0x17
+ 529 0035 39000000 		.4byte	0x39
+ 530 0039 04       		.uleb128 0x4
+ 531 003a 04       		.byte	0x4
+ 532 003b 07       		.byte	0x7
+ 533 003c 79040000 		.4byte	.LASF0
+ 534 0040 04       		.uleb128 0x4
+ 535 0041 08       		.byte	0x8
+ 536 0042 05       		.byte	0x5
+ 537 0043 A3010000 		.4byte	.LASF1
+ 538 0047 04       		.uleb128 0x4
+ 539 0048 08       		.byte	0x8
+ 540 0049 04       		.byte	0x4
+ 541 004a 00000000 		.4byte	.LASF2
+ 542 004e 04       		.uleb128 0x4
+ 543 004f 01       		.byte	0x1
+ 544 0050 06       		.byte	0x6
+ 545 0051 28020000 		.4byte	.LASF3
+ 546 0055 01       		.uleb128 0x1
+ 547 0056 EE010000 		.4byte	.LASF5
+ 548 005a 09       		.byte	0x9
+ 549 005b 2B       		.byte	0x2b
+ 550 005c 18       		.byte	0x18
+ 551 005d 61000000 		.4byte	0x61
+ 552 0061 04       		.uleb128 0x4
+ 553 0062 01       		.byte	0x1
+ 554 0063 08       		.byte	0x8
+ 555 0064 06020000 		.4byte	.LASF6
+ 556 0068 04       		.uleb128 0x4
+ 557 0069 02       		.byte	0x2
+ 558 006a 05       		.byte	0x5
+ 559 006b DE000000 		.4byte	.LASF7
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 11
+
+
+ 560 006f 04       		.uleb128 0x4
+ 561 0070 02       		.byte	0x2
+ 562 0071 07       		.byte	0x7
+ 563 0072 ED020000 		.4byte	.LASF8
+ 564 0076 01       		.uleb128 0x1
+ 565 0077 F2030000 		.4byte	.LASF9
+ 566 007b 09       		.byte	0x9
+ 567 007c 4D       		.byte	0x4d
+ 568 007d 18       		.byte	0x18
+ 569 007e 82000000 		.4byte	0x82
+ 570 0082 04       		.uleb128 0x4
+ 571 0083 04       		.byte	0x4
+ 572 0084 05       		.byte	0x5
+ 573 0085 70040000 		.4byte	.LASF10
+ 574 0089 01       		.uleb128 0x1
+ 575 008a C0030000 		.4byte	.LASF11
+ 576 008e 09       		.byte	0x9
+ 577 008f 4F       		.byte	0x4f
+ 578 0090 19       		.byte	0x19
+ 579 0091 95000000 		.4byte	0x95
+ 580 0095 04       		.uleb128 0x4
+ 581 0096 04       		.byte	0x4
+ 582 0097 07       		.byte	0x7
+ 583 0098 A5030000 		.4byte	.LASF12
+ 584 009c 01       		.uleb128 0x1
+ 585 009d 6B030000 		.4byte	.LASF13
+ 586 00a1 09       		.byte	0x9
+ 587 00a2 69       		.byte	0x69
+ 588 00a3 19       		.byte	0x19
+ 589 00a4 A8000000 		.4byte	0xa8
+ 590 00a8 04       		.uleb128 0x4
+ 591 00a9 08       		.byte	0x8
+ 592 00aa 07       		.byte	0x7
+ 593 00ab 34020000 		.4byte	.LASF14
+ 594 00af 01       		.uleb128 0x1
+ 595 00b0 60010000 		.4byte	.LASF15
+ 596 00b4 0A       		.byte	0xa
+ 597 00b5 18       		.byte	0x18
+ 598 00b6 13       		.byte	0x13
+ 599 00b7 55000000 		.4byte	0x55
+ 600 00bb 06       		.uleb128 0x6
+ 601 00bc AF000000 		.4byte	0xaf
+ 602 00c0 01       		.uleb128 0x1
+ 603 00c1 2F030000 		.4byte	.LASF16
+ 604 00c5 0A       		.byte	0xa
+ 605 00c6 2C       		.byte	0x2c
+ 606 00c7 13       		.byte	0x13
+ 607 00c8 76000000 		.4byte	0x76
+ 608 00cc 01       		.uleb128 0x1
+ 609 00cd 4B020000 		.4byte	.LASF17
+ 610 00d1 0A       		.byte	0xa
+ 611 00d2 30       		.byte	0x30
+ 612 00d3 14       		.byte	0x14
+ 613 00d4 89000000 		.4byte	0x89
+ 614 00d8 01       		.uleb128 0x1
+ 615 00d9 D5000000 		.4byte	.LASF18
+ 616 00dd 0A       		.byte	0xa
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 12
+
+
+ 617 00de 3C       		.byte	0x3c
+ 618 00df 14       		.byte	0x14
+ 619 00e0 9C000000 		.4byte	0x9c
+ 620 00e4 01       		.uleb128 0x1
+ 621 00e5 8E040000 		.4byte	.LASF19
+ 622 00e9 0B       		.byte	0xb
+ 623 00ea 58       		.byte	0x58
+ 624 00eb 19       		.byte	0x19
+ 625 00ec C0000000 		.4byte	0xc0
+ 626 00f0 03       		.uleb128 0x3
+ 627 00f1 FC000000 		.4byte	0xfc
+ 628 00f5 04       		.uleb128 0x4
+ 629 00f6 01       		.byte	0x1
+ 630 00f7 08       		.byte	0x8
+ 631 00f8 12030000 		.4byte	.LASF20
+ 632 00fc 06       		.uleb128 0x6
+ 633 00fd F5000000 		.4byte	0xf5
+ 634 0101 01       		.uleb128 0x1
+ 635 0102 08030000 		.4byte	.LASF21
+ 636 0106 01       		.byte	0x1
+ 637 0107 6D       		.byte	0x6d
+ 638 0108 12       		.byte	0x12
+ 639 0109 CC000000 		.4byte	0xcc
+ 640 010d 01       		.uleb128 0x1
+ 641 010e 5D030000 		.4byte	.LASF22
+ 642 0112 01       		.byte	0x1
+ 643 0113 79       		.byte	0x79
+ 644 0114 12       		.byte	0x12
+ 645 0115 CC000000 		.4byte	0xcc
+ 646 0119 01       		.uleb128 0x1
+ 647 011a 3C040000 		.4byte	.LASF23
+ 648 011e 01       		.byte	0x1
+ 649 011f 81       		.byte	0x81
+ 650 0120 12       		.byte	0x12
+ 651 0121 D8000000 		.4byte	0xd8
+ 652 0125 01       		.uleb128 0x1
+ 653 0126 FC030000 		.4byte	.LASF24
+ 654 012a 01       		.byte	0x1
+ 655 012b 9B       		.byte	0x9b
+ 656 012c 12       		.byte	0x12
+ 657 012d D8000000 		.4byte	0xd8
+ 658 0131 17       		.uleb128 0x17
+ 659 0132 04       		.byte	0x4
+ 660 0133 04       		.uleb128 0x4
+ 661 0134 01       		.byte	0x1
+ 662 0135 02       		.byte	0x2
+ 663 0136 4B030000 		.4byte	.LASF25
+ 664 013a 03       		.uleb128 0x3
+ 665 013b AF000000 		.4byte	0xaf
+ 666 013f 18       		.uleb128 0x18
+ 667 0140 94040000 		.4byte	.LASF75
+ 668 0144 14       		.byte	0x14
+ 669 0145 0C       		.byte	0xc
+ 670 0146 4F       		.byte	0x4f
+ 671 0147 08       		.byte	0x8
+ 672 0148 8C010000 		.4byte	0x18c
+ 673 014c 02       		.uleb128 0x2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 13
+
+
+ 674 014d C2010000 		.4byte	.LASF26
+ 675 0151 0C       		.byte	0xc
+ 676 0152 50       		.byte	0x50
+ 677 0153 03       		.byte	0x3
+ 678 0154 2D000000 		.4byte	0x2d
+ 679 0158 00       		.byte	0
+ 680 0159 02       		.uleb128 0x2
+ 681 015a 44000000 		.4byte	.LASF27
+ 682 015e 0C       		.byte	0xc
+ 683 015f 50       		.byte	0x50
+ 684 0160 03       		.byte	0x3
+ 685 0161 AF010000 		.4byte	0x1af
+ 686 0165 04       		.byte	0x4
+ 687 0166 02       		.uleb128 0x2
+ 688 0167 9E010000 		.4byte	.LASF28
+ 689 016b 0C       		.byte	0xc
+ 690 016c 50       		.byte	0x50
+ 691 016d 03       		.byte	0x3
+ 692 016e CD010000 		.4byte	0x1cd
+ 693 0172 08       		.byte	0x8
+ 694 0173 0C       		.uleb128 0xc
+ 695 0174 70757400 		.ascii	"put\000"
+ 696 0178 50       		.byte	0x50
+ 697 0179 03       		.byte	0x3
+ 698 017a E6010000 		.4byte	0x1e6
+ 699 017e 0C       		.byte	0xc
+ 700 017f 0C       		.uleb128 0xc
+ 701 0180 67657400 		.ascii	"get\000"
+ 702 0184 50       		.byte	0x50
+ 703 0185 03       		.byte	0x3
+ 704 0186 FA010000 		.4byte	0x1fa
+ 705 018a 10       		.byte	0x10
+ 706 018b 00       		.byte	0
+ 707 018c 06       		.uleb128 0x6
+ 708 018d 3F010000 		.4byte	0x13f
+ 709 0191 07       		.uleb128 0x7
+ 710 0192 2D000000 		.4byte	0x2d
+ 711 0196 AA010000 		.4byte	0x1aa
+ 712 019a 05       		.uleb128 0x5
+ 713 019b 31010000 		.4byte	0x131
+ 714 019f 05       		.uleb128 0x5
+ 715 01a0 AA010000 		.4byte	0x1aa
+ 716 01a4 05       		.uleb128 0x5
+ 717 01a5 2D000000 		.4byte	0x2d
+ 718 01a9 00       		.byte	0
+ 719 01aa 03       		.uleb128 0x3
+ 720 01ab BB000000 		.4byte	0xbb
+ 721 01af 03       		.uleb128 0x3
+ 722 01b0 91010000 		.4byte	0x191
+ 723 01b4 07       		.uleb128 0x7
+ 724 01b5 2D000000 		.4byte	0x2d
+ 725 01b9 CD010000 		.4byte	0x1cd
+ 726 01bd 05       		.uleb128 0x5
+ 727 01be 31010000 		.4byte	0x131
+ 728 01c2 05       		.uleb128 0x5
+ 729 01c3 3A010000 		.4byte	0x13a
+ 730 01c7 05       		.uleb128 0x5
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 14
+
+
+ 731 01c8 2D000000 		.4byte	0x2d
+ 732 01cc 00       		.byte	0
+ 733 01cd 03       		.uleb128 0x3
+ 734 01ce B4010000 		.4byte	0x1b4
+ 735 01d2 07       		.uleb128 0x7
+ 736 01d3 E4000000 		.4byte	0xe4
+ 737 01d7 E6010000 		.4byte	0x1e6
+ 738 01db 05       		.uleb128 0x5
+ 739 01dc 31010000 		.4byte	0x131
+ 740 01e0 05       		.uleb128 0x5
+ 741 01e1 AF000000 		.4byte	0xaf
+ 742 01e5 00       		.byte	0
+ 743 01e6 03       		.uleb128 0x3
+ 744 01e7 D2010000 		.4byte	0x1d2
+ 745 01eb 07       		.uleb128 0x7
+ 746 01ec E4000000 		.4byte	0xe4
+ 747 01f0 FA010000 		.4byte	0x1fa
+ 748 01f4 05       		.uleb128 0x5
+ 749 01f5 31010000 		.4byte	0x131
+ 750 01f9 00       		.byte	0
+ 751 01fa 03       		.uleb128 0x3
+ 752 01fb EB010000 		.4byte	0x1eb
+ 753 01ff 08       		.uleb128 0x8
+ 754 0200 04       		.byte	0x4
+ 755 0201 0C       		.byte	0xc
+ 756 0202 5A       		.byte	0x5a
+ 757 0203 14020000 		.4byte	0x214
+ 758 0207 0C       		.uleb128 0xc
+ 759 0208 766D7400 		.ascii	"vmt\000"
+ 760 020c 5C       		.byte	0x5c
+ 761 020d 29       		.byte	0x29
+ 762 020e 14020000 		.4byte	0x214
+ 763 0212 00       		.byte	0
+ 764 0213 00       		.byte	0
+ 765 0214 03       		.uleb128 0x3
+ 766 0215 8C010000 		.4byte	0x18c
+ 767 0219 01       		.uleb128 0x1
+ 768 021a 16010000 		.4byte	.LASF29
+ 769 021e 0C       		.byte	0xc
+ 770 021f 5E       		.byte	0x5e
+ 771 0220 03       		.byte	0x3
+ 772 0221 FF010000 		.4byte	0x1ff
+ 773 0225 01       		.uleb128 0x1
+ 774 0226 6E010000 		.4byte	.LASF30
+ 775 022a 0D       		.byte	0xd
+ 776 022b 7D       		.byte	0x7d
+ 777 022c 0F       		.byte	0xf
+ 778 022d 31020000 		.4byte	0x231
+ 779 0231 03       		.uleb128 0x3
+ 780 0232 36020000 		.4byte	0x236
+ 781 0236 07       		.uleb128 0x7
+ 782 0237 26000000 		.4byte	0x26
+ 783 023b 45020000 		.4byte	0x245
+ 784 023f 05       		.uleb128 0x5
+ 785 0240 26000000 		.4byte	0x26
+ 786 0244 00       		.byte	0
+ 787 0245 08       		.uleb128 0x8
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 15
+
+
+ 788 0246 28       		.byte	0x28
+ 789 0247 0D       		.byte	0xd
+ 790 0248 82       		.byte	0x82
+ 791 0249 B6020000 		.4byte	0x2b6
+ 792 024d 02       		.uleb128 0x2
+ 793 024e 7D010000 		.4byte	.LASF31
+ 794 0252 0D       		.byte	0xd
+ 795 0253 86       		.byte	0x86
+ 796 0254 15       		.byte	0x15
+ 797 0255 39000000 		.4byte	0x39
+ 798 0259 00       		.byte	0
+ 799 025a 02       		.uleb128 0x2
+ 800 025b EF000000 		.4byte	.LASF32
+ 801 025f 0D       		.byte	0xd
+ 802 0260 8A       		.byte	0x8a
+ 803 0261 15       		.byte	0x15
+ 804 0262 33010000 		.4byte	0x133
+ 805 0266 04       		.byte	0x4
+ 806 0267 02       		.uleb128 0x2
+ 807 0268 1D020000 		.4byte	.LASF33
+ 808 026c 0D       		.byte	0xd
+ 809 026d 8E       		.byte	0x8e
+ 810 026e 15       		.byte	0x15
+ 811 026f 33010000 		.4byte	0x133
+ 812 0273 05       		.byte	0x5
+ 813 0274 02       		.uleb128 0x2
+ 814 0275 D2010000 		.4byte	.LASF34
+ 815 0279 0D       		.byte	0xd
+ 816 027a 92       		.byte	0x92
+ 817 027b 16       		.byte	0x16
+ 818 027c F0000000 		.4byte	0xf0
+ 819 0280 08       		.byte	0x8
+ 820 0281 02       		.uleb128 0x2
+ 821 0282 E2010000 		.4byte	.LASF35
+ 822 0286 0D       		.byte	0xd
+ 823 0287 96       		.byte	0x96
+ 824 0288 16       		.byte	0x16
+ 825 0289 B6020000 		.4byte	0x2b6
+ 826 028d 0C       		.byte	0xc
+ 827 028e 02       		.uleb128 0x2
+ 828 028f 36000000 		.4byte	.LASF36
+ 829 0293 0D       		.byte	0xd
+ 830 0294 9A       		.byte	0x9a
+ 831 0295 15       		.byte	0x15
+ 832 0296 BB020000 		.4byte	0x2bb
+ 833 029a 10       		.byte	0x10
+ 834 029b 02       		.uleb128 0x2
+ 835 029c FB000000 		.4byte	.LASF37
+ 836 02a0 0D       		.byte	0xd
+ 837 02a1 9E       		.byte	0x9e
+ 838 02a2 15       		.byte	0x15
+ 839 02a3 25020000 		.4byte	0x225
+ 840 02a7 20       		.byte	0x20
+ 841 02a8 02       		.uleb128 0x2
+ 842 02a9 E7010000 		.4byte	.LASF38
+ 843 02ad 0D       		.byte	0xd
+ 844 02ae A3       		.byte	0xa3
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 16
+
+
+ 845 02af 19       		.byte	0x19
+ 846 02b0 CB020000 		.4byte	0x2cb
+ 847 02b4 24       		.byte	0x24
+ 848 02b5 00       		.byte	0
+ 849 02b6 03       		.uleb128 0x3
+ 850 02b7 F5000000 		.4byte	0xf5
+ 851 02bb 0D       		.uleb128 0xd
+ 852 02bc F5000000 		.4byte	0xf5
+ 853 02c0 CB020000 		.4byte	0x2cb
+ 854 02c4 0E       		.uleb128 0xe
+ 855 02c5 39000000 		.4byte	0x39
+ 856 02c9 0F       		.byte	0xf
+ 857 02ca 00       		.byte	0
+ 858 02cb 03       		.uleb128 0x3
+ 859 02cc 19020000 		.4byte	0x219
+ 860 02d0 01       		.uleb128 0x1
+ 861 02d1 24000000 		.4byte	.LASF39
+ 862 02d5 0D       		.byte	0xd
+ 863 02d6 A5       		.byte	0xa5
+ 864 02d7 03       		.byte	0x3
+ 865 02d8 45020000 		.4byte	0x245
+ 866 02dc 08       		.uleb128 0x8
+ 867 02dd 10       		.byte	0x10
+ 868 02de 0D       		.byte	0xd
+ 869 02df AA       		.byte	0xaa
+ 870 02e0 19030000 		.4byte	0x319
+ 871 02e4 02       		.uleb128 0x2
+ 872 02e5 01020000 		.4byte	.LASF40
+ 873 02e9 0D       		.byte	0xd
+ 874 02ea AB       		.byte	0xab
+ 875 02eb 0F       		.byte	0xf
+ 876 02ec F0000000 		.4byte	0xf0
+ 877 02f0 00       		.byte	0
+ 878 02f1 02       		.uleb128 0x2
+ 879 02f2 8A010000 		.4byte	.LASF41
+ 880 02f6 0D       		.byte	0xd
+ 881 02f7 AC       		.byte	0xac
+ 882 02f8 0A       		.byte	0xa
+ 883 02f9 1A030000 		.4byte	0x31a
+ 884 02fd 04       		.byte	0x4
+ 885 02fe 02       		.uleb128 0x2
+ 886 02ff F8010000 		.4byte	.LASF42
+ 887 0303 0D       		.byte	0xd
+ 888 0304 AD       		.byte	0xad
+ 889 0305 0A       		.byte	0xa
+ 890 0306 1A030000 		.4byte	0x31a
+ 891 030a 08       		.byte	0x8
+ 892 030b 02       		.uleb128 0x2
+ 893 030c 5A040000 		.4byte	.LASF43
+ 894 0310 0D       		.byte	0xd
+ 895 0311 AE       		.byte	0xae
+ 896 0312 0A       		.byte	0xa
+ 897 0313 1A030000 		.4byte	0x31a
+ 898 0317 0C       		.byte	0xc
+ 899 0318 00       		.byte	0
+ 900 0319 19       		.uleb128 0x19
+ 901 031a 03       		.uleb128 0x3
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 17
+
+
+ 902 031b 19030000 		.4byte	0x319
+ 903 031f 01       		.uleb128 0x1
+ 904 0320 55010000 		.4byte	.LASF44
+ 905 0324 0D       		.byte	0xd
+ 906 0325 AF       		.byte	0xaf
+ 907 0326 03       		.byte	0x3
+ 908 0327 DC020000 		.4byte	0x2dc
+ 909 032b 06       		.uleb128 0x6
+ 910 032c 1F030000 		.4byte	0x31f
+ 911 0330 08       		.uleb128 0x8
+ 912 0331 08       		.byte	0x8
+ 913 0332 0D       		.byte	0xd
+ 914 0333 B4       		.byte	0xb4
+ 915 0334 53030000 		.4byte	0x353
+ 916 0338 02       		.uleb128 0x2
+ 917 0339 01020000 		.4byte	.LASF40
+ 918 033d 0D       		.byte	0xd
+ 919 033e B5       		.byte	0xb5
+ 920 033f 16       		.byte	0x16
+ 921 0340 F0000000 		.4byte	0xf0
+ 922 0344 00       		.byte	0
+ 923 0345 02       		.uleb128 0x2
+ 924 0346 E1020000 		.4byte	.LASF45
+ 925 034a 0D       		.byte	0xd
+ 926 034b B6       		.byte	0xb6
+ 927 034c 1E       		.byte	0x1e
+ 928 034d 53030000 		.4byte	0x353
+ 929 0351 04       		.byte	0x4
+ 930 0352 00       		.byte	0
+ 931 0353 03       		.uleb128 0x3
+ 932 0354 5D030000 		.4byte	0x35d
+ 933 0358 03       		.uleb128 0x3
+ 934 0359 2B030000 		.4byte	0x32b
+ 935 035d 06       		.uleb128 0x6
+ 936 035e 58030000 		.4byte	0x358
+ 937 0362 01       		.uleb128 0x1
+ 938 0363 46010000 		.4byte	.LASF46
+ 939 0367 0D       		.byte	0xd
+ 940 0368 B7       		.byte	0xb7
+ 941 0369 03       		.byte	0x3
+ 942 036a 30030000 		.4byte	0x330
+ 943 036e 06       		.uleb128 0x6
+ 944 036f 62030000 		.4byte	0x362
+ 945 0373 1A       		.uleb128 0x1a
+ 946 0374 2B010000 		.4byte	.LASF47
+ 947 0378 0D       		.byte	0xd
+ 948 0379 2901     		.2byte	0x129
+ 949 037b 1A       		.byte	0x1a
+ 950 037c D0020000 		.4byte	0x2d0
+ 951 0380 1B       		.uleb128 0x1b
+ 952 0381 90030000 		.4byte	.LASF48
+ 953 0385 0E       		.byte	0xe
+ 954 0386 19       		.byte	0x19
+ 955 0387 1D       		.byte	0x1d
+ 956 0388 6E030000 		.4byte	0x36e
+ 957 038c 09       		.uleb128 0x9
+ 958 038d 54020000 		.4byte	.LASF53
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 18
+
+
+ 959 0391 5E       		.byte	0x5e
+ 960 0392 19       		.byte	0x19
+ 961 0393 2B030000 		.4byte	0x32b
+ 962 0397 05       		.uleb128 0x5
+ 963 0398 03       		.byte	0x3
+ 964 0399 00000000 		.4byte	rt_test_004_001
+ 965 039d 0D       		.uleb128 0xd
+ 966 039e 5D030000 		.4byte	0x35d
+ 967 03a2 AD030000 		.4byte	0x3ad
+ 968 03a6 0E       		.uleb128 0xe
+ 969 03a7 39000000 		.4byte	0x39
+ 970 03ab 01       		.byte	0x1
+ 971 03ac 00       		.byte	0
+ 972 03ad 06       		.uleb128 0x6
+ 973 03ae 9D030000 		.4byte	0x39d
+ 974 03b2 1C       		.uleb128 0x1c
+ 975 03b3 D7030000 		.4byte	.LASF49
+ 976 03b7 07       		.byte	0x7
+ 977 03b8 6C       		.byte	0x6c
+ 978 03b9 1A       		.byte	0x1a
+ 979 03ba AD030000 		.4byte	0x3ad
+ 980 03be 05       		.uleb128 0x5
+ 981 03bf 03       		.byte	0x3
+ 982 03c0 00000000 		.4byte	rt_test_sequence_004_array
+ 983 03c4 1D       		.uleb128 0x1d
+ 984 03c5 80030000 		.4byte	0x380
+ 985 03c9 07       		.byte	0x7
+ 986 03ca 74       		.byte	0x74
+ 987 03cb 16       		.byte	0x16
+ 988 03cc 05       		.uleb128 0x5
+ 989 03cd 03       		.byte	0x3
+ 990 03ce 00000000 		.4byte	rt_test_sequence_004
+ 991 03d2 0F       		.uleb128 0xf
+ 992 03d3 AC040000 		.4byte	.LASF50
+ 993 03d7 0F       		.byte	0xf
+ 994 03d8 4B       		.byte	0x4b
+ 995 03d9 0D       		.byte	0xd
+ 996 03da 01010000 		.4byte	0x101
+ 997 03de 0F       		.uleb128 0xf
+ 998 03df 64020000 		.4byte	.LASF51
+ 999 03e3 06       		.byte	0x6
+ 1000 03e4 52       		.byte	0x52
+ 1001 03e5 12       		.byte	0x12
+ 1002 03e6 19010000 		.4byte	0x119
+ 1003 03ea 1E       		.uleb128 0x1e
+ 1004 03eb 90010000 		.4byte	.LASF76
+ 1005 03ef 0D       		.byte	0xd
+ 1006 03f0 3001     		.2byte	0x130
+ 1007 03f2 08       		.byte	0x8
+ 1008 03f3 33010000 		.4byte	0x133
+ 1009 03f7 06040000 		.4byte	0x406
+ 1010 03fb 05       		.uleb128 0x5
+ 1011 03fc 33010000 		.4byte	0x133
+ 1012 0400 05       		.uleb128 0x5
+ 1013 0401 F0000000 		.4byte	0xf0
+ 1014 0405 00       		.byte	0
+ 1015 0406 0F       		.uleb128 0xf
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 19
+
+
+ 1016 0407 4B040000 		.4byte	.LASF52
+ 1017 040b 10       		.byte	0x10
+ 1018 040c 65       		.byte	0x65
+ 1019 040d 0B       		.byte	0xb
+ 1020 040e 01010000 		.4byte	0x101
+ 1021 0412 1F       		.uleb128 0x1f
+ 1022 0413 17030000 		.4byte	.LASF60
+ 1023 0417 07       		.byte	0x7
+ 1024 0418 42       		.byte	0x42
+ 1025 0419 0D       		.byte	0xd
+ 1026 041a 00000000 		.4byte	.LFB436
+ 1027 041e 8C000000 		.4byte	.LFE436-.LFB436
+ 1028 0422 01       		.uleb128 0x1
+ 1029 0423 9C       		.byte	0x9c
+ 1030 0424 79040000 		.4byte	0x479
+ 1031 0428 20       		.uleb128 0x20
+ 1032 0429 0C000000 		.4byte	.LBB22
+ 1033 042d 70000000 		.4byte	.LBE22-.LBB22
+ 1034 0431 09       		.uleb128 0x9
+ 1035 0432 E7020000 		.4byte	.LASF54
+ 1036 0436 47       		.byte	0x47
+ 1037 0437 0F       		.byte	0xf
+ 1038 0438 01010000 		.4byte	0x101
+ 1039 043c 02       		.uleb128 0x2
+ 1040 043d 91       		.byte	0x91
+ 1041 043e 68       		.sleb128 -24
+ 1042 043f 10       		.uleb128 0x10
+ 1043 0440 656E6400 		.ascii	"end\000"
+ 1044 0444 47       		.byte	0x47
+ 1045 0445 16       		.byte	0x16
+ 1046 0446 01010000 		.4byte	0x101
+ 1047 044a 02       		.uleb128 0x2
+ 1048 044b 91       		.byte	0x91
+ 1049 044c 64       		.sleb128 -28
+ 1050 044d 09       		.uleb128 0x9
+ 1051 044e DC020000 		.4byte	.LASF55
+ 1052 0452 48       		.byte	0x48
+ 1053 0453 14       		.byte	0x14
+ 1054 0454 19010000 		.4byte	0x119
+ 1055 0458 02       		.uleb128 0x2
+ 1056 0459 91       		.byte	0x91
+ 1057 045a 70       		.sleb128 -16
+ 1058 045b 10       		.uleb128 0x10
+ 1059 045c 6E6F7700 		.ascii	"now\000"
+ 1060 0460 48       		.byte	0x48
+ 1061 0461 1A       		.byte	0x1a
+ 1062 0462 19010000 		.4byte	0x119
+ 1063 0466 02       		.uleb128 0x2
+ 1064 0467 91       		.byte	0x91
+ 1065 0468 58       		.sleb128 -40
+ 1066 0469 09       		.uleb128 0x9
+ 1067 046a 76030000 		.4byte	.LASF56
+ 1068 046e 49       		.byte	0x49
+ 1069 046f 13       		.byte	0x13
+ 1070 0470 0D010000 		.4byte	0x10d
+ 1071 0474 02       		.uleb128 0x2
+ 1072 0475 91       		.byte	0x91
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 20
+
+
+ 1073 0476 6C       		.sleb128 -20
+ 1074 0477 00       		.byte	0
+ 1075 0478 00       		.byte	0
+ 1076 0479 21       		.uleb128 0x21
+ 1077 047a 7F030000 		.4byte	.LASF58
+ 1078 047e 06       		.byte	0x6
+ 1079 047f DA01     		.2byte	0x1da
+ 1080 0481 1E       		.byte	0x1e
+ 1081 0482 19010000 		.4byte	0x119
+ 1082 0486 00000000 		.4byte	.LFB225
+ 1083 048a 24000000 		.4byte	.LFE225-.LFB225
+ 1084 048e 01       		.uleb128 0x1
+ 1085 048f 9C       		.byte	0x9c
+ 1086 0490 A5040000 		.4byte	0x4a5
+ 1087 0494 22       		.uleb128 0x22
+ 1088 0495 68010000 		.4byte	.LASF57
+ 1089 0499 06       		.byte	0x6
+ 1090 049a DB01     		.2byte	0x1db
+ 1091 049c 12       		.byte	0x12
+ 1092 049d 19010000 		.4byte	0x119
+ 1093 04a1 02       		.uleb128 0x2
+ 1094 04a2 91       		.byte	0x91
+ 1095 04a3 70       		.sleb128 -16
+ 1096 04a4 00       		.byte	0
+ 1097 04a5 23       		.uleb128 0x23
+ 1098 04a6 0C000000 		.4byte	.LASF59
+ 1099 04aa 06       		.byte	0x6
+ 1100 04ab B1       		.byte	0xb1
+ 1101 04ac 14       		.byte	0x14
+ 1102 04ad 33010000 		.4byte	0x133
+ 1103 04b1 00000000 		.4byte	.LFB212
+ 1104 04b5 24000000 		.4byte	.LFE212-.LFB212
+ 1105 04b9 01       		.uleb128 0x1
+ 1106 04ba 9C       		.byte	0x9c
+ 1107 04bb DE040000 		.4byte	0x4de
+ 1108 04bf 24       		.uleb128 0x24
+ 1109 04c0 E7020000 		.4byte	.LASF54
+ 1110 04c4 06       		.byte	0x6
+ 1111 04c5 B1       		.byte	0xb1
+ 1112 04c6 36       		.byte	0x36
+ 1113 04c7 01010000 		.4byte	0x101
+ 1114 04cb 02       		.uleb128 0x2
+ 1115 04cc 91       		.byte	0x91
+ 1116 04cd 74       		.sleb128 -12
+ 1117 04ce 25       		.uleb128 0x25
+ 1118 04cf 656E6400 		.ascii	"end\000"
+ 1119 04d3 06       		.byte	0x6
+ 1120 04d4 B1       		.byte	0xb1
+ 1121 04d5 47       		.byte	0x47
+ 1122 04d6 01010000 		.4byte	0x101
+ 1123 04da 02       		.uleb128 0x2
+ 1124 04db 91       		.byte	0x91
+ 1125 04dc 70       		.sleb128 -16
+ 1126 04dd 00       		.byte	0
+ 1127 04de 11       		.uleb128 0x11
+ 1128 04df 03010000 		.4byte	.LASF63
+ 1129 04e3 06       		.byte	0x6
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 21
+
+
+ 1130 04e4 7A       		.byte	0x7a
+ 1131 04e5 01010000 		.4byte	0x101
+ 1132 04e9 00000000 		.4byte	.LFB209
+ 1133 04ed 0E000000 		.4byte	.LFE209-.LFB209
+ 1134 04f1 01       		.uleb128 0x1
+ 1135 04f2 9C       		.byte	0x9c
+ 1136 04f3 12       		.uleb128 0x12
+ 1137 04f4 CB030000 		.4byte	.LASF61
+ 1138 04f8 A501     		.2byte	0x1a5
+ 1139 04fa 00000000 		.4byte	.LFB203
+ 1140 04fe 1E000000 		.4byte	.LFE203-.LFB203
+ 1141 0502 01       		.uleb128 0x1
+ 1142 0503 9C       		.byte	0x9c
+ 1143 0504 3C050000 		.4byte	0x53c
+ 1144 0508 26       		.uleb128 0x26
+ 1145 0509 14020000 		.4byte	.LASF77
+ 1146 050d 4C050000 		.4byte	0x54c
+ 1147 0511 0A       		.uleb128 0xa
+ 1148 0512 A6050000 		.4byte	0x5a6
+ 1149 0516 0A000000 		.4byte	.LBB18
+ 1150 051a 0A000000 		.4byte	.LBE18-.LBB18
+ 1151 051e 03       		.byte	0x3
+ 1152 051f B201     		.2byte	0x1b2
+ 1153 0521 0A       		.uleb128 0xa
+ 1154 0522 B4050000 		.4byte	0x5b4
+ 1155 0526 0A000000 		.4byte	.LBB20
+ 1156 052a 08000000 		.4byte	.LBE20-.LBB20
+ 1157 052e 05       		.byte	0x5
+ 1158 052f 5203     		.2byte	0x352
+ 1159 0531 13       		.uleb128 0x13
+ 1160 0532 C2050000 		.4byte	0x5c2
+ 1161 0536 02       		.uleb128 0x2
+ 1162 0537 91       		.byte	0x91
+ 1163 0538 74       		.sleb128 -12
+ 1164 0539 00       		.byte	0
+ 1165 053a 00       		.byte	0
+ 1166 053b 00       		.byte	0
+ 1167 053c 0D       		.uleb128 0xd
+ 1168 053d FC000000 		.4byte	0xfc
+ 1169 0541 4C050000 		.4byte	0x54c
+ 1170 0545 0E       		.uleb128 0xe
+ 1171 0546 39000000 		.4byte	0x39
+ 1172 054a 0B       		.byte	0xb
+ 1173 054b 00       		.byte	0
+ 1174 054c 06       		.uleb128 0x6
+ 1175 054d 3C050000 		.4byte	0x53c
+ 1176 0551 12       		.uleb128 0x12
+ 1177 0552 3C010000 		.4byte	.LASF62
+ 1178 0556 9701     		.2byte	0x197
+ 1179 0558 00000000 		.4byte	.LFB202
+ 1180 055c 1E000000 		.4byte	.LFE202-.LFB202
+ 1181 0560 01       		.uleb128 0x1
+ 1182 0561 9C       		.byte	0x9c
+ 1183 0562 91050000 		.4byte	0x591
+ 1184 0566 0A       		.uleb128 0xa
+ 1185 0567 AD050000 		.4byte	0x5ad
+ 1186 056b 0A000000 		.4byte	.LBB14
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 22
+
+
+ 1187 056f 0A000000 		.4byte	.LBE14-.LBB14
+ 1188 0573 03       		.byte	0x3
+ 1189 0574 9901     		.2byte	0x199
+ 1190 0576 0A       		.uleb128 0xa
+ 1191 0577 B4050000 		.4byte	0x5b4
+ 1192 057b 0A000000 		.4byte	.LBB16
+ 1193 057f 08000000 		.4byte	.LBE16-.LBB16
+ 1194 0583 05       		.byte	0x5
+ 1195 0584 3F03     		.2byte	0x33f
+ 1196 0586 13       		.uleb128 0x13
+ 1197 0587 C2050000 		.4byte	0x5c2
+ 1198 058b 02       		.uleb128 0x2
+ 1199 058c 91       		.byte	0x91
+ 1200 058d 74       		.sleb128 -12
+ 1201 058e 00       		.byte	0
+ 1202 058f 00       		.byte	0
+ 1203 0590 00       		.byte	0
+ 1204 0591 11       		.uleb128 0x11
+ 1205 0592 37030000 		.4byte	.LASF64
+ 1206 0596 02       		.byte	0x2
+ 1207 0597 6F       		.byte	0x6f
+ 1208 0598 01010000 		.4byte	0x101
+ 1209 059c 00000000 		.4byte	.LFB196
+ 1210 05a0 0E000000 		.4byte	.LFE196-.LFB196
+ 1211 05a4 01       		.uleb128 0x1
+ 1212 05a5 9C       		.byte	0x9c
+ 1213 05a6 14       		.uleb128 0x14
+ 1214 05a7 51030000 		.4byte	.LASF65
+ 1215 05ab 4F03     		.2byte	0x34f
+ 1216 05ad 14       		.uleb128 0x14
+ 1217 05ae 32010000 		.4byte	.LASF66
+ 1218 05b2 3703     		.2byte	0x337
+ 1219 05b4 27       		.uleb128 0x27
+ 1220 05b5 62040000 		.4byte	.LASF78
+ 1221 05b9 04       		.byte	0x4
+ 1222 05ba EB01     		.2byte	0x1eb
+ 1223 05bc 1B       		.byte	0x1b
+ 1224 05bd 03       		.byte	0x3
+ 1225 05be D0050000 		.4byte	0x5d0
+ 1226 05c2 28       		.uleb128 0x28
+ 1227 05c3 00030000 		.4byte	.LASF79
+ 1228 05c7 04       		.byte	0x4
+ 1229 05c8 EB01     		.2byte	0x1eb
+ 1230 05ca 32       		.byte	0x32
+ 1231 05cb CC000000 		.4byte	0xcc
+ 1232 05cf 00       		.byte	0
+ 1233 05d0 29       		.uleb128 0x29
+ 1234 05d1 B1010000 		.4byte	.LASF67
+ 1235 05d5 01       		.byte	0x1
+ 1236 05d6 E401     		.2byte	0x1e4
+ 1237 05d8 14       		.byte	0x14
+ 1238 05d9 33010000 		.4byte	0x133
+ 1239 05dd 00000000 		.4byte	.LFB10
+ 1240 05e1 2C000000 		.4byte	.LFE10-.LFB10
+ 1241 05e5 01       		.uleb128 0x1
+ 1242 05e6 9C       		.byte	0x9c
+ 1243 05e7 1A060000 		.4byte	0x61a
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 23
+
+
+ 1244 05eb 0B       		.uleb128 0xb
+ 1245 05ec D7020000 		.4byte	.LASF68
+ 1246 05f0 E401     		.2byte	0x1e4
+ 1247 05f2 2F       		.byte	0x2f
+ 1248 05f3 01010000 		.4byte	0x101
+ 1249 05f7 02       		.uleb128 0x2
+ 1250 05f8 91       		.byte	0x91
+ 1251 05f9 74       		.sleb128 -12
+ 1252 05fa 0B       		.uleb128 0xb
+ 1253 05fb E7020000 		.4byte	.LASF54
+ 1254 05ff E501     		.2byte	0x1e5
+ 1255 0601 2F       		.byte	0x2f
+ 1256 0602 01010000 		.4byte	0x101
+ 1257 0606 02       		.uleb128 0x2
+ 1258 0607 91       		.byte	0x91
+ 1259 0608 70       		.sleb128 -16
+ 1260 0609 2A       		.uleb128 0x2a
+ 1261 060a 656E6400 		.ascii	"end\000"
+ 1262 060e 01       		.byte	0x1
+ 1263 060f E601     		.2byte	0x1e6
+ 1264 0611 2F       		.byte	0x2f
+ 1265 0612 01010000 		.4byte	0x101
+ 1266 0616 02       		.uleb128 0x2
+ 1267 0617 91       		.byte	0x91
+ 1268 0618 6C       		.sleb128 -20
+ 1269 0619 00       		.byte	0
+ 1270 061a 2B       		.uleb128 0x2b
+ 1271 061b 76020000 		.4byte	.LASF69
+ 1272 061f 01       		.byte	0x1
+ 1273 0620 BA01     		.2byte	0x1ba
+ 1274 0622 19       		.byte	0x19
+ 1275 0623 01010000 		.4byte	0x101
+ 1276 0627 00000000 		.4byte	.LFB8
+ 1277 062b 1A000000 		.4byte	.LFE8-.LFB8
+ 1278 062f 01       		.uleb128 0x1
+ 1279 0630 9C       		.byte	0x9c
+ 1280 0631 0B       		.uleb128 0xb
+ 1281 0632 86040000 		.4byte	.LASF70
+ 1282 0636 BA01     		.2byte	0x1ba
+ 1283 0638 2E       		.byte	0x2e
+ 1284 0639 01010000 		.4byte	0x101
+ 1285 063d 02       		.uleb128 0x2
+ 1286 063e 91       		.byte	0x91
+ 1287 063f 74       		.sleb128 -12
+ 1288 0640 0B       		.uleb128 0xb
+ 1289 0641 B7030000 		.4byte	.LASF71
+ 1290 0645 BB01     		.2byte	0x1bb
+ 1291 0647 32       		.byte	0x32
+ 1292 0648 0D010000 		.4byte	0x10d
+ 1293 064c 02       		.uleb128 0x2
+ 1294 064d 91       		.byte	0x91
+ 1295 064e 70       		.sleb128 -16
+ 1296 064f 00       		.byte	0
+ 1297 0650 00       		.byte	0
+ 1298              		.section	.debug_abbrev,"",%progbits
+ 1299              	.Ldebug_abbrev0:
+ 1300 0000 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 24
+
+
+ 1301 0001 16       		.uleb128 0x16
+ 1302 0002 00       		.byte	0
+ 1303 0003 03       		.uleb128 0x3
+ 1304 0004 0E       		.uleb128 0xe
+ 1305 0005 3A       		.uleb128 0x3a
+ 1306 0006 0B       		.uleb128 0xb
+ 1307 0007 3B       		.uleb128 0x3b
+ 1308 0008 0B       		.uleb128 0xb
+ 1309 0009 39       		.uleb128 0x39
+ 1310 000a 0B       		.uleb128 0xb
+ 1311 000b 49       		.uleb128 0x49
+ 1312 000c 13       		.uleb128 0x13
+ 1313 000d 00       		.byte	0
+ 1314 000e 00       		.byte	0
+ 1315 000f 02       		.uleb128 0x2
+ 1316 0010 0D       		.uleb128 0xd
+ 1317 0011 00       		.byte	0
+ 1318 0012 03       		.uleb128 0x3
+ 1319 0013 0E       		.uleb128 0xe
+ 1320 0014 3A       		.uleb128 0x3a
+ 1321 0015 0B       		.uleb128 0xb
+ 1322 0016 3B       		.uleb128 0x3b
+ 1323 0017 0B       		.uleb128 0xb
+ 1324 0018 39       		.uleb128 0x39
+ 1325 0019 0B       		.uleb128 0xb
+ 1326 001a 49       		.uleb128 0x49
+ 1327 001b 13       		.uleb128 0x13
+ 1328 001c 38       		.uleb128 0x38
+ 1329 001d 0B       		.uleb128 0xb
+ 1330 001e 00       		.byte	0
+ 1331 001f 00       		.byte	0
+ 1332 0020 03       		.uleb128 0x3
+ 1333 0021 0F       		.uleb128 0xf
+ 1334 0022 00       		.byte	0
+ 1335 0023 0B       		.uleb128 0xb
+ 1336 0024 21       		.uleb128 0x21
+ 1337 0025 04       		.sleb128 4
+ 1338 0026 49       		.uleb128 0x49
+ 1339 0027 13       		.uleb128 0x13
+ 1340 0028 00       		.byte	0
+ 1341 0029 00       		.byte	0
+ 1342 002a 04       		.uleb128 0x4
+ 1343 002b 24       		.uleb128 0x24
+ 1344 002c 00       		.byte	0
+ 1345 002d 0B       		.uleb128 0xb
+ 1346 002e 0B       		.uleb128 0xb
+ 1347 002f 3E       		.uleb128 0x3e
+ 1348 0030 0B       		.uleb128 0xb
+ 1349 0031 03       		.uleb128 0x3
+ 1350 0032 0E       		.uleb128 0xe
+ 1351 0033 00       		.byte	0
+ 1352 0034 00       		.byte	0
+ 1353 0035 05       		.uleb128 0x5
+ 1354 0036 05       		.uleb128 0x5
+ 1355 0037 00       		.byte	0
+ 1356 0038 49       		.uleb128 0x49
+ 1357 0039 13       		.uleb128 0x13
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 25
+
+
+ 1358 003a 00       		.byte	0
+ 1359 003b 00       		.byte	0
+ 1360 003c 06       		.uleb128 0x6
+ 1361 003d 26       		.uleb128 0x26
+ 1362 003e 00       		.byte	0
+ 1363 003f 49       		.uleb128 0x49
+ 1364 0040 13       		.uleb128 0x13
+ 1365 0041 00       		.byte	0
+ 1366 0042 00       		.byte	0
+ 1367 0043 07       		.uleb128 0x7
+ 1368 0044 15       		.uleb128 0x15
+ 1369 0045 01       		.byte	0x1
+ 1370 0046 27       		.uleb128 0x27
+ 1371 0047 19       		.uleb128 0x19
+ 1372 0048 49       		.uleb128 0x49
+ 1373 0049 13       		.uleb128 0x13
+ 1374 004a 01       		.uleb128 0x1
+ 1375 004b 13       		.uleb128 0x13
+ 1376 004c 00       		.byte	0
+ 1377 004d 00       		.byte	0
+ 1378 004e 08       		.uleb128 0x8
+ 1379 004f 13       		.uleb128 0x13
+ 1380 0050 01       		.byte	0x1
+ 1381 0051 0B       		.uleb128 0xb
+ 1382 0052 0B       		.uleb128 0xb
+ 1383 0053 3A       		.uleb128 0x3a
+ 1384 0054 0B       		.uleb128 0xb
+ 1385 0055 3B       		.uleb128 0x3b
+ 1386 0056 0B       		.uleb128 0xb
+ 1387 0057 39       		.uleb128 0x39
+ 1388 0058 21       		.uleb128 0x21
+ 1389 0059 09       		.sleb128 9
+ 1390 005a 01       		.uleb128 0x1
+ 1391 005b 13       		.uleb128 0x13
+ 1392 005c 00       		.byte	0
+ 1393 005d 00       		.byte	0
+ 1394 005e 09       		.uleb128 0x9
+ 1395 005f 34       		.uleb128 0x34
+ 1396 0060 00       		.byte	0
+ 1397 0061 03       		.uleb128 0x3
+ 1398 0062 0E       		.uleb128 0xe
+ 1399 0063 3A       		.uleb128 0x3a
+ 1400 0064 21       		.uleb128 0x21
+ 1401 0065 07       		.sleb128 7
+ 1402 0066 3B       		.uleb128 0x3b
+ 1403 0067 0B       		.uleb128 0xb
+ 1404 0068 39       		.uleb128 0x39
+ 1405 0069 0B       		.uleb128 0xb
+ 1406 006a 49       		.uleb128 0x49
+ 1407 006b 13       		.uleb128 0x13
+ 1408 006c 02       		.uleb128 0x2
+ 1409 006d 18       		.uleb128 0x18
+ 1410 006e 00       		.byte	0
+ 1411 006f 00       		.byte	0
+ 1412 0070 0A       		.uleb128 0xa
+ 1413 0071 1D       		.uleb128 0x1d
+ 1414 0072 01       		.byte	0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 26
+
+
+ 1415 0073 31       		.uleb128 0x31
+ 1416 0074 13       		.uleb128 0x13
+ 1417 0075 11       		.uleb128 0x11
+ 1418 0076 01       		.uleb128 0x1
+ 1419 0077 12       		.uleb128 0x12
+ 1420 0078 06       		.uleb128 0x6
+ 1421 0079 58       		.uleb128 0x58
+ 1422 007a 0B       		.uleb128 0xb
+ 1423 007b 59       		.uleb128 0x59
+ 1424 007c 05       		.uleb128 0x5
+ 1425 007d 57       		.uleb128 0x57
+ 1426 007e 21       		.uleb128 0x21
+ 1427 007f 03       		.sleb128 3
+ 1428 0080 00       		.byte	0
+ 1429 0081 00       		.byte	0
+ 1430 0082 0B       		.uleb128 0xb
+ 1431 0083 05       		.uleb128 0x5
+ 1432 0084 00       		.byte	0
+ 1433 0085 03       		.uleb128 0x3
+ 1434 0086 0E       		.uleb128 0xe
+ 1435 0087 3A       		.uleb128 0x3a
+ 1436 0088 21       		.uleb128 0x21
+ 1437 0089 01       		.sleb128 1
+ 1438 008a 3B       		.uleb128 0x3b
+ 1439 008b 05       		.uleb128 0x5
+ 1440 008c 39       		.uleb128 0x39
+ 1441 008d 0B       		.uleb128 0xb
+ 1442 008e 49       		.uleb128 0x49
+ 1443 008f 13       		.uleb128 0x13
+ 1444 0090 02       		.uleb128 0x2
+ 1445 0091 18       		.uleb128 0x18
+ 1446 0092 00       		.byte	0
+ 1447 0093 00       		.byte	0
+ 1448 0094 0C       		.uleb128 0xc
+ 1449 0095 0D       		.uleb128 0xd
+ 1450 0096 00       		.byte	0
+ 1451 0097 03       		.uleb128 0x3
+ 1452 0098 08       		.uleb128 0x8
+ 1453 0099 3A       		.uleb128 0x3a
+ 1454 009a 21       		.uleb128 0x21
+ 1455 009b 0C       		.sleb128 12
+ 1456 009c 3B       		.uleb128 0x3b
+ 1457 009d 0B       		.uleb128 0xb
+ 1458 009e 39       		.uleb128 0x39
+ 1459 009f 0B       		.uleb128 0xb
+ 1460 00a0 49       		.uleb128 0x49
+ 1461 00a1 13       		.uleb128 0x13
+ 1462 00a2 38       		.uleb128 0x38
+ 1463 00a3 0B       		.uleb128 0xb
+ 1464 00a4 00       		.byte	0
+ 1465 00a5 00       		.byte	0
+ 1466 00a6 0D       		.uleb128 0xd
+ 1467 00a7 01       		.uleb128 0x1
+ 1468 00a8 01       		.byte	0x1
+ 1469 00a9 49       		.uleb128 0x49
+ 1470 00aa 13       		.uleb128 0x13
+ 1471 00ab 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 27
+
+
+ 1472 00ac 13       		.uleb128 0x13
+ 1473 00ad 00       		.byte	0
+ 1474 00ae 00       		.byte	0
+ 1475 00af 0E       		.uleb128 0xe
+ 1476 00b0 21       		.uleb128 0x21
+ 1477 00b1 00       		.byte	0
+ 1478 00b2 49       		.uleb128 0x49
+ 1479 00b3 13       		.uleb128 0x13
+ 1480 00b4 2F       		.uleb128 0x2f
+ 1481 00b5 0B       		.uleb128 0xb
+ 1482 00b6 00       		.byte	0
+ 1483 00b7 00       		.byte	0
+ 1484 00b8 0F       		.uleb128 0xf
+ 1485 00b9 2E       		.uleb128 0x2e
+ 1486 00ba 00       		.byte	0
+ 1487 00bb 3F       		.uleb128 0x3f
+ 1488 00bc 19       		.uleb128 0x19
+ 1489 00bd 03       		.uleb128 0x3
+ 1490 00be 0E       		.uleb128 0xe
+ 1491 00bf 3A       		.uleb128 0x3a
+ 1492 00c0 0B       		.uleb128 0xb
+ 1493 00c1 3B       		.uleb128 0x3b
+ 1494 00c2 0B       		.uleb128 0xb
+ 1495 00c3 39       		.uleb128 0x39
+ 1496 00c4 0B       		.uleb128 0xb
+ 1497 00c5 27       		.uleb128 0x27
+ 1498 00c6 19       		.uleb128 0x19
+ 1499 00c7 49       		.uleb128 0x49
+ 1500 00c8 13       		.uleb128 0x13
+ 1501 00c9 3C       		.uleb128 0x3c
+ 1502 00ca 19       		.uleb128 0x19
+ 1503 00cb 00       		.byte	0
+ 1504 00cc 00       		.byte	0
+ 1505 00cd 10       		.uleb128 0x10
+ 1506 00ce 34       		.uleb128 0x34
+ 1507 00cf 00       		.byte	0
+ 1508 00d0 03       		.uleb128 0x3
+ 1509 00d1 08       		.uleb128 0x8
+ 1510 00d2 3A       		.uleb128 0x3a
+ 1511 00d3 21       		.uleb128 0x21
+ 1512 00d4 07       		.sleb128 7
+ 1513 00d5 3B       		.uleb128 0x3b
+ 1514 00d6 0B       		.uleb128 0xb
+ 1515 00d7 39       		.uleb128 0x39
+ 1516 00d8 0B       		.uleb128 0xb
+ 1517 00d9 49       		.uleb128 0x49
+ 1518 00da 13       		.uleb128 0x13
+ 1519 00db 02       		.uleb128 0x2
+ 1520 00dc 18       		.uleb128 0x18
+ 1521 00dd 00       		.byte	0
+ 1522 00de 00       		.byte	0
+ 1523 00df 11       		.uleb128 0x11
+ 1524 00e0 2E       		.uleb128 0x2e
+ 1525 00e1 00       		.byte	0
+ 1526 00e2 03       		.uleb128 0x3
+ 1527 00e3 0E       		.uleb128 0xe
+ 1528 00e4 3A       		.uleb128 0x3a
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 28
+
+
+ 1529 00e5 0B       		.uleb128 0xb
+ 1530 00e6 3B       		.uleb128 0x3b
+ 1531 00e7 0B       		.uleb128 0xb
+ 1532 00e8 39       		.uleb128 0x39
+ 1533 00e9 21       		.uleb128 0x21
+ 1534 00ea 19       		.sleb128 25
+ 1535 00eb 27       		.uleb128 0x27
+ 1536 00ec 19       		.uleb128 0x19
+ 1537 00ed 49       		.uleb128 0x49
+ 1538 00ee 13       		.uleb128 0x13
+ 1539 00ef 11       		.uleb128 0x11
+ 1540 00f0 01       		.uleb128 0x1
+ 1541 00f1 12       		.uleb128 0x12
+ 1542 00f2 06       		.uleb128 0x6
+ 1543 00f3 40       		.uleb128 0x40
+ 1544 00f4 18       		.uleb128 0x18
+ 1545 00f5 7C       		.uleb128 0x7c
+ 1546 00f6 19       		.uleb128 0x19
+ 1547 00f7 00       		.byte	0
+ 1548 00f8 00       		.byte	0
+ 1549 00f9 12       		.uleb128 0x12
+ 1550 00fa 2E       		.uleb128 0x2e
+ 1551 00fb 01       		.byte	0x1
+ 1552 00fc 03       		.uleb128 0x3
+ 1553 00fd 0E       		.uleb128 0xe
+ 1554 00fe 3A       		.uleb128 0x3a
+ 1555 00ff 21       		.uleb128 0x21
+ 1556 0100 03       		.sleb128 3
+ 1557 0101 3B       		.uleb128 0x3b
+ 1558 0102 05       		.uleb128 0x5
+ 1559 0103 39       		.uleb128 0x39
+ 1560 0104 21       		.uleb128 0x21
+ 1561 0105 14       		.sleb128 20
+ 1562 0106 27       		.uleb128 0x27
+ 1563 0107 19       		.uleb128 0x19
+ 1564 0108 11       		.uleb128 0x11
+ 1565 0109 01       		.uleb128 0x1
+ 1566 010a 12       		.uleb128 0x12
+ 1567 010b 06       		.uleb128 0x6
+ 1568 010c 40       		.uleb128 0x40
+ 1569 010d 18       		.uleb128 0x18
+ 1570 010e 7A       		.uleb128 0x7a
+ 1571 010f 19       		.uleb128 0x19
+ 1572 0110 01       		.uleb128 0x1
+ 1573 0111 13       		.uleb128 0x13
+ 1574 0112 00       		.byte	0
+ 1575 0113 00       		.byte	0
+ 1576 0114 13       		.uleb128 0x13
+ 1577 0115 05       		.uleb128 0x5
+ 1578 0116 00       		.byte	0
+ 1579 0117 31       		.uleb128 0x31
+ 1580 0118 13       		.uleb128 0x13
+ 1581 0119 02       		.uleb128 0x2
+ 1582 011a 18       		.uleb128 0x18
+ 1583 011b 00       		.byte	0
+ 1584 011c 00       		.byte	0
+ 1585 011d 14       		.uleb128 0x14
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 29
+
+
+ 1586 011e 2E       		.uleb128 0x2e
+ 1587 011f 00       		.byte	0
+ 1588 0120 03       		.uleb128 0x3
+ 1589 0121 0E       		.uleb128 0xe
+ 1590 0122 3A       		.uleb128 0x3a
+ 1591 0123 21       		.uleb128 0x21
+ 1592 0124 05       		.sleb128 5
+ 1593 0125 3B       		.uleb128 0x3b
+ 1594 0126 05       		.uleb128 0x5
+ 1595 0127 39       		.uleb128 0x39
+ 1596 0128 21       		.uleb128 0x21
+ 1597 0129 1B       		.sleb128 27
+ 1598 012a 27       		.uleb128 0x27
+ 1599 012b 19       		.uleb128 0x19
+ 1600 012c 20       		.uleb128 0x20
+ 1601 012d 21       		.uleb128 0x21
+ 1602 012e 03       		.sleb128 3
+ 1603 012f 00       		.byte	0
+ 1604 0130 00       		.byte	0
+ 1605 0131 15       		.uleb128 0x15
+ 1606 0132 11       		.uleb128 0x11
+ 1607 0133 01       		.byte	0x1
+ 1608 0134 25       		.uleb128 0x25
+ 1609 0135 0E       		.uleb128 0xe
+ 1610 0136 13       		.uleb128 0x13
+ 1611 0137 0B       		.uleb128 0xb
+ 1612 0138 03       		.uleb128 0x3
+ 1613 0139 0E       		.uleb128 0xe
+ 1614 013a 1B       		.uleb128 0x1b
+ 1615 013b 0E       		.uleb128 0xe
+ 1616 013c 55       		.uleb128 0x55
+ 1617 013d 17       		.uleb128 0x17
+ 1618 013e 11       		.uleb128 0x11
+ 1619 013f 01       		.uleb128 0x1
+ 1620 0140 10       		.uleb128 0x10
+ 1621 0141 17       		.uleb128 0x17
+ 1622 0142 00       		.byte	0
+ 1623 0143 00       		.byte	0
+ 1624 0144 16       		.uleb128 0x16
+ 1625 0145 24       		.uleb128 0x24
+ 1626 0146 00       		.byte	0
+ 1627 0147 0B       		.uleb128 0xb
+ 1628 0148 0B       		.uleb128 0xb
+ 1629 0149 3E       		.uleb128 0x3e
+ 1630 014a 0B       		.uleb128 0xb
+ 1631 014b 03       		.uleb128 0x3
+ 1632 014c 08       		.uleb128 0x8
+ 1633 014d 00       		.byte	0
+ 1634 014e 00       		.byte	0
+ 1635 014f 17       		.uleb128 0x17
+ 1636 0150 0F       		.uleb128 0xf
+ 1637 0151 00       		.byte	0
+ 1638 0152 0B       		.uleb128 0xb
+ 1639 0153 0B       		.uleb128 0xb
+ 1640 0154 00       		.byte	0
+ 1641 0155 00       		.byte	0
+ 1642 0156 18       		.uleb128 0x18
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 30
+
+
+ 1643 0157 13       		.uleb128 0x13
+ 1644 0158 01       		.byte	0x1
+ 1645 0159 03       		.uleb128 0x3
+ 1646 015a 0E       		.uleb128 0xe
+ 1647 015b 0B       		.uleb128 0xb
+ 1648 015c 0B       		.uleb128 0xb
+ 1649 015d 3A       		.uleb128 0x3a
+ 1650 015e 0B       		.uleb128 0xb
+ 1651 015f 3B       		.uleb128 0x3b
+ 1652 0160 0B       		.uleb128 0xb
+ 1653 0161 39       		.uleb128 0x39
+ 1654 0162 0B       		.uleb128 0xb
+ 1655 0163 01       		.uleb128 0x1
+ 1656 0164 13       		.uleb128 0x13
+ 1657 0165 00       		.byte	0
+ 1658 0166 00       		.byte	0
+ 1659 0167 19       		.uleb128 0x19
+ 1660 0168 15       		.uleb128 0x15
+ 1661 0169 00       		.byte	0
+ 1662 016a 27       		.uleb128 0x27
+ 1663 016b 19       		.uleb128 0x19
+ 1664 016c 00       		.byte	0
+ 1665 016d 00       		.byte	0
+ 1666 016e 1A       		.uleb128 0x1a
+ 1667 016f 34       		.uleb128 0x34
+ 1668 0170 00       		.byte	0
+ 1669 0171 03       		.uleb128 0x3
+ 1670 0172 0E       		.uleb128 0xe
+ 1671 0173 3A       		.uleb128 0x3a
+ 1672 0174 0B       		.uleb128 0xb
+ 1673 0175 3B       		.uleb128 0x3b
+ 1674 0176 05       		.uleb128 0x5
+ 1675 0177 39       		.uleb128 0x39
+ 1676 0178 0B       		.uleb128 0xb
+ 1677 0179 49       		.uleb128 0x49
+ 1678 017a 13       		.uleb128 0x13
+ 1679 017b 3F       		.uleb128 0x3f
+ 1680 017c 19       		.uleb128 0x19
+ 1681 017d 3C       		.uleb128 0x3c
+ 1682 017e 19       		.uleb128 0x19
+ 1683 017f 00       		.byte	0
+ 1684 0180 00       		.byte	0
+ 1685 0181 1B       		.uleb128 0x1b
+ 1686 0182 34       		.uleb128 0x34
+ 1687 0183 00       		.byte	0
+ 1688 0184 03       		.uleb128 0x3
+ 1689 0185 0E       		.uleb128 0xe
+ 1690 0186 3A       		.uleb128 0x3a
+ 1691 0187 0B       		.uleb128 0xb
+ 1692 0188 3B       		.uleb128 0x3b
+ 1693 0189 0B       		.uleb128 0xb
+ 1694 018a 39       		.uleb128 0x39
+ 1695 018b 0B       		.uleb128 0xb
+ 1696 018c 49       		.uleb128 0x49
+ 1697 018d 13       		.uleb128 0x13
+ 1698 018e 3F       		.uleb128 0x3f
+ 1699 018f 19       		.uleb128 0x19
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 31
+
+
+ 1700 0190 3C       		.uleb128 0x3c
+ 1701 0191 19       		.uleb128 0x19
+ 1702 0192 00       		.byte	0
+ 1703 0193 00       		.byte	0
+ 1704 0194 1C       		.uleb128 0x1c
+ 1705 0195 34       		.uleb128 0x34
+ 1706 0196 00       		.byte	0
+ 1707 0197 03       		.uleb128 0x3
+ 1708 0198 0E       		.uleb128 0xe
+ 1709 0199 3A       		.uleb128 0x3a
+ 1710 019a 0B       		.uleb128 0xb
+ 1711 019b 3B       		.uleb128 0x3b
+ 1712 019c 0B       		.uleb128 0xb
+ 1713 019d 39       		.uleb128 0x39
+ 1714 019e 0B       		.uleb128 0xb
+ 1715 019f 49       		.uleb128 0x49
+ 1716 01a0 13       		.uleb128 0x13
+ 1717 01a1 3F       		.uleb128 0x3f
+ 1718 01a2 19       		.uleb128 0x19
+ 1719 01a3 02       		.uleb128 0x2
+ 1720 01a4 18       		.uleb128 0x18
+ 1721 01a5 00       		.byte	0
+ 1722 01a6 00       		.byte	0
+ 1723 01a7 1D       		.uleb128 0x1d
+ 1724 01a8 34       		.uleb128 0x34
+ 1725 01a9 00       		.byte	0
+ 1726 01aa 47       		.uleb128 0x47
+ 1727 01ab 13       		.uleb128 0x13
+ 1728 01ac 3A       		.uleb128 0x3a
+ 1729 01ad 0B       		.uleb128 0xb
+ 1730 01ae 3B       		.uleb128 0x3b
+ 1731 01af 0B       		.uleb128 0xb
+ 1732 01b0 39       		.uleb128 0x39
+ 1733 01b1 0B       		.uleb128 0xb
+ 1734 01b2 02       		.uleb128 0x2
+ 1735 01b3 18       		.uleb128 0x18
+ 1736 01b4 00       		.byte	0
+ 1737 01b5 00       		.byte	0
+ 1738 01b6 1E       		.uleb128 0x1e
+ 1739 01b7 2E       		.uleb128 0x2e
+ 1740 01b8 01       		.byte	0x1
+ 1741 01b9 3F       		.uleb128 0x3f
+ 1742 01ba 19       		.uleb128 0x19
+ 1743 01bb 03       		.uleb128 0x3
+ 1744 01bc 0E       		.uleb128 0xe
+ 1745 01bd 3A       		.uleb128 0x3a
+ 1746 01be 0B       		.uleb128 0xb
+ 1747 01bf 3B       		.uleb128 0x3b
+ 1748 01c0 05       		.uleb128 0x5
+ 1749 01c1 39       		.uleb128 0x39
+ 1750 01c2 0B       		.uleb128 0xb
+ 1751 01c3 27       		.uleb128 0x27
+ 1752 01c4 19       		.uleb128 0x19
+ 1753 01c5 49       		.uleb128 0x49
+ 1754 01c6 13       		.uleb128 0x13
+ 1755 01c7 3C       		.uleb128 0x3c
+ 1756 01c8 19       		.uleb128 0x19
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 32
+
+
+ 1757 01c9 01       		.uleb128 0x1
+ 1758 01ca 13       		.uleb128 0x13
+ 1759 01cb 00       		.byte	0
+ 1760 01cc 00       		.byte	0
+ 1761 01cd 1F       		.uleb128 0x1f
+ 1762 01ce 2E       		.uleb128 0x2e
+ 1763 01cf 01       		.byte	0x1
+ 1764 01d0 03       		.uleb128 0x3
+ 1765 01d1 0E       		.uleb128 0xe
+ 1766 01d2 3A       		.uleb128 0x3a
+ 1767 01d3 0B       		.uleb128 0xb
+ 1768 01d4 3B       		.uleb128 0x3b
+ 1769 01d5 0B       		.uleb128 0xb
+ 1770 01d6 39       		.uleb128 0x39
+ 1771 01d7 0B       		.uleb128 0xb
+ 1772 01d8 27       		.uleb128 0x27
+ 1773 01d9 19       		.uleb128 0x19
+ 1774 01da 11       		.uleb128 0x11
+ 1775 01db 01       		.uleb128 0x1
+ 1776 01dc 12       		.uleb128 0x12
+ 1777 01dd 06       		.uleb128 0x6
+ 1778 01de 40       		.uleb128 0x40
+ 1779 01df 18       		.uleb128 0x18
+ 1780 01e0 7C       		.uleb128 0x7c
+ 1781 01e1 19       		.uleb128 0x19
+ 1782 01e2 01       		.uleb128 0x1
+ 1783 01e3 13       		.uleb128 0x13
+ 1784 01e4 00       		.byte	0
+ 1785 01e5 00       		.byte	0
+ 1786 01e6 20       		.uleb128 0x20
+ 1787 01e7 0B       		.uleb128 0xb
+ 1788 01e8 01       		.byte	0x1
+ 1789 01e9 11       		.uleb128 0x11
+ 1790 01ea 01       		.uleb128 0x1
+ 1791 01eb 12       		.uleb128 0x12
+ 1792 01ec 06       		.uleb128 0x6
+ 1793 01ed 00       		.byte	0
+ 1794 01ee 00       		.byte	0
+ 1795 01ef 21       		.uleb128 0x21
+ 1796 01f0 2E       		.uleb128 0x2e
+ 1797 01f1 01       		.byte	0x1
+ 1798 01f2 03       		.uleb128 0x3
+ 1799 01f3 0E       		.uleb128 0xe
+ 1800 01f4 3A       		.uleb128 0x3a
+ 1801 01f5 0B       		.uleb128 0xb
+ 1802 01f6 3B       		.uleb128 0x3b
+ 1803 01f7 05       		.uleb128 0x5
+ 1804 01f8 39       		.uleb128 0x39
+ 1805 01f9 0B       		.uleb128 0xb
+ 1806 01fa 27       		.uleb128 0x27
+ 1807 01fb 19       		.uleb128 0x19
+ 1808 01fc 49       		.uleb128 0x49
+ 1809 01fd 13       		.uleb128 0x13
+ 1810 01fe 11       		.uleb128 0x11
+ 1811 01ff 01       		.uleb128 0x1
+ 1812 0200 12       		.uleb128 0x12
+ 1813 0201 06       		.uleb128 0x6
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 33
+
+
+ 1814 0202 40       		.uleb128 0x40
+ 1815 0203 18       		.uleb128 0x18
+ 1816 0204 7C       		.uleb128 0x7c
+ 1817 0205 19       		.uleb128 0x19
+ 1818 0206 01       		.uleb128 0x1
+ 1819 0207 13       		.uleb128 0x13
+ 1820 0208 00       		.byte	0
+ 1821 0209 00       		.byte	0
+ 1822 020a 22       		.uleb128 0x22
+ 1823 020b 34       		.uleb128 0x34
+ 1824 020c 00       		.byte	0
+ 1825 020d 03       		.uleb128 0x3
+ 1826 020e 0E       		.uleb128 0xe
+ 1827 020f 3A       		.uleb128 0x3a
+ 1828 0210 0B       		.uleb128 0xb
+ 1829 0211 3B       		.uleb128 0x3b
+ 1830 0212 05       		.uleb128 0x5
+ 1831 0213 39       		.uleb128 0x39
+ 1832 0214 0B       		.uleb128 0xb
+ 1833 0215 49       		.uleb128 0x49
+ 1834 0216 13       		.uleb128 0x13
+ 1835 0217 02       		.uleb128 0x2
+ 1836 0218 18       		.uleb128 0x18
+ 1837 0219 00       		.byte	0
+ 1838 021a 00       		.byte	0
+ 1839 021b 23       		.uleb128 0x23
+ 1840 021c 2E       		.uleb128 0x2e
+ 1841 021d 01       		.byte	0x1
+ 1842 021e 03       		.uleb128 0x3
+ 1843 021f 0E       		.uleb128 0xe
+ 1844 0220 3A       		.uleb128 0x3a
+ 1845 0221 0B       		.uleb128 0xb
+ 1846 0222 3B       		.uleb128 0x3b
+ 1847 0223 0B       		.uleb128 0xb
+ 1848 0224 39       		.uleb128 0x39
+ 1849 0225 0B       		.uleb128 0xb
+ 1850 0226 27       		.uleb128 0x27
+ 1851 0227 19       		.uleb128 0x19
+ 1852 0228 49       		.uleb128 0x49
+ 1853 0229 13       		.uleb128 0x13
+ 1854 022a 11       		.uleb128 0x11
+ 1855 022b 01       		.uleb128 0x1
+ 1856 022c 12       		.uleb128 0x12
+ 1857 022d 06       		.uleb128 0x6
+ 1858 022e 40       		.uleb128 0x40
+ 1859 022f 18       		.uleb128 0x18
+ 1860 0230 7C       		.uleb128 0x7c
+ 1861 0231 19       		.uleb128 0x19
+ 1862 0232 01       		.uleb128 0x1
+ 1863 0233 13       		.uleb128 0x13
+ 1864 0234 00       		.byte	0
+ 1865 0235 00       		.byte	0
+ 1866 0236 24       		.uleb128 0x24
+ 1867 0237 05       		.uleb128 0x5
+ 1868 0238 00       		.byte	0
+ 1869 0239 03       		.uleb128 0x3
+ 1870 023a 0E       		.uleb128 0xe
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 34
+
+
+ 1871 023b 3A       		.uleb128 0x3a
+ 1872 023c 0B       		.uleb128 0xb
+ 1873 023d 3B       		.uleb128 0x3b
+ 1874 023e 0B       		.uleb128 0xb
+ 1875 023f 39       		.uleb128 0x39
+ 1876 0240 0B       		.uleb128 0xb
+ 1877 0241 49       		.uleb128 0x49
+ 1878 0242 13       		.uleb128 0x13
+ 1879 0243 02       		.uleb128 0x2
+ 1880 0244 18       		.uleb128 0x18
+ 1881 0245 00       		.byte	0
+ 1882 0246 00       		.byte	0
+ 1883 0247 25       		.uleb128 0x25
+ 1884 0248 05       		.uleb128 0x5
+ 1885 0249 00       		.byte	0
+ 1886 024a 03       		.uleb128 0x3
+ 1887 024b 08       		.uleb128 0x8
+ 1888 024c 3A       		.uleb128 0x3a
+ 1889 024d 0B       		.uleb128 0xb
+ 1890 024e 3B       		.uleb128 0x3b
+ 1891 024f 0B       		.uleb128 0xb
+ 1892 0250 39       		.uleb128 0x39
+ 1893 0251 0B       		.uleb128 0xb
+ 1894 0252 49       		.uleb128 0x49
+ 1895 0253 13       		.uleb128 0x13
+ 1896 0254 02       		.uleb128 0x2
+ 1897 0255 18       		.uleb128 0x18
+ 1898 0256 00       		.byte	0
+ 1899 0257 00       		.byte	0
+ 1900 0258 26       		.uleb128 0x26
+ 1901 0259 34       		.uleb128 0x34
+ 1902 025a 00       		.byte	0
+ 1903 025b 03       		.uleb128 0x3
+ 1904 025c 0E       		.uleb128 0xe
+ 1905 025d 49       		.uleb128 0x49
+ 1906 025e 13       		.uleb128 0x13
+ 1907 025f 34       		.uleb128 0x34
+ 1908 0260 19       		.uleb128 0x19
+ 1909 0261 00       		.byte	0
+ 1910 0262 00       		.byte	0
+ 1911 0263 27       		.uleb128 0x27
+ 1912 0264 2E       		.uleb128 0x2e
+ 1913 0265 01       		.byte	0x1
+ 1914 0266 03       		.uleb128 0x3
+ 1915 0267 0E       		.uleb128 0xe
+ 1916 0268 3A       		.uleb128 0x3a
+ 1917 0269 0B       		.uleb128 0xb
+ 1918 026a 3B       		.uleb128 0x3b
+ 1919 026b 05       		.uleb128 0x5
+ 1920 026c 39       		.uleb128 0x39
+ 1921 026d 0B       		.uleb128 0xb
+ 1922 026e 27       		.uleb128 0x27
+ 1923 026f 19       		.uleb128 0x19
+ 1924 0270 20       		.uleb128 0x20
+ 1925 0271 0B       		.uleb128 0xb
+ 1926 0272 01       		.uleb128 0x1
+ 1927 0273 13       		.uleb128 0x13
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 35
+
+
+ 1928 0274 00       		.byte	0
+ 1929 0275 00       		.byte	0
+ 1930 0276 28       		.uleb128 0x28
+ 1931 0277 05       		.uleb128 0x5
+ 1932 0278 00       		.byte	0
+ 1933 0279 03       		.uleb128 0x3
+ 1934 027a 0E       		.uleb128 0xe
+ 1935 027b 3A       		.uleb128 0x3a
+ 1936 027c 0B       		.uleb128 0xb
+ 1937 027d 3B       		.uleb128 0x3b
+ 1938 027e 05       		.uleb128 0x5
+ 1939 027f 39       		.uleb128 0x39
+ 1940 0280 0B       		.uleb128 0xb
+ 1941 0281 49       		.uleb128 0x49
+ 1942 0282 13       		.uleb128 0x13
+ 1943 0283 00       		.byte	0
+ 1944 0284 00       		.byte	0
+ 1945 0285 29       		.uleb128 0x29
+ 1946 0286 2E       		.uleb128 0x2e
+ 1947 0287 01       		.byte	0x1
+ 1948 0288 03       		.uleb128 0x3
+ 1949 0289 0E       		.uleb128 0xe
+ 1950 028a 3A       		.uleb128 0x3a
+ 1951 028b 0B       		.uleb128 0xb
+ 1952 028c 3B       		.uleb128 0x3b
+ 1953 028d 05       		.uleb128 0x5
+ 1954 028e 39       		.uleb128 0x39
+ 1955 028f 0B       		.uleb128 0xb
+ 1956 0290 27       		.uleb128 0x27
+ 1957 0291 19       		.uleb128 0x19
+ 1958 0292 49       		.uleb128 0x49
+ 1959 0293 13       		.uleb128 0x13
+ 1960 0294 11       		.uleb128 0x11
+ 1961 0295 01       		.uleb128 0x1
+ 1962 0296 12       		.uleb128 0x12
+ 1963 0297 06       		.uleb128 0x6
+ 1964 0298 40       		.uleb128 0x40
+ 1965 0299 18       		.uleb128 0x18
+ 1966 029a 7A       		.uleb128 0x7a
+ 1967 029b 19       		.uleb128 0x19
+ 1968 029c 01       		.uleb128 0x1
+ 1969 029d 13       		.uleb128 0x13
+ 1970 029e 00       		.byte	0
+ 1971 029f 00       		.byte	0
+ 1972 02a0 2A       		.uleb128 0x2a
+ 1973 02a1 05       		.uleb128 0x5
+ 1974 02a2 00       		.byte	0
+ 1975 02a3 03       		.uleb128 0x3
+ 1976 02a4 08       		.uleb128 0x8
+ 1977 02a5 3A       		.uleb128 0x3a
+ 1978 02a6 0B       		.uleb128 0xb
+ 1979 02a7 3B       		.uleb128 0x3b
+ 1980 02a8 05       		.uleb128 0x5
+ 1981 02a9 39       		.uleb128 0x39
+ 1982 02aa 0B       		.uleb128 0xb
+ 1983 02ab 49       		.uleb128 0x49
+ 1984 02ac 13       		.uleb128 0x13
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 36
+
+
+ 1985 02ad 02       		.uleb128 0x2
+ 1986 02ae 18       		.uleb128 0x18
+ 1987 02af 00       		.byte	0
+ 1988 02b0 00       		.byte	0
+ 1989 02b1 2B       		.uleb128 0x2b
+ 1990 02b2 2E       		.uleb128 0x2e
+ 1991 02b3 01       		.byte	0x1
+ 1992 02b4 03       		.uleb128 0x3
+ 1993 02b5 0E       		.uleb128 0xe
+ 1994 02b6 3A       		.uleb128 0x3a
+ 1995 02b7 0B       		.uleb128 0xb
+ 1996 02b8 3B       		.uleb128 0x3b
+ 1997 02b9 05       		.uleb128 0x5
+ 1998 02ba 39       		.uleb128 0x39
+ 1999 02bb 0B       		.uleb128 0xb
+ 2000 02bc 27       		.uleb128 0x27
+ 2001 02bd 19       		.uleb128 0x19
+ 2002 02be 49       		.uleb128 0x49
+ 2003 02bf 13       		.uleb128 0x13
+ 2004 02c0 11       		.uleb128 0x11
+ 2005 02c1 01       		.uleb128 0x1
+ 2006 02c2 12       		.uleb128 0x12
+ 2007 02c3 06       		.uleb128 0x6
+ 2008 02c4 40       		.uleb128 0x40
+ 2009 02c5 18       		.uleb128 0x18
+ 2010 02c6 7A       		.uleb128 0x7a
+ 2011 02c7 19       		.uleb128 0x19
+ 2012 02c8 00       		.byte	0
+ 2013 02c9 00       		.byte	0
+ 2014 02ca 00       		.byte	0
+ 2015              		.section	.debug_aranges,"",%progbits
+ 2016 0000 5C000000 		.4byte	0x5c
+ 2017 0004 0200     		.2byte	0x2
+ 2018 0006 00000000 		.4byte	.Ldebug_info0
+ 2019 000a 04       		.byte	0x4
+ 2020 000b 00       		.byte	0
+ 2021 000c 0000     		.2byte	0
+ 2022 000e 0000     		.2byte	0
+ 2023 0010 00000000 		.4byte	.LFB8
+ 2024 0014 1A000000 		.4byte	.LFE8-.LFB8
+ 2025 0018 00000000 		.4byte	.LFB10
+ 2026 001c 2C000000 		.4byte	.LFE10-.LFB10
+ 2027 0020 00000000 		.4byte	.LFB196
+ 2028 0024 0E000000 		.4byte	.LFE196-.LFB196
+ 2029 0028 00000000 		.4byte	.LFB202
+ 2030 002c 1E000000 		.4byte	.LFE202-.LFB202
+ 2031 0030 00000000 		.4byte	.LFB203
+ 2032 0034 1E000000 		.4byte	.LFE203-.LFB203
+ 2033 0038 00000000 		.4byte	.LFB209
+ 2034 003c 0E000000 		.4byte	.LFE209-.LFB209
+ 2035 0040 00000000 		.4byte	.LFB212
+ 2036 0044 24000000 		.4byte	.LFE212-.LFB212
+ 2037 0048 00000000 		.4byte	.LFB225
+ 2038 004c 24000000 		.4byte	.LFE225-.LFB225
+ 2039 0050 00000000 		.4byte	.LFB436
+ 2040 0054 8C000000 		.4byte	.LFE436-.LFB436
+ 2041 0058 00000000 		.4byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 37
+
+
+ 2042 005c 00000000 		.4byte	0
+ 2043              		.section	.debug_rnglists,"",%progbits
+ 2044              	.Ldebug_ranges0:
+ 2045 0000 40000000 		.4byte	.Ldebug_ranges3-.Ldebug_ranges2
+ 2046              	.Ldebug_ranges2:
+ 2047 0004 0500     		.2byte	0x5
+ 2048 0006 04       		.byte	0x4
+ 2049 0007 00       		.byte	0
+ 2050 0008 00000000 		.4byte	0
+ 2051              	.LLRL0:
+ 2052 000c 07       		.byte	0x7
+ 2053 000d 00000000 		.4byte	.LFB8
+ 2054 0011 1A       		.uleb128 .LFE8-.LFB8
+ 2055 0012 07       		.byte	0x7
+ 2056 0013 00000000 		.4byte	.LFB10
+ 2057 0017 2C       		.uleb128 .LFE10-.LFB10
+ 2058 0018 07       		.byte	0x7
+ 2059 0019 00000000 		.4byte	.LFB196
+ 2060 001d 0E       		.uleb128 .LFE196-.LFB196
+ 2061 001e 07       		.byte	0x7
+ 2062 001f 00000000 		.4byte	.LFB202
+ 2063 0023 1E       		.uleb128 .LFE202-.LFB202
+ 2064 0024 07       		.byte	0x7
+ 2065 0025 00000000 		.4byte	.LFB203
+ 2066 0029 1E       		.uleb128 .LFE203-.LFB203
+ 2067 002a 07       		.byte	0x7
+ 2068 002b 00000000 		.4byte	.LFB209
+ 2069 002f 0E       		.uleb128 .LFE209-.LFB209
+ 2070 0030 07       		.byte	0x7
+ 2071 0031 00000000 		.4byte	.LFB212
+ 2072 0035 24       		.uleb128 .LFE212-.LFB212
+ 2073 0036 07       		.byte	0x7
+ 2074 0037 00000000 		.4byte	.LFB225
+ 2075 003b 24       		.uleb128 .LFE225-.LFB225
+ 2076 003c 07       		.byte	0x7
+ 2077 003d 00000000 		.4byte	.LFB436
+ 2078 0041 8C01     		.uleb128 .LFE436-.LFB436
+ 2079 0043 00       		.byte	0
+ 2080              	.Ldebug_ranges3:
+ 2081              		.section	.debug_line,"",%progbits
+ 2082              	.Ldebug_line0:
+ 2083 0000 1D040000 		.section	.debug_str,"MS",%progbits,1
+ 2083      0300E302 
+ 2083      00000201 
+ 2083      FB0E0D00 
+ 2083      01010101 
+ 2084              	.LASF2:
+ 2085 0000 6C6F6E67 		.ascii	"long double\000"
+ 2085      20646F75 
+ 2085      626C6500 
+ 2086              	.LASF59:
+ 2087 000c 63685654 		.ascii	"chVTIsSystemTimeWithinX\000"
+ 2087      49735379 
+ 2087      7374656D 
+ 2087      54696D65 
+ 2087      57697468 
+ 2088              	.LASF39:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 38
+
+
+ 2089 0024 63685F74 		.ascii	"ch_test_context_t\000"
+ 2089      6573745F 
+ 2089      636F6E74 
+ 2089      6578745F 
+ 2089      7400
+ 2090              	.LASF36:
+ 2091 0036 746F6B65 		.ascii	"tokens_buffer\000"
+ 2091      6E735F62 
+ 2091      75666665 
+ 2091      7200
+ 2092              	.LASF27:
+ 2093 0044 77726974 		.ascii	"write\000"
+ 2093      6500
+ 2094              	.LASF72:
+ 2095 004a 474E5520 		.ascii	"GNU C17 11.3.1 20220712 -mcpu=cortex-m7 -mthumb -mf"
+ 2095      43313720 
+ 2095      31312E33 
+ 2095      2E312032 
+ 2095      30323230 
+ 2096 007d 6C6F6174 		.ascii	"loat-abi=soft -march=armv7e-m -ggdb -O0 -ffunction-"
+ 2096      2D616269 
+ 2096      3D736F66 
+ 2096      74202D6D 
+ 2096      61726368 
+ 2097 00b0 73656374 		.ascii	"sections -fdata-sections -fno-common\000"
+ 2097      696F6E73 
+ 2097      202D6664 
+ 2097      6174612D 
+ 2097      73656374 
+ 2098              	.LASF18:
+ 2099 00d5 75696E74 		.ascii	"uint64_t\000"
+ 2099      36345F74 
+ 2099      00
+ 2100              	.LASF7:
+ 2101 00de 73686F72 		.ascii	"short int\000"
+ 2101      7420696E 
+ 2101      7400
+ 2102              	.LASF4:
+ 2103 00e8 73697A65 		.ascii	"size_t\000"
+ 2103      5F7400
+ 2104              	.LASF32:
+ 2105 00ef 676C6F62 		.ascii	"global_fail\000"
+ 2105      616C5F66 
+ 2105      61696C00 
+ 2106              	.LASF37:
+ 2107 00fb 70757463 		.ascii	"putchar\000"
+ 2107      68617200 
+ 2108              	.LASF63:
+ 2109 0103 63685654 		.ascii	"chVTGetSystemTimeX\000"
+ 2109      47657453 
+ 2109      79737465 
+ 2109      6D54696D 
+ 2109      655800
+ 2110              	.LASF29:
+ 2111 0116 42617365 		.ascii	"BaseSequentialStream\000"
+ 2111      53657175 
+ 2111      656E7469 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 39
+
+
+ 2111      616C5374 
+ 2111      7265616D 
+ 2112              	.LASF47:
+ 2113 012b 63687465 		.ascii	"chtest\000"
+ 2113      737400
+ 2114              	.LASF66:
+ 2115 0132 706F7274 		.ascii	"port_lock\000"
+ 2115      5F6C6F63 
+ 2115      6B00
+ 2116              	.LASF62:
+ 2117 013c 63685379 		.ascii	"chSysLock\000"
+ 2117      734C6F63 
+ 2117      6B00
+ 2118              	.LASF46:
+ 2119 0146 74657374 		.ascii	"testsequence_t\000"
+ 2119      73657175 
+ 2119      656E6365 
+ 2119      5F7400
+ 2120              	.LASF44:
+ 2121 0155 74657374 		.ascii	"testcase_t\000"
+ 2121      63617365 
+ 2121      5F7400
+ 2122              	.LASF15:
+ 2123 0160 75696E74 		.ascii	"uint8_t\000"
+ 2123      385F7400 
+ 2124              	.LASF57:
+ 2125 0168 7374616D 		.ascii	"stamp\000"
+ 2125      7000
+ 2126              	.LASF30:
+ 2127 016e 74657374 		.ascii	"test_putchar_t\000"
+ 2127      5F707574 
+ 2127      63686172 
+ 2127      5F7400
+ 2128              	.LASF31:
+ 2129 017d 63757272 		.ascii	"current_step\000"
+ 2129      656E745F 
+ 2129      73746570 
+ 2129      00
+ 2130              	.LASF41:
+ 2131 018a 73657475 		.ascii	"setup\000"
+ 2131      7000
+ 2132              	.LASF76:
+ 2133 0190 5F5F7465 		.ascii	"__test_assert\000"
+ 2133      73745F61 
+ 2133      73736572 
+ 2133      7400
+ 2134              	.LASF28:
+ 2135 019e 72656164 		.ascii	"read\000"
+ 2135      00
+ 2136              	.LASF1:
+ 2137 01a3 6C6F6E67 		.ascii	"long long int\000"
+ 2137      206C6F6E 
+ 2137      6720696E 
+ 2137      7400
+ 2138              	.LASF67:
+ 2139 01b1 63685469 		.ascii	"chTimeIsInRangeX\000"
+ 2139      6D654973 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 40
+
+
+ 2139      496E5261 
+ 2139      6E676558 
+ 2139      00
+ 2140              	.LASF26:
+ 2141 01c2 696E7374 		.ascii	"instance_offset\000"
+ 2141      616E6365 
+ 2141      5F6F6666 
+ 2141      73657400 
+ 2142              	.LASF34:
+ 2143 01d2 6661696C 		.ascii	"failure_message\000"
+ 2143      7572655F 
+ 2143      6D657373 
+ 2143      61676500 
+ 2144              	.LASF35:
+ 2145 01e2 746F6B70 		.ascii	"tokp\000"
+ 2145      00
+ 2146              	.LASF38:
+ 2147 01e7 73747265 		.ascii	"stream\000"
+ 2147      616D00
+ 2148              	.LASF5:
+ 2149 01ee 5F5F7569 		.ascii	"__uint8_t\000"
+ 2149      6E74385F 
+ 2149      7400
+ 2150              	.LASF42:
+ 2151 01f8 74656172 		.ascii	"teardown\000"
+ 2151      646F776E 
+ 2151      00
+ 2152              	.LASF40:
+ 2153 0201 6E616D65 		.ascii	"name\000"
+ 2153      00
+ 2154              	.LASF6:
+ 2155 0206 756E7369 		.ascii	"unsigned char\000"
+ 2155      676E6564 
+ 2155      20636861 
+ 2155      7200
+ 2156              	.LASF77:
+ 2157 0214 5F5F6675 		.ascii	"__func__\000"
+ 2157      6E635F5F 
+ 2157      00
+ 2158              	.LASF33:
+ 2159 021d 6C6F6361 		.ascii	"local_fail\000"
+ 2159      6C5F6661 
+ 2159      696C00
+ 2160              	.LASF3:
+ 2161 0228 7369676E 		.ascii	"signed char\000"
+ 2161      65642063 
+ 2161      68617200 
+ 2162              	.LASF14:
+ 2163 0234 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2163      206C6F6E 
+ 2163      6720756E 
+ 2163      7369676E 
+ 2163      65642069 
+ 2164              	.LASF17:
+ 2165 024b 75696E74 		.ascii	"uint32_t\000"
+ 2165      33325F74 
+ 2165      00
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 41
+
+
+ 2166              	.LASF53:
+ 2167 0254 72745F74 		.ascii	"rt_test_004_001\000"
+ 2167      6573745F 
+ 2167      3030345F 
+ 2167      30303100 
+ 2168              	.LASF51:
+ 2169 0264 63685654 		.ascii	"chVTGetTimeStampI\000"
+ 2169      47657454 
+ 2169      696D6553 
+ 2169      74616D70 
+ 2169      4900
+ 2170              	.LASF69:
+ 2171 0276 63685469 		.ascii	"chTimeAddX\000"
+ 2171      6D654164 
+ 2171      645800
+ 2172              	.LASF74:
+ 2173 0281 433A5C50 		.ascii	"C:\\PROJET\\ChibiOS project\\ChibiOS_21.11.4\\demos"
+ 2173      524F4A45 
+ 2173      545C4368 
+ 2173      6962694F 
+ 2173      53207072 
+ 2174 02b0 5C53544D 		.ascii	"\\STM32\\RT-STM32H743ZI_REV_XY-NUCLEO144\000"
+ 2174      33325C52 
+ 2174      542D5354 
+ 2174      4D333248 
+ 2174      3734335A 
+ 2175              	.LASF68:
+ 2176 02d7 74696D65 		.ascii	"time\000"
+ 2176      00
+ 2177              	.LASF55:
+ 2178 02dc 6C617374 		.ascii	"last\000"
+ 2178      00
+ 2179              	.LASF45:
+ 2180 02e1 63617365 		.ascii	"cases\000"
+ 2180      7300
+ 2181              	.LASF54:
+ 2182 02e7 73746172 		.ascii	"start\000"
+ 2182      7400
+ 2183              	.LASF8:
+ 2184 02ed 73686F72 		.ascii	"short unsigned int\000"
+ 2184      7420756E 
+ 2184      7369676E 
+ 2184      65642069 
+ 2184      6E7400
+ 2185              	.LASF79:
+ 2186 0300 62617365 		.ascii	"basePri\000"
+ 2186      50726900 
+ 2187              	.LASF21:
+ 2188 0308 73797374 		.ascii	"systime_t\000"
+ 2188      696D655F 
+ 2188      7400
+ 2189              	.LASF20:
+ 2190 0312 63686172 		.ascii	"char\000"
+ 2190      00
+ 2191              	.LASF60:
+ 2192 0317 72745F74 		.ascii	"rt_test_004_001_execute\000"
+ 2192      6573745F 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 42
+
+
+ 2192      3030345F 
+ 2192      3030315F 
+ 2192      65786563 
+ 2193              	.LASF16:
+ 2194 032f 696E7433 		.ascii	"int32_t\000"
+ 2194      325F7400 
+ 2195              	.LASF64:
+ 2196 0337 706F7274 		.ascii	"port_timer_get_time\000"
+ 2196      5F74696D 
+ 2196      65725F67 
+ 2196      65745F74 
+ 2196      696D6500 
+ 2197              	.LASF25:
+ 2198 034b 5F426F6F 		.ascii	"_Bool\000"
+ 2198      6C00
+ 2199              	.LASF65:
+ 2200 0351 706F7274 		.ascii	"port_unlock\000"
+ 2200      5F756E6C 
+ 2200      6F636B00 
+ 2201              	.LASF22:
+ 2202 035d 73797369 		.ascii	"sysinterval_t\000"
+ 2202      6E746572 
+ 2202      76616C5F 
+ 2202      7400
+ 2203              	.LASF13:
+ 2204 036b 5F5F7569 		.ascii	"__uint64_t\000"
+ 2204      6E743634 
+ 2204      5F7400
+ 2205              	.LASF56:
+ 2206 0376 64757261 		.ascii	"duration\000"
+ 2206      74696F6E 
+ 2206      00
+ 2207              	.LASF58:
+ 2208 037f 63685654 		.ascii	"chVTGetTimeStamp\000"
+ 2208      47657454 
+ 2208      696D6553 
+ 2208      74616D70 
+ 2208      00
+ 2209              	.LASF48:
+ 2210 0390 72745F74 		.ascii	"rt_test_sequence_004\000"
+ 2210      6573745F 
+ 2210      73657175 
+ 2210      656E6365 
+ 2210      5F303034 
+ 2211              	.LASF12:
+ 2212 03a5 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2212      20756E73 
+ 2212      69676E65 
+ 2212      6420696E 
+ 2212      7400
+ 2213              	.LASF71:
+ 2214 03b7 696E7465 		.ascii	"interval\000"
+ 2214      7276616C 
+ 2214      00
+ 2215              	.LASF11:
+ 2216 03c0 5F5F7569 		.ascii	"__uint32_t\000"
+ 2216      6E743332 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 43
+
+
+ 2216      5F7400
+ 2217              	.LASF61:
+ 2218 03cb 63685379 		.ascii	"chSysUnlock\000"
+ 2218      73556E6C 
+ 2218      6F636B00 
+ 2219              	.LASF49:
+ 2220 03d7 72745F74 		.ascii	"rt_test_sequence_004_array\000"
+ 2220      6573745F 
+ 2220      73657175 
+ 2220      656E6365 
+ 2220      5F303034 
+ 2221              	.LASF9:
+ 2222 03f2 5F5F696E 		.ascii	"__int32_t\000"
+ 2222      7433325F 
+ 2222      7400
+ 2223              	.LASF24:
+ 2224 03fc 74696D65 		.ascii	"time_conv_t\000"
+ 2224      5F636F6E 
+ 2224      765F7400 
+ 2225              	.LASF73:
+ 2226 0408 2E2E2F2E 		.ascii	"../../../test/rt/source/test/rt_test_sequence_004.c"
+ 2226      2E2F2E2E 
+ 2226      2F746573 
+ 2226      742F7274 
+ 2226      2F736F75 
+ 2227 043b 00       		.ascii	"\000"
+ 2228              	.LASF23:
+ 2229 043c 73797374 		.ascii	"systimestamp_t\000"
+ 2229      696D6573 
+ 2229      74616D70 
+ 2229      5F7400
+ 2230              	.LASF52:
+ 2231 044b 74657374 		.ascii	"test_wait_tick\000"
+ 2231      5F776169 
+ 2231      745F7469 
+ 2231      636B00
+ 2232              	.LASF43:
+ 2233 045a 65786563 		.ascii	"execute\000"
+ 2233      75746500 
+ 2234              	.LASF78:
+ 2235 0462 5F5F7365 		.ascii	"__set_BASEPRI\000"
+ 2235      745F4241 
+ 2235      53455052 
+ 2235      4900
+ 2236              	.LASF10:
+ 2237 0470 6C6F6E67 		.ascii	"long int\000"
+ 2237      20696E74 
+ 2237      00
+ 2238              	.LASF0:
+ 2239 0479 756E7369 		.ascii	"unsigned int\000"
+ 2239      676E6564 
+ 2239      20696E74 
+ 2239      00
+ 2240              	.LASF70:
+ 2241 0486 73797374 		.ascii	"systime\000"
+ 2241      696D6500 
+ 2242              	.LASF19:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 44
+
+
+ 2243 048e 6D73675F 		.ascii	"msg_t\000"
+ 2243      7400
+ 2244              	.LASF75:
+ 2245 0494 42617365 		.ascii	"BaseSequentialStreamVMT\000"
+ 2245      53657175 
+ 2245      656E7469 
+ 2245      616C5374 
+ 2245      7265616D 
+ 2246              	.LASF50:
+ 2247 04ac 73744765 		.ascii	"stGetCounter\000"
+ 2247      74436F75 
+ 2247      6E746572 
+ 2247      00
+ 2248              		.ident	"GCC: (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s 			page 45
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 rt_test_sequence_004.c
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:18     .text.chTimeAddX:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:23     .text.chTimeAddX:00000000 chTimeAddX
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:59     .text.chTimeIsInRangeX:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:64     .text.chTimeIsInRangeX:00000000 chTimeIsInRangeX
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:110    .text.port_timer_get_time:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:115    .text.port_timer_get_time:00000000 port_timer_get_time
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:138    .text.chSysLock:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:143    .text.chSysLock:00000000 chSysLock
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:197    .text.chSysUnlock:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:202    .text.chSysUnlock:00000000 chSysUnlock
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:253    .text.chVTGetSystemTimeX:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:258    .text.chVTGetSystemTimeX:00000000 chVTGetSystemTimeX
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:281    .text.chVTIsSystemTimeWithinX:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:286    .text.chVTIsSystemTimeWithinX:00000000 chVTIsSystemTimeWithinX
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:322    .text.chVTGetTimeStamp:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:327    .text.chVTGetTimeStamp:00000000 chVTGetTimeStamp
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:363    .rodata:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:367    .text.rt_test_004_001_execute:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:372    .text.rt_test_004_001_execute:00000000 rt_test_004_001_execute
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:456    .text.rt_test_004_001_execute:00000084 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:466    .rodata.rt_test_004_001:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:469    .rodata.rt_test_004_001:00000000 rt_test_004_001
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:479    .rodata.rt_test_sequence_004_array:00000000 rt_test_sequence_004_array
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:476    .rodata.rt_test_sequence_004_array:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:491    .rodata.rt_test_sequence_004:00000000 rt_test_sequence_004
+C:\Users\DEVELO~1\AppData\Local\Temp\ccmLGAJZ.s:488    .rodata.rt_test_sequence_004:00000000 $d
+
+UNDEFINED SYMBOLS
+stGetCounter
+chVTGetTimeStampI
+test_wait_tick
+__test_assert
+chtest
