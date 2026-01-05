@@ -9,6 +9,18 @@
 #include "ch.h"
 #include "hal.h"
 
+/* -------------------------------------------------------------------------- */
+/* Validation configuration SAI LLD                                           */
+/* -------------------------------------------------------------------------- */
+
+#if !HAL_USE_SAI
+#error "Le sous-système audio requiert HAL_USE_SAI = TRUE dans halconf.h"
+#endif
+
+#if !STM32_SAI_USE_SAI2A || !STM32_SAI_USE_SAI2B
+#error "Le sous-système audio requiert STM32_SAI_USE_SAI2A/B = TRUE dans mcuconf.h"
+#endif
+
 /*
  * Attribut pour placer les buffers DMA audio en RAM non cacheable (.ram_d2).
  * Section LD délimitée par __ram_d2_start__/__ram_d2_end__ et configurée en
@@ -55,6 +67,10 @@
 #define AUDIO_SAI_TX                  SAI2
 #define AUDIO_SAI_TX_BLOCK            SAI2_Block_A
 
+/** Drivers SAI ChibiOS associés aux blocs RX/TX. */
+#define AUDIO_SAI_RX_DRIVER           SAID2B
+#define AUDIO_SAI_TX_DRIVER           SAID2A
+
 /** Broches SAI issues du fichier board.h (mode Alternate 6). */
 #define AUDIO_LINE_SAI_MCLK           LINE_SAI2_MCLK_A
 #define AUDIO_LINE_SAI_FS             LINE_SAI2_FS_A
@@ -72,22 +88,6 @@
 /** Adresses 7 bits des deux ADAU1979 (config strap ADDR0/ADDR1). */
 #define ADAU1979_I2C_ADDRESS_0        0x11U
 #define ADAU1979_I2C_ADDRESS_1        0x12U
-
-/* -------------------------------------------------------------------------- */
-/* DMA (DMAMUX)                                                               */
-/* -------------------------------------------------------------------------- */
-
-/* Streams DMA à ajuster selon le schéma exact (DMA1/2 + stream). */
-#define AUDIO_SAI_RX_DMA_STREAM       STM32_DMA_STREAM_ID(1, 0)
-#define AUDIO_SAI_TX_DMA_STREAM       STM32_DMA_STREAM_ID(1, 1)
-
-/* Requests DMAMUX : valeurs issues du RM0433, section DMAMUX. */
-#define AUDIO_SAI_RX_DMA_REQUEST      STM32_DMAMUX1_SAI2_B
-#define AUDIO_SAI_TX_DMA_REQUEST      STM32_DMAMUX1_SAI2_A
-
-/* Priorité DMA (0 = basse, 3 = très haute). */
-#define AUDIO_SAI_RX_DMA_PRIORITY     2U
-#define AUDIO_SAI_TX_DMA_PRIORITY     2U
 
 /* -------------------------------------------------------------------------- */
 /* Options de pile/threads                                                    */
