@@ -1,7 +1,42 @@
 #include "ch.h"
 #include "hal.h"
 #include "drivers/drivers.h"
+#include "drv_hall.h"
 #include <stdio.h>
+
+static THD_WORKING_AREA(waHallTask, 512);
+
+static THD_FUNCTION(hallTask, arg) {
+  (void)arg;
+  chRegSetThreadName("HallTask");
+
+  while (!chThdShouldTerminateX()) {
+    drv_hall_task();
+    chThdSleepMilliseconds(5);
+  }
+
+  chThdExit(MSG_OK);
+}
+
+static void draw_hall_states(void) {
+  char line[16];
+
+  drv_display_clear();
+
+  for (uint8_t row = 0; row < 8; ++row) {
+    uint8_t left = row;
+    uint8_t right = (uint8_t)(row + 8);
+    uint8_t y = (uint8_t)(row * 8);
+
+    snprintf(line, sizeof(line), "B%u:%s", (unsigned)(left + 1U),
+             drv_hall_is_pressed(left) ? "ON " : "OFF");
+    drv_display_draw_text(0, y, line);
+
+    snprintf(line, sizeof(line), "B%u:%s", (unsigned)(right + 1U),
+             drv_hall_is_pressed(right) ? "ON " : "OFF");
+    drv_display_draw_text(64, y, line);
+  }
+}
 
 int main(void) {
 
@@ -9,19 +44,11 @@ int main(void) {
   chSysInit();
   drivers_init_all();
 
-  uint32_t idcode = DBGMCU->IDCODE;
+  drv_hall_init();
+  chThdCreateStatic(waHallTask, sizeof(waHallTask), NORMALPRIO, hallTask, NULL);
 
   while (true) {
-    char line[32];
-
-    drv_display_clear();
-
-    snprintf(line, sizeof(line), "IDCODE:");
-    drv_display_draw_text(0, 0, line);
-
-    snprintf(line, sizeof(line), "0x%08lX", (unsigned long)idcode);
-    drv_display_draw_text(0, 16, line);
-
-    chThdSleepMilliseconds(1000);
+    draw_hall_states();
+    chThdSleepMilliseconds(100);
   }
 }

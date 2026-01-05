@@ -25,7 +25,7 @@ ChibiOS_21.11.4/demos/STM32/RT-STM32H743ZI_REV_XY-NUCLEO144
 
 ```
 
-os/hal/boards/STM32H743_LQFP176_CUSTOM
+os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M
 
 ```
 
@@ -258,4 +258,3 @@ Ils ne seront abordés que si :
 
 The OLED driver is considered **stable and complete** for the current product scope.
 No further changes required unless new UI requirements arise.
-
