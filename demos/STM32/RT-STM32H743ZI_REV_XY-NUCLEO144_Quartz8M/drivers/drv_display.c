@@ -1,3 +1,4 @@
+
 #include "drv_display.h"
 #include "ch.h"
 #include "hal.h"
@@ -9,7 +10,23 @@
 /*                        CONFIGURATION MATÉRIELLE                        */
 /* ====================================================================== */
 
-/* SPI5 - Configuration compatible ChibiOS récent */
+/*
+ * Port SPI2 demandé :
+ *  - SCK  = PI1 (AF5)
+ *  - MOSI = PI3 (AF5)
+ *
+ * Si ces lignes sont déjà définies ailleurs (board.h, etc.), ce #ifndef évite
+ * les redéfinitions.
+ */
+#ifndef LINE_SPI2_SCK
+#define LINE_SPI2_SCK                PAL_LINE(GPIOI, 1U)
+#endif
+
+#ifndef LINE_SPI2_MOSI
+#define LINE_SPI2_MOSI               PAL_LINE(GPIOI, 3U)
+#endif
+
+/* SPI2 - Configuration compatible ChibiOS récent */
 static const SPIConfig spicfg = {
     .circular = false,
     .slave    = false,
@@ -36,6 +53,7 @@ static thread_t *display_tp = NULL;
 /*                              UTILITAIRES GPIO                          */
 /* ====================================================================== */
 
+/* On laisse CS/DC/RES tels quels (déjà câblés et définis chez toi) */
 static inline void cs_low(void)  { palClearLine(LINE_SPI5_CS_OLED); }
 static inline void cs_high(void) { palSetLine  (LINE_SPI5_CS_OLED); }
 static inline void dc_cmd(void)  { palClearLine(LINE_SPI5_DC_OLED); }
@@ -48,7 +66,7 @@ static inline void dc_data(void) { palSetLine  (LINE_SPI5_DC_OLED); }
 static void send_cmd(uint8_t cmd) {
     dc_cmd();
     cs_low();
-    spiPolledExchange(&SPID5, cmd);
+    spiPolledExchange(&SPID2, cmd);
     cs_high();
 }
 
@@ -56,7 +74,7 @@ static void send_data(const uint8_t *data, size_t len) {
     dc_data();
     for (size_t i = 0; i < len; i++) {
         cs_low();
-        spiPolledExchange(&SPID5, data[i]);
+        spiPolledExchange(&SPID2, data[i]);
         cs_high();
     }
 }
@@ -68,7 +86,6 @@ static void send_data(const uint8_t *data, size_t len) {
 static volatile bool display_dirty = false;
 /* 1 bit par page (0..7) */
 static uint8_t dirty_pages = 0;
-
 
 /* ====================================================================== */
 /*                              FRAMEBUFFER                               */
@@ -135,7 +152,6 @@ void drv_display_fill_rect(int x, int y, int w, int h) {
     }
 }
 
-
 void drv_display_clear_rect(int x, int y, int w, int h) {
 
     if (w <= 0 || h <= 0)
@@ -147,8 +163,6 @@ void drv_display_clear_rect(int x, int y, int w, int h) {
         }
     }
 }
-
-
 
 /* ====================================================================== */
 /*                      INITIALISATION OLED                               */
@@ -165,12 +179,11 @@ void drv_display_init(void) {
     dc_data();
     palSetLine(LINE_SPI5_RES_OLED);
 
-    /* SPI5 pins forced to AF5 (STM32H7 specific) */
-    palSetLineMode(LINE_SPI5_SCK,  PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
-    palSetLineMode(LINE_SPI5_MISO, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
-    palSetLineMode(LINE_SPI5_MOSI, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    /* SPI2 pins forced to AF5 (STM32H7 specific) */
+    palSetLineMode(LINE_SPI2_SCK,  PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
+    palSetLineMode(LINE_SPI2_MOSI, PAL_MODE_ALTERNATE(5) | PAL_STM32_OSPEED_HIGHEST);
 
-    spiStart(&SPID5, &spicfg);
+    spiStart(&SPID2, &spicfg);
 
     /* Reset OLED */
     palClearLine(LINE_SPI5_RES_OLED);
