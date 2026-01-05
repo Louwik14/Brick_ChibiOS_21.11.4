@@ -37,6 +37,10 @@
 #define SAI2A_DMA_REQUEST STM32_DMAMUX1_SAI2_A
 #define SAI2B_DMA_REQUEST STM32_DMAMUX1_SAI2_B
 
+/* Bring-up hardening: bound SAIEN clear waits per "SAI LLD — Bring-up Safe
+   Profile & Hardening", aligning with RM expectations while avoiding lockups. */
+#define SAI_LLD_SAIEN_CLEAR_TIMEOUT      10000U
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -180,8 +184,14 @@ void sai_lld_init(void) {
 #endif
 }
 
+#if defined(SAI_LLD_ENHANCED_API)
+msg_t sai_lld_start(SAIDriver *saip) {
+  msg_t msg = HAL_RET_SUCCESS;
+#else
 void sai_lld_start(SAIDriver *saip) {
+#endif
   uint32_t cr1;
+  uint32_t timeout;
   bool is_rx;
 
   if (saip->state == SAI_STOP) {
@@ -218,7 +228,17 @@ void sai_lld_start(SAIDriver *saip) {
 
   cr1 = saip->config->cr1 & ~(SAI_xCR1_SAIEN | SAI_xCR1_DMAEN);
   saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
-  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+  timeout = SAI_LLD_SAIEN_CLEAR_TIMEOUT;
+  while (((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) && (timeout > 0U)) {
+    timeout--;
+  }
+  if ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+    /* Timeout keeps API behavior, but degrades state for robust bring-up. */
+    saip->state = SAI_STOP;
+#if defined(SAI_LLD_ENHANCED_API)
+    msg = HAL_RET_HW_FAILURE;
+    return msg;
+#endif
   }
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
@@ -232,11 +252,30 @@ void sai_lld_start(SAIDriver *saip) {
   saip->blockp->SLOTR = saip->config->slotr;
   saip->blockp->IMR = 0U;
   saip->blockp->CLRFR = 0xFFFFFFFFU;
+#if defined(SAI_LLD_ENHANCED_API)
+  return msg;
+#endif
 }
 
+#if defined(SAI_LLD_ENHANCED_API)
+msg_t sai_lld_stop(SAIDriver *saip) {
+  msg_t msg = HAL_RET_SUCCESS;
+#else
 void sai_lld_stop(SAIDriver *saip) {
+#endif
+  uint32_t timeout;
+
   saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
-  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+  timeout = SAI_LLD_SAIEN_CLEAR_TIMEOUT;
+  while (((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) && (timeout > 0U)) {
+    timeout--;
+  }
+  if ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+    /* Timeout keeps API behavior, but degrades state for robust bring-up. */
+    saip->state = SAI_STOP;
+#if defined(SAI_LLD_ENHANCED_API)
+    msg = HAL_RET_HW_FAILURE;
+#endif
   }
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
@@ -262,6 +301,10 @@ void sai_lld_stop(SAIDriver *saip) {
       rccDisableSAI2();
     }
   }
+
+#if defined(SAI_LLD_ENHANCED_API)
+  return msg;
+#endif
 }
 
 void sai_lld_set_buffers(SAIDriver *saip,
@@ -333,9 +376,32 @@ void sai_lld_start_exchange(SAIDriver *saip) {
   saip->blockp->CR1 |= SAI_xCR1_SAIEN;
 }
 
+#if defined(SAI_LLD_ENHANCED_API)
+msg_t sai_lld_stop_exchange(SAIDriver *saip) {
+  msg_t msg = HAL_RET_SUCCESS;
+#else
 void sai_lld_stop_exchange(SAIDriver *saip) {
+#endif
+  uint32_t timeout;
+
   saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
-  while ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+  timeout = SAI_LLD_SAIEN_CLEAR_TIMEOUT;
+  while (((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) && (timeout > 0U)) {
+    timeout--;
+  }
+  if ((saip->blockp->CR1 & SAI_xCR1_SAIEN) != 0U) {
+    /* Timeout keeps API behavior, but degrades state for robust bring-up. */
+    saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
+    saip->state = SAI_READY;
+    if (saip->dmarx != NULL) {
+      dmaStreamDisable(saip->dmarx);
+    }
+    if (saip->dmatx != NULL) {
+      dmaStreamDisable(saip->dmatx);
+    }
+#if defined(SAI_LLD_ENHANCED_API)
+    msg = HAL_RET_HW_FAILURE;
+#endif
   }
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
@@ -345,6 +411,10 @@ void sai_lld_stop_exchange(SAIDriver *saip) {
   if (saip->dmatx != NULL) {
     dmaStreamDisable(saip->dmatx);
   }
+
+#if defined(SAI_LLD_ENHANCED_API)
+  return msg;
+#endif
 }
 
 #endif /* HAL_USE_SAI */

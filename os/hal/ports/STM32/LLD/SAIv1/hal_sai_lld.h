@@ -254,14 +254,23 @@ extern SAIDriver SAID2B;
 extern "C" {
 #endif
   void sai_lld_init(void);
+#if defined(SAI_LLD_ENHANCED_API)
+  msg_t sai_lld_start(SAIDriver *saip);
+  msg_t sai_lld_stop(SAIDriver *saip);
+#else
   void sai_lld_start(SAIDriver *saip);
   void sai_lld_stop(SAIDriver *saip);
+#endif
   void sai_lld_set_buffers(SAIDriver *saip,
                            const void *tx_buffer,
                            void *rx_buffer,
                            size_t size);
   void sai_lld_start_exchange(SAIDriver *saip);
+#if defined(SAI_LLD_ENHANCED_API)
+  msg_t sai_lld_stop_exchange(SAIDriver *saip);
+#else
   void sai_lld_stop_exchange(SAIDriver *saip);
+#endif
   void sai_dma_error_hook(SAIDriver *saip);
 #ifdef __cplusplus
 }
