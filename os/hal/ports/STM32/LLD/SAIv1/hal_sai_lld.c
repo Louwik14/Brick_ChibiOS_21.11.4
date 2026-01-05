@@ -41,6 +41,14 @@
    Profile & Hardening", aligning with RM expectations while avoiding lockups. */
 #define SAI_LLD_SAIEN_CLEAR_TIMEOUT      10000U
 
+/* Bring-up policy (SAI LLD — Hardware Bring-up Playbook / Safe Profile &
+   Hardening):
+   - tolerate: latch WCKCFG/OVRUDR once (bring-up without codec), clear flags.
+   - signal: report latched flags via STM32_SAI_ERROR_HOOK() outside IRQ.
+   - stop immediately: if WCKCFG/OVRUDR are persistent or repeated. */
+#define SAI_LLD_ERROR_SR_MASK            (SAI_xSR_WCKCFG | SAI_xSR_OVRUDR)
+#define SAI_LLD_ERROR_CLRFR_MASK         (SAI_xCLRFR_CWCKCFG | SAI_xCLRFR_COVRUDR)
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -90,6 +98,8 @@ static uint32_t sai_lld_dma_request(const SAIDriver *saip) {
 }
 
 static void sai_lld_serve_dma_interrupt(SAIDriver *saip, uint32_t flags) {
+  uint32_t sr = saip->blockp->SR;
+  uint32_t critical = sr & SAI_LLD_ERROR_SR_MASK;
 
 #if defined(STM32_SAI_DMA_ERROR_HOOK)
   if ((flags & (STM32_DMA_ISR_TEIF | STM32_DMA_ISR_DMEIF)) != 0U) {
@@ -98,6 +108,14 @@ static void sai_lld_serve_dma_interrupt(SAIDriver *saip, uint32_t flags) {
 #else
   (void)flags;
 #endif
+
+  if (critical != 0U) {
+    if ((saip->error_flags & critical) != 0U) {
+      saip->error_repeats++;
+    }
+    saip->error_flags |= critical;
+    saip->blockp->CLRFR = SAI_LLD_ERROR_CLRFR_MASK;
+  }
 
   if ((flags & STM32_DMA_ISR_HTIF) != 0U) {
     _sai_isr_half_code(saip);
@@ -143,6 +161,28 @@ static uint32_t sai_lld_dma_priority(const SAIDriver *saip) {
 
   return (saip->block == STM32_SAI_BLOCK_A) ? STM32_SAI_SAI2A_DMA_PRIORITY
                                             : STM32_SAI_SAI2B_DMA_PRIORITY;
+}
+
+static void sai_lld_report_errors(SAIDriver *saip) {
+  uint32_t sr = saip->blockp->SR & SAI_LLD_ERROR_SR_MASK;
+  uint32_t pending = saip->error_flags & SAI_LLD_ERROR_SR_MASK;
+
+  if ((sr | pending) == 0U) {
+    return;
+  }
+
+  if (sr != 0U) {
+    saip->blockp->CLRFR = SAI_LLD_ERROR_CLRFR_MASK;
+  }
+
+  STM32_SAI_ERROR_HOOK(saip, (sr | pending));
+
+  if ((saip->error_repeats != 0U) || (sr != 0U)) {
+    osalSysHalt("SAI WCKCFG/OVRUDR persistent");
+  }
+
+  saip->error_flags = 0U;
+  saip->error_repeats = 0U;
 }
 
 /*===========================================================================*/
@@ -226,6 +266,9 @@ void sai_lld_start(SAIDriver *saip) {
     }
   }
 
+  saip->error_flags = 0U;
+  saip->error_repeats = 0U;
+
   cr1 = saip->config->cr1 & ~(SAI_xCR1_SAIEN | SAI_xCR1_DMAEN);
   saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
   timeout = SAI_LLD_SAIEN_CLEAR_TIMEOUT;
@@ -264,6 +307,9 @@ msg_t sai_lld_stop(SAIDriver *saip) {
 void sai_lld_stop(SAIDriver *saip) {
 #endif
   uint32_t timeout;
+
+  saip->error_flags = 0U;
+  saip->error_repeats = 0U;
 
   saip->blockp->CR1 &= ~SAI_xCR1_SAIEN;
   timeout = SAI_LLD_SAIEN_CLEAR_TIMEOUT;
@@ -372,8 +418,13 @@ void sai_lld_set_buffers(SAIDriver *saip,
 void sai_lld_start_exchange(SAIDriver *saip) {
   osalDbgAssert(saip->bufsize > 0U, "buffers not set");
 
+  /* Clear error flags before enabling to avoid IRQ storm from latent errors. */
+  saip->blockp->CLRFR = SAI_LLD_ERROR_CLRFR_MASK;
   saip->blockp->CR1 = (saip->blockp->CR1 | SAI_xCR1_DMAEN) & ~SAI_xCR1_SAIEN;
   saip->blockp->CR1 |= SAI_xCR1_SAIEN;
+
+  /* Bring-up policy: report errors outside IRQ, stop if persistent/repeated. */
+  sai_lld_report_errors(saip);
 }
 
 #if defined(SAI_LLD_ENHANCED_API)

@@ -52,6 +52,8 @@ void saiObjectInit(SAIDriver *saip) {
 
   saip->state  = SAI_STOP;
   saip->config = NULL;
+  saip->error_flags = 0U;
+  saip->error_repeats = 0U;
 }
 
 /**

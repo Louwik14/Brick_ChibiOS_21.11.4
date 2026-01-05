@@ -130,6 +130,13 @@
 #if !defined(STM32_SAI_DMA_ERROR_HOOK) || defined(__DOXYGEN__)
 #define STM32_SAI_DMA_ERROR_HOOK(saip)   osalSysHalt("DMA failure")
 #endif
+
+#if !defined(STM32_SAI_ERROR_HOOK) || defined(__DOXYGEN__)
+#define STM32_SAI_ERROR_HOOK(saip, flags) do {                              \
+  (void)(saip);                                                             \
+  (void)(flags);                                                            \
+} while (false)
+#endif
 /** @} */
 
 /*===========================================================================*/
@@ -211,7 +218,11 @@
   /* RX buffer pointer.*/                                                   \
   void                     *rxbuf;                                         \
   /* Buffer size in items.*/                                                \
-  size_t                   bufsize;
+  size_t                   bufsize;                                        \
+  /* Latched error flags for bring-up policy (WCKCFG/OVRUDR).*/              \
+  uint32_t                 error_flags;                                    \
+  /* Repetition counter for persistent error detection.*/                   \
+  uint32_t                 error_repeats;
 
 /**
  * @brief   Low level fields of the SAI configuration structure.
