@@ -80,6 +80,48 @@ static bool audio_initialized = false;
  */
 
 /* -------------------------------------------------------------------------- */
+/* Configuration SAI LLD                                                     */
+/* -------------------------------------------------------------------------- */
+
+static const SAIConfig audio_sai_rx_cfg = {
+    .tx_buffer = NULL,
+    .rx_buffer = (void *)audio_in_buffers,
+    .size = AUDIO_DMA_IN_SAMPLES,
+    .end_cb = audio_sai_rx_cb,
+    .gcr = 0U,
+    .cr1 = (SAI_xCR1_MODE_0 | SAI_xCR1_PRTCFG_0 | SAI_xCR1_DS_4 | SAI_xCR1_DS_2 |
+            (3U << 20U) | SAI_xCR1_CKSTR | SAI_xCR1_OUTDRIV | SAI_xCR1_MCKEN),
+    .cr2 = SAI_xCR2_FTH_0,
+    .frcr = ((256U - 1U) << SAI_xFRCR_FRL_Pos) |
+            ((128U - 1U) << SAI_xFRCR_FSALL_Pos) |
+            SAI_xFRCR_FSDEF | SAI_xFRCR_FSOFF,
+    .slotr = (0U << SAI_xSLOTR_FBOFF_Pos) |
+             SAI_xSLOTR_SLOTSZ_1 |
+             ((AUDIO_NUM_INPUT_CHANNELS - 1U) << SAI_xSLOTR_NBSLOT_Pos) |
+             0x00FFU,
+    .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD,
+};
+
+static const SAIConfig audio_sai_tx_cfg = {
+    .tx_buffer = (const void *)audio_out_buffers,
+    .rx_buffer = NULL,
+    .size = AUDIO_DMA_OUT_SAMPLES,
+    .end_cb = audio_sai_tx_cb,
+    .gcr = 0U,
+    .cr1 = (SAI_xCR1_MODE_1 | SAI_xCR1_PRTCFG_0 | SAI_xCR1_DS_4 | SAI_xCR1_DS_2 |
+            SAI_xCR1_SYNCEN_0),
+    .cr2 = SAI_xCR2_FTH_0,
+    .frcr = ((128U - 1U) << SAI_xFRCR_FRL_Pos) |
+            ((64U - 1U) << SAI_xFRCR_FSALL_Pos) |
+            SAI_xFRCR_FSDEF | SAI_xFRCR_FSOFF,
+    .slotr = (0U << SAI_xSLOTR_FBOFF_Pos) |
+             SAI_xSLOTR_SLOTSZ_1 |
+             ((AUDIO_NUM_OUTPUT_CHANNELS - 1U) << SAI_xSLOTR_NBSLOT_Pos) |
+             0x000FU,
+    .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD,
+};
+
+/* -------------------------------------------------------------------------- */
 /* Prototypes internes                                                        */
 /* -------------------------------------------------------------------------- */
 
@@ -615,6 +657,7 @@ static void audio_dma_start(void) {
         audio_state = DRV_AUDIO_FAULT;
         audio_dma_stop();
     }
+    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_RX);
 }
 
 static void audio_dma_stop(void) {
