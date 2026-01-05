@@ -559,13 +559,17 @@
 #define STM32_SAI_USE_SAI1A                 FALSE
 #define STM32_SAI_USE_SAI1B                 FALSE
 #define STM32_SAI_USE_SAI2A                 TRUE
-#define STM32_SAI_USE_SAI2B                 FALSE
+#define STM32_SAI_USE_SAI2B                 TRUE
 
 #define STM32_SAI_SAI2A_IRQ_PRIORITY        5
 #define STM32_SAI_SAI2A_DMA_PRIORITY        2
+#define STM32_SAI_SAI2B_IRQ_PRIORITY        5
+#define STM32_SAI_SAI2B_DMA_PRIORITY        2
 
 #define STM32_SAI_SAI2A_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SAI_SAI2A_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 0)
+#define STM32_SAI_SAI2B_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 3)
+#define STM32_SAI_SAI2B_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 2)
 
 #define STM32_SAI_DMA_ERROR_HOOK(saip)      sai_dma_error_hook(saip)
 
