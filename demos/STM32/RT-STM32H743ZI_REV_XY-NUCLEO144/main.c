@@ -1,7 +1,8 @@
 #include "ch.h"
 #include "hal.h"
-#include "chprintf.h"
 #include "audio/audio_conf.h"
+#include "drivers/drivers.h"
+#include <stdio.h>
 
 /*
  * Hardware-dependent: verify GPIO lines and AF numbers against the board
@@ -16,19 +17,14 @@
 
 #define SAI_DMA_ITEMS   256U
 
-static const SerialConfig uart_cfg = {
-  115200,
-  0,
-  0,
-  0
-};
-
 static volatile uint32_t ht_count = 0U;
 static volatile uint32_t tc_count = 0U;
 static volatile uint32_t dma_error_count = 0U;
 static volatile uint32_t sai_error_flags = 0U;
 
 static uint32_t sai_tx_buffer[SAI_DMA_ITEMS];
+
+static THD_WORKING_AREA(waOledThread, 512);
 
 static void sai_test_callback(SAIDriver *saip, bool half) {
   (void)saip;
@@ -46,6 +42,17 @@ static void sai_test_callback(SAIDriver *saip, bool half) {
 void sai_dma_error_hook(SAIDriver *saip) {
   (void)saip;
   dma_error_count++;
+}
+
+static const char *sai_state_label(saistate_t state) {
+  switch (state) {
+    case SAI_READY:
+      return "READY";
+    case SAI_ACTIVE:
+      return "ACTIVE";
+    default:
+      return "OTHER";
+  }
 }
 
 static void sai_gpio_init(void) {
@@ -83,14 +90,45 @@ static const SAIConfig sai_cfg = {
   .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD
 };
 
+static THD_FUNCTION(oledThread, arg) {
+  (void)arg;
+  chRegSetThreadName("OLED SAI");
+
+  while (true) {
+    char line[32];
+    uint32_t local_ht = ht_count;
+    uint32_t local_tc = tc_count;
+    uint32_t local_dma_err = dma_error_count;
+    uint32_t local_sr = sai_error_flags;
+    saistate_t local_state = SAID2A.state;
+
+    drv_display_clear();
+    drv_display_draw_text(0, 0, "SAI TEST");
+
+    snprintf(line, sizeof(line), "HT:%lu", (unsigned long)local_ht);
+    drv_display_draw_text(0, 8, line);
+
+    snprintf(line, sizeof(line), "TC:%lu", (unsigned long)local_tc);
+    drv_display_draw_text(0, 16, line);
+
+    snprintf(line, sizeof(line), "DMAE:%lu", (unsigned long)local_dma_err);
+    drv_display_draw_text(0, 24, line);
+
+    snprintf(line, sizeof(line), "SR:%08lX", (unsigned long)local_sr);
+    drv_display_draw_text(0, 32, line);
+
+    snprintf(line, sizeof(line), "ST:%s", sai_state_label(local_state));
+    drv_display_draw_text(0, 40, line);
+
+    chThdSleepMilliseconds(500);
+  }
+}
+
 int main(void) {
   halInit();
   chSysInit();
 
-  sdStart(&SD1, &uart_cfg);
-  chprintf((BaseSequentialStream *)&SD1, "\r\nSAI LLD bring-up test\r\n");
-  chprintf((BaseSequentialStream *)&SD1,
-           "Verify SAI2A pins and AF before running.\r\n");
+  drivers_init_all();
 
   sai_gpio_init();
   sai_fill_silence();
@@ -99,7 +137,8 @@ int main(void) {
   saiSetBuffers(&SAID2A, sai_tx_buffer, NULL, SAI_DMA_ITEMS);
   saiStartExchange(&SAID2A);
 
-  chprintf((BaseSequentialStream *)&SD1, "SAI started\r\n");
+  chThdCreateStatic(waOledThread, sizeof(waOledThread),
+                    NORMALPRIO - 1, oledThread, NULL);
 
   while (true) {
     chThdSleepSeconds(5);
@@ -107,13 +146,9 @@ int main(void) {
     saiStopExchange(&SAID2A);
     /* CMSIS (stm32h743xx.h): status flags are in SAI_Block_TypeDef::SR. */
     sai_error_flags = SAID2A.blockp->SR;
-    chprintf((BaseSequentialStream *)&SD1,
-             "SAI stopped ht=%lu tc=%lu dma_err=%lu sr=0x%08lx\r\n",
-             ht_count, tc_count, dma_error_count, sai_error_flags);
 
     chThdSleepSeconds(1);
 
     saiStartExchange(&SAID2A);
-    chprintf((BaseSequentialStream *)&SD1, "SAI restarted\r\n");
   }
 }
