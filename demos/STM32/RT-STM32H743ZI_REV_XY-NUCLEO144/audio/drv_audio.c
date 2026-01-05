@@ -203,9 +203,11 @@ static void audio_sai_tx_cb(SAIDriver *saip, bool half) {
 static THD_WORKING_AREA(audioThreadWA, AUDIO_THREAD_STACK_SIZE);
 static THD_FUNCTION(audioThread, arg);
 
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
 static void audio_sai_dump_regs(BaseSequentialStream *chp,
                                 const char *tag,
                                 const SAI_Block_TypeDef *block);
+#endif
 static void audio_sai_dump_state(BaseSequentialStream *chp);
 
 /* -------------------------------------------------------------------------- */
@@ -657,7 +659,6 @@ static void audio_dma_start(void) {
         audio_state = DRV_AUDIO_FAULT;
         audio_dma_stop();
     }
-    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_RX);
 }
 
 static void audio_dma_stop(void) {
@@ -676,7 +677,16 @@ static void audio_dma_stop(void) {
     }
 }
 
-/* Callbacks DMA : half/full -> signale le thread. */
+static void audio_sai_dump_state(BaseSequentialStream *chp) {
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
+    audio_sai_dump_regs(chp, "RX", AUDIO_SAI_RX_BLOCK);
+    audio_sai_dump_regs(chp, "TX", AUDIO_SAI_TX_BLOCK);
+#else
+    (void)chp;
+#endif
+}
+
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
 static void audio_sai_dump_regs(BaseSequentialStream *chp,
                                 const char *tag,
                                 const SAI_Block_TypeDef *block) {
@@ -690,12 +700,4 @@ static void audio_sai_dump_regs(BaseSequentialStream *chp,
              (unsigned long)block->IMR,
              (unsigned long)block->SR);
 }
-
-static void audio_sai_dump_state(BaseSequentialStream *chp) {
-#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
-    audio_sai_dump_regs(chp, "RX", AUDIO_SAI_RX_BLOCK);
-    audio_sai_dump_regs(chp, "TX", AUDIO_SAI_TX_BLOCK);
-#else
-    (void)chp;
 #endif
-}
