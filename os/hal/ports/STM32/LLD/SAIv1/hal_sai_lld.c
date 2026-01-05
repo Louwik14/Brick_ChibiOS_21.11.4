@@ -231,8 +231,12 @@ msg_t sai_lld_start(SAIDriver *saip) {
 void sai_lld_start(SAIDriver *saip) {
 #endif
   uint32_t cr1;
+  uint32_t cr1_block_a;
+  uint32_t cr1_block_b;
   uint32_t timeout;
   bool is_rx;
+  SAI_Block_TypeDef *block_a;
+  SAI_Block_TypeDef *block_b;
 
   if (saip->state == SAI_STOP) {
     if (saip->sai == SAI1) {
@@ -286,7 +290,26 @@ void sai_lld_start(SAIDriver *saip) {
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
   saip->blockp->CR1 &= ~SAI_xCR1_DMAEN;
 
-  /* RM0433: SAI_GCR must be programmed when both blocks are disabled. */
+  if (saip->sai == SAI1) {
+    block_a = SAI1_Block_A;
+    block_b = SAI1_Block_B;
+  }
+  else {
+    block_a = SAI2_Block_A;
+    block_b = SAI2_Block_B;
+  }
+
+  cr1_block_a = block_a->CR1;
+  cr1_block_b = block_b->CR1;
+  if (((cr1_block_a | cr1_block_b) & SAI_xCR1_SAIEN) != 0U) {
+    osalDbgAssert(false, "SAI blocks must be disabled before GCR write");
+#if defined(SAI_LLD_ENHANCED_API)
+    msg = HAL_RET_HW_FAILURE;
+    return msg;
+#endif
+  }
+
+  /* RM0433: program SAI_GCR only when both blocks are disabled; see bring-up docs. */
   /* CMSIS mapping (stm32h743xx.h): block registers are in SAI_Block_TypeDef. */
   saip->sai->GCR = saip->config->gcr;
   saip->blockp->CR1 = cr1;
