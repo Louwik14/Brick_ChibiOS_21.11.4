@@ -12,13 +12,12 @@ void drivers_init_all(void) {
     chMtxObjectInit(&spi5_mutex);
 
     /* Contrat de démarrage :
-       - drv_display   : init + start (thread de rafraîchissement)
+       - drv_display   : init uniquement (rendu déclenché côté UI)
        - drv_leds_addr : init uniquement (rendu déclenché côté UI)
        - drv_buttons   : start = init + thread de scan
        - drv_encoders  : start = init + thread de scan
        - drv_pots      : start = init + thread de scan */
     drv_display_init();
-    drv_display_start();
 
 }
 
@@ -26,5 +25,4 @@ void drivers_init_all(void) {
 void drivers_update_all(void) {
     /* ⚠️ Ne **pas** appeler drv_leds_addr_update() ici.
        Le pipeline LED passe par ui_led_backend_refresh() → drv_leds_addr_render(). */
-    drv_display_update();
 }
