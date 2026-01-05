@@ -11,6 +11,12 @@
 
 static THD_WORKING_AREA(waHallTask, 512);
 
+enum {
+  HALL_TASK_PERIOD_MS = 20,
+  UI_TASK_PERIOD_MS = 100,
+  UI_FORCE_REFRESH_MS = 1000
+};
+
 static uint16_t build_hall_mask(void) {
   uint16_t mask = 0;
   for (uint8_t i = 0; i < 16U; ++i) {
@@ -24,11 +30,13 @@ static uint16_t build_hall_mask(void) {
 static THD_FUNCTION(hallTask, arg) {
   (void)arg;
   chRegSetThreadName("HallTask");
+  systime_t next_wake = chVTGetSystemTimeX();
 
   while (!chThdShouldTerminateX()) {
     drv_hall_task();
     ui_model_set_hall_mask(build_hall_mask());
-    chThdSleepMilliseconds(20);
+    next_wake = chThdSleepUntilWindowed(next_wake,
+                                        next_wake + TIME_MS2I(HALL_TASK_PERIOD_MS));
   }
 
   chThdExit(MSG_OK);
@@ -69,11 +77,23 @@ static THD_WORKING_AREA(waUiTask, 512);
 static THD_FUNCTION(uiTask, arg) {
   (void)arg;
   chRegSetThreadName("UiTask");
+  systime_t next_wake = chVTGetSystemTimeX();
+  uint16_t last_mask = 0xFFFFU;
+  uint8_t refresh_ticks = 0;
 
   while (!chThdShouldTerminateX()) {
     uint16_t hall_mask = ui_model_get_hall_mask();
-    draw_hall_states(hall_mask);
-    chThdSleepMilliseconds(100);
+    bool force_refresh = (refresh_ticks >= (UI_FORCE_REFRESH_MS / UI_TASK_PERIOD_MS));
+    if (hall_mask != last_mask || force_refresh) {
+      draw_hall_states(hall_mask);
+      last_mask = hall_mask;
+      refresh_ticks = 0;
+    } else {
+      refresh_ticks++;
+    }
+
+    next_wake = chThdSleepUntilWindowed(next_wake,
+                                        next_wake + TIME_MS2I(UI_TASK_PERIOD_MS));
   }
 
   chThdExit(MSG_OK);
