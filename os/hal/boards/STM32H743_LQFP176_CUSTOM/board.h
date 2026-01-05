@@ -428,9 +428,9 @@
 #define LINE_SPI5_MOSI               PAL_LINE(GPIOF, 9U)
 
 /* OLED aliases for display driver. */
-#define LINE_SPI5_CS_OLED            LINE_SPI5_CS
-#define LINE_SPI5_DC_OLED            LINE_SPI5_DC
-#define LINE_SPI5_RES_OLED           LINE_SPI5_RESET
+#define LINE_SPI5_CS_OLED            PAL_LINE(GPIOI, 6U)
+#define LINE_SPI5_DC_OLED            PAL_LINE(GPIOI, 5U)
+#define LINE_SPI5_RES_OLED           PAL_LINE(GPIOI, 4U)
 #define LINE_ENC4_A                  PAL_LINE(GPIOF, 10U)
 #define LINE_FMC_SDNRAS              PAL_LINE(GPIOF, 11U)
 #define LINE_FMC_A6                  PAL_LINE(GPIOF, 12U)
