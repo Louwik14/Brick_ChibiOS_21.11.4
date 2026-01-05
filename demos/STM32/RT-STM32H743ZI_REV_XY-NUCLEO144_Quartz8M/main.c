@@ -12,6 +12,8 @@
 static THD_WORKING_AREA(waHallTask, 512);
 
 enum {
+  /* Scheduler is cooperative for equal priorities (CH_CFG_TIME_QUANTUM = 0).
+     Cadences below guarantee UI execution windows even under Hall load. */
   HALL_TASK_PERIOD_MS = 20,
   UI_TASK_PERIOD_MS = 100,
   UI_FORCE_REFRESH_MS = 1000
@@ -46,7 +48,7 @@ static THD_FUNCTION(hallTask, arg) {
 /*                          AFFICHAGE OLED                                */
 /* ====================================================================== */
 
-static void draw_hall_states(uint16_t hall_mask) {
+static void draw_hall_states(uint16_t hall_mask, uint32_t heartbeat) {
   char line[16];
 
   drv_display_clear();
@@ -69,6 +71,9 @@ static void draw_hall_states(uint16_t hall_mask) {
     drv_display_draw_text(64, y, line);
   }
 
+  snprintf(line, sizeof(line), "U%lu", (unsigned long)heartbeat);
+  drv_display_draw_text(96, 56, line);
+
   drv_display_update();
 }
 
@@ -80,18 +85,20 @@ static THD_FUNCTION(uiTask, arg) {
   systime_t next_wake = chVTGetSystemTimeX();
   uint16_t last_mask = 0xFFFFU;
   uint8_t refresh_ticks = 0;
+  uint32_t heartbeat = 0;
 
   while (!chThdShouldTerminateX()) {
     uint16_t hall_mask = ui_model_get_hall_mask();
     bool force_refresh = (refresh_ticks >= (UI_FORCE_REFRESH_MS / UI_TASK_PERIOD_MS));
     if (hall_mask != last_mask || force_refresh) {
-      draw_hall_states(hall_mask);
+      draw_hall_states(hall_mask, heartbeat);
       last_mask = hall_mask;
       refresh_ticks = 0;
     } else {
       refresh_ticks++;
     }
 
+    heartbeat++;
     next_wake = chThdSleepUntilWindowed(next_wake,
                                         next_wake + TIME_MS2I(UI_TASK_PERIOD_MS));
   }
