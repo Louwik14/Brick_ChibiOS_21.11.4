@@ -6,8 +6,10 @@
 #include "drv_audio.h"
 #include "audio_codec_ada1979.h"
 #include "audio_codec_pcm4104.h"
+#include "drivers/drv_display.h"
 #include "mpu_config.h"
 #include "chprintf.h"
+#include <stdio.h>
 #include <string.h>
 
 /* -------------------------------------------------------------------------- */
@@ -33,6 +35,23 @@ static volatile uint8_t audio_out_ready_index = 0xFFU;
 #define AUDIO_SYNC_FLAG_TX    0x02U
 static volatile uint8_t audio_sync_mask = 0U;
 static volatile uint8_t audio_sync_half = 0xFFU;
+
+/* -------------------------------------------------------------------------- */
+/* Instrumentation DMA/SAI                                                   */
+/* -------------------------------------------------------------------------- */
+
+static volatile uint32_t audio_rx_half_count = 0U;
+static volatile uint32_t audio_rx_full_count = 0U;
+static volatile uint32_t audio_tx_half_count = 0U;
+static volatile uint32_t audio_tx_full_count = 0U;
+static volatile uint32_t audio_sync_error_count = 0U;
+static volatile uint32_t audio_dma_error_count = 0U;
+static volatile uint32_t audio_rx_checksums[2] = {0U, 0U};
+static volatile uint32_t audio_rx_cr1_start = 0U;
+static volatile uint32_t audio_rx_sr_start = 0U;
+static volatile uint32_t audio_tx_cr1_start = 0U;
+static volatile uint32_t audio_tx_sr_start = 0U;
+static volatile uint32_t audio_sai_error_count = 0U;
 
 /* SPI-LINK callbacks. */
 static drv_spilink_pull_cb_t spilink_pull_cb = NULL;
@@ -66,6 +85,7 @@ static binary_semaphore_t audio_dma_sem;
 static SAIDriver *audio_sai_rx = &AUDIO_SAI_RX_DRIVER;
 static SAIDriver *audio_sai_tx = &AUDIO_SAI_TX_DRIVER;
 static thread_t *audio_thread = NULL;
+static thread_t *audio_display_thread = NULL;
 static drv_audio_state_t audio_state = DRV_AUDIO_STOPPED;
 static bool audio_initialized = false;
 
@@ -91,6 +111,12 @@ static void audio_control_init(void);
 static void audio_control_get_snapshot(audio_control_snapshot_t *dst);
 static float soft_clip(float x);
 static void audio_dma_sync_mark(uint8_t half, uint8_t flag);
+static uint32_t audio_checksum_rx_half(uint8_t half);
+static uint32_t audio_sai_error_mask(void);
+static void audio_reset_stats(void);
+static void audio_capture_sai_start_state(void);
+static void audio_display_start(void);
+static void audio_display_stop(void);
 
 static void audio_sai_rx_cb(SAIDriver *saip, bool half);
 static void audio_sai_tx_cb(SAIDriver *saip, bool half);
@@ -145,6 +171,12 @@ static void audio_sai_rx_cb(SAIDriver *saip, bool half) {
     (void)saip;
     uint8_t half_index = half ? 0U : 1U;
     if (half) {
+        audio_rx_half_count++;
+    } else {
+        audio_rx_full_count++;
+    }
+    audio_rx_checksums[half_index] = audio_checksum_rx_half(half_index);
+    if (half) {
         drv_audio_dma_half_cb(half_index);
     } else {
         drv_audio_dma_full_cb(half_index);
@@ -155,11 +187,18 @@ static void audio_sai_rx_cb(SAIDriver *saip, bool half) {
 static void audio_sai_tx_cb(SAIDriver *saip, bool half) {
     (void)saip;
     uint8_t half_index = half ? 0U : 1U;
+    if (half) {
+        audio_tx_half_count++;
+    } else {
+        audio_tx_full_count++;
+    }
     audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_TX);
 }
 
 static THD_WORKING_AREA(audioThreadWA, AUDIO_THREAD_STACK_SIZE);
 static THD_FUNCTION(audioThread, arg);
+static THD_WORKING_AREA(audioDisplayWA, THD_WORKING_AREA_SIZE(512));
+static THD_FUNCTION(audioDisplayThread, arg);
 
 #if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
 static void audio_sai_dump_regs(BaseSequentialStream *chp,
@@ -202,6 +241,8 @@ void drv_audio_init(void) {
     audio_out_ready_index = 0xFFU;
     audio_sync_mask = 0U;
     audio_sync_half = 0xFFU;
+    audio_reset_stats();
+    audio_reset_stats();
 
     memset((void *)audio_in_buffers, 0, sizeof(audio_in_buffers));
     memset((void *)audio_out_buffers, 0, sizeof(audio_out_buffers));
@@ -267,6 +308,7 @@ void drv_audio_start(void) {
                                          audioThread,
                                          NULL);
     }
+    audio_display_start();
     audio_state = DRV_AUDIO_RUNNING;
     audio_codec_pcm4104_set_mute(false);
 }
@@ -278,6 +320,7 @@ void drv_audio_stop(void) {
 
     audio_codec_pcm4104_set_mute(true);
     audio_dma_stop();
+    audio_display_stop();
 
     if (audio_thread != NULL) {
         chThdTerminate(audio_thread);
@@ -440,6 +483,9 @@ static void audio_dma_sync_mark(uint8_t half, uint8_t flag) {
     chSysLockFromISR();
 
     if (audio_sync_half != half) {
+        if (audio_sync_mask != 0U) {
+            audio_sync_error_count++;
+        }
         audio_sync_half = half;
         audio_sync_mask = 0U;
     }
@@ -456,6 +502,162 @@ static void audio_dma_sync_mark(uint8_t half, uint8_t flag) {
     }
 
     chSysUnlockFromISR();
+}
+
+static uint32_t audio_checksum_rx_half(uint8_t half) {
+    const size_t samples = AUDIO_FRAMES_PER_BUFFER * AUDIO_NUM_INPUT_CHANNELS;
+    const volatile int32_t *buf = &audio_in_buffers[half][0][0];
+    uint32_t checksum = 0U;
+
+    for (size_t i = 0; i < samples; ++i) {
+        checksum ^= (uint32_t)buf[i];
+    }
+
+    return checksum;
+}
+
+static uint32_t audio_sai_error_mask(void) {
+    uint32_t mask = 0U;
+#ifdef SAI_xSR_OVRUDR
+    mask |= SAI_xSR_OVRUDR;
+#endif
+#ifdef SAI_xSR_WCKCFG
+    mask |= SAI_xSR_WCKCFG;
+#endif
+#ifdef SAI_xSR_AFSDET
+    mask |= SAI_xSR_AFSDET;
+#endif
+#ifdef SAI_xSR_LFSDET
+    mask |= SAI_xSR_LFSDET;
+#endif
+#ifdef SAI_xSR_CNRDY
+    mask |= SAI_xSR_CNRDY;
+#endif
+#ifdef SAI_xSR_MUTEDET
+    mask |= SAI_xSR_MUTEDET;
+#endif
+    return mask;
+}
+
+static void audio_reset_stats(void) {
+    audio_rx_half_count = 0U;
+    audio_rx_full_count = 0U;
+    audio_tx_half_count = 0U;
+    audio_tx_full_count = 0U;
+    audio_sync_error_count = 0U;
+    audio_dma_error_count = 0U;
+    audio_rx_checksums[0] = 0U;
+    audio_rx_checksums[1] = 0U;
+    audio_rx_cr1_start = 0U;
+    audio_rx_sr_start = 0U;
+    audio_tx_cr1_start = 0U;
+    audio_tx_sr_start = 0U;
+    audio_sai_error_count = 0U;
+}
+
+static void audio_capture_sai_start_state(void) {
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
+    const uint32_t error_mask = audio_sai_error_mask();
+    if (audio_sai_rx->blockp != NULL) {
+        audio_rx_cr1_start = audio_sai_rx->blockp->CR1;
+        audio_rx_sr_start = audio_sai_rx->blockp->SR;
+        if ((audio_rx_sr_start & error_mask) != 0U) {
+            audio_sai_error_count++;
+        }
+    }
+    if (audio_sai_tx->blockp != NULL) {
+        audio_tx_cr1_start = audio_sai_tx->blockp->CR1;
+        audio_tx_sr_start = audio_sai_tx->blockp->SR;
+        if ((audio_tx_sr_start & error_mask) != 0U) {
+            audio_sai_error_count++;
+        }
+    }
+#else
+    (void)audio_sai_error_mask;
+#endif
+}
+
+void __attribute__((weak)) sai_dma_error_hook(SAIDriver *saip) {
+    (void)saip;
+    audio_dma_error_count++;
+}
+
+static THD_FUNCTION(audioDisplayThread, arg) {
+    (void)arg;
+    chRegSetThreadName("audioDisplay");
+
+    while (!chThdShouldTerminateX()) {
+        uint32_t rx_ht = audio_rx_half_count;
+        uint32_t rx_tc = audio_rx_full_count;
+        uint32_t tx_ht = audio_tx_half_count;
+        uint32_t tx_tc = audio_tx_full_count;
+        uint32_t cs0 = audio_rx_checksums[0];
+        uint32_t cs1 = audio_rx_checksums[1];
+        uint32_t sync_err = audio_sync_error_count;
+        uint32_t sr_live = 0U;
+
+#if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
+        if (audio_sai_rx->blockp != NULL) {
+            sr_live |= audio_sai_rx->blockp->SR;
+        }
+        if (audio_sai_tx->blockp != NULL) {
+            sr_live |= audio_sai_tx->blockp->SR;
+        }
+#endif
+
+        char line[32];
+        drv_display_clear();
+        drv_display_draw_text(0, 0, "SAI AUDIO TEST");
+
+        snprintf(line, sizeof(line), "RX HT:%lu TC:%lu",
+                 (unsigned long)rx_ht, (unsigned long)rx_tc);
+        drv_display_draw_text(0, 8, line);
+
+        snprintf(line, sizeof(line), "TX HT:%lu TC:%lu",
+                 (unsigned long)tx_ht, (unsigned long)tx_tc);
+        drv_display_draw_text(0, 16, line);
+
+        snprintf(line, sizeof(line), "RX CS0: %08lX", (unsigned long)cs0);
+        drv_display_draw_text(0, 24, line);
+
+        snprintf(line, sizeof(line), "RX CS1: %08lX", (unsigned long)cs1);
+        drv_display_draw_text(0, 32, line);
+
+        snprintf(line, sizeof(line), "SYNC ERR: %lu", (unsigned long)sync_err);
+        drv_display_draw_text(0, 40, line);
+
+        snprintf(line, sizeof(line), "SR: 0x%08lX", (unsigned long)sr_live);
+        drv_display_draw_text(0, 48, line);
+
+        chThdSleepMilliseconds(300);
+    }
+}
+
+static void audio_display_start(void) {
+    if (audio_display_thread != NULL) {
+        if (chThdTerminatedX(audio_display_thread)) {
+            chThdWait(audio_display_thread);
+            audio_display_thread = NULL;
+        } else {
+            return;
+        }
+    }
+
+    audio_display_thread = chThdCreateStatic(audioDisplayWA,
+                                             sizeof(audioDisplayWA),
+                                             NORMALPRIO - 2,
+                                             audioDisplayThread,
+                                             NULL);
+}
+
+static void audio_display_stop(void) {
+    if (audio_display_thread == NULL) {
+        return;
+    }
+
+    chThdTerminate(audio_display_thread);
+    chThdWait(audio_display_thread);
+    audio_display_thread = NULL;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -597,6 +799,8 @@ static void audio_hw_configure_sai(void) {
 }
 
 static void audio_dma_start(void) {
+    saistate_t prev_rx_state = audio_sai_rx->state;
+    saistate_t prev_tx_state = audio_sai_tx->state;
     msg_t rx_status = saiStart(audio_sai_rx, &audio_sai_rx_cfg);
     msg_t tx_status = saiStart(audio_sai_tx, &audio_sai_tx_cfg);
 
@@ -612,6 +816,11 @@ static void audio_dma_start(void) {
     /* Démarre le TX esclave avant le RX maître pour éviter les glitches d'horloge. */
     saiStartExchange(audio_sai_tx);
     saiStartExchange(audio_sai_rx);
+
+    if (((prev_rx_state == SAI_READY) && (audio_sai_rx->state == SAI_ACTIVE)) ||
+        ((prev_tx_state == SAI_READY) && (audio_sai_tx->state == SAI_ACTIVE))) {
+        audio_capture_sai_start_state();
+    }
 
     if ((audio_sai_rx->state != SAI_ACTIVE) || (audio_sai_tx->state != SAI_ACTIVE)) {
         audio_state = DRV_AUDIO_FAULT;
