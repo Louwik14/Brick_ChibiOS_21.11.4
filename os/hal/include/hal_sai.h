@@ -115,6 +115,15 @@ struct hal_sai_config {
 /* Driver macros.                                                            */
 /*===========================================================================*/
 
+#if defined(SAI_LLD_ENHANCED_API)
+#define SAI_LLD_START_ERROR_ASSIGN(saip, value)                             \
+  do {                                                                      \
+    (saip)->start_error = (value);                                          \
+  } while (false)
+#else
+#define SAI_LLD_START_ERROR_ASSIGN(saip, value) do { } while (false)
+#endif
+
 /**
  * @brief   Starts an SAI data exchange.
  *
@@ -132,15 +141,11 @@ struct hal_sai_config {
   (void)_sai_sr;                                                             \
   if ((_sai_cr1 & SAI_xCR1_SAIEN) != 0U) {                                   \
     (saip)->state = SAI_ACTIVE;                                              \
-#if defined(SAI_LLD_ENHANCED_API)
-    (saip)->start_error = HAL_RET_SUCCESS;                                   \
-#endif
+    SAI_LLD_START_ERROR_ASSIGN(saip, HAL_RET_SUCCESS);                       \
   }                                                                          \
   else {                                                                     \
     (saip)->state = SAI_READY;                                               \
-#if defined(SAI_LLD_ENHANCED_API)
-    (saip)->start_error = HAL_RET_HW_FAILURE;                                \
-#endif
+    SAI_LLD_START_ERROR_ASSIGN(saip, HAL_RET_HW_FAILURE);                    \
   }                                                                          \
 } while (false)
 
