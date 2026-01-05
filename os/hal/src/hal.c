@@ -92,6 +92,9 @@ void halInit(void) {
 #if (HAL_USE_I2S == TRUE) || defined(__DOXYGEN__)
   i2sInit();
 #endif
+#if (HAL_USE_SAI == TRUE) || defined(__DOXYGEN__)
+  saiInit();
+#endif
 #if (HAL_USE_ICU == TRUE) || defined(__DOXYGEN__)
   icuInit();
 #endif
