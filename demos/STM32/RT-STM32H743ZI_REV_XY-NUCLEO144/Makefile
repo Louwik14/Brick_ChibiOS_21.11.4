@@ -104,7 +104,6 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 #
 
 DRIVERS_SRC = $(wildcard drivers/*.c)
-DRIVERS_SRC := $(filter-out drivers/stm32h7xx_hal_chibios.c,$(DRIVERS_SRC))
 
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
