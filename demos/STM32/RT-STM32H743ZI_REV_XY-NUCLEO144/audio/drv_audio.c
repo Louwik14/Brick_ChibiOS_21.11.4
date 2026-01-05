@@ -179,6 +179,27 @@ static const SAIConfig audio_sai_tx_cfg = {
     .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD,
 };
 
+/* -------------------------------------------------------------------------- */
+/* Callbacks DMA SAI                                                         */
+/* -------------------------------------------------------------------------- */
+
+static void audio_sai_rx_cb(SAIDriver *saip, bool half) {
+    (void)saip;
+    uint8_t half_index = half ? 0U : 1U;
+    if (half) {
+        drv_audio_dma_half_cb(half_index);
+    } else {
+        drv_audio_dma_full_cb(half_index);
+    }
+    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_RX);
+}
+
+static void audio_sai_tx_cb(SAIDriver *saip, bool half) {
+    (void)saip;
+    uint8_t half_index = half ? 0U : 1U;
+    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_TX);
+}
+
 static THD_WORKING_AREA(audioThreadWA, AUDIO_THREAD_STACK_SIZE);
 static THD_FUNCTION(audioThread, arg);
 
@@ -610,8 +631,6 @@ static THD_FUNCTION(audioThread, arg) {
 
 static void audio_hw_configure_sai(void) {
 #if defined(STM32H7xx) && defined(SAI_xCR1_MODE_0)
-    (void)audio_sai_rx_cfg;
-    (void)audio_sai_tx_cfg;
 #else
     audio_state = DRV_AUDIO_FAULT;
 #endif
@@ -638,6 +657,7 @@ static void audio_dma_start(void) {
         audio_state = DRV_AUDIO_FAULT;
         audio_dma_stop();
     }
+    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_RX);
 }
 
 static void audio_dma_stop(void) {
@@ -657,23 +677,6 @@ static void audio_dma_stop(void) {
 }
 
 /* Callbacks DMA : half/full -> signale le thread. */
-static void audio_sai_rx_cb(SAIDriver *saip, bool half) {
-    (void)saip;
-    uint8_t half_index = half ? 0U : 1U;
-    if (half) {
-        drv_audio_dma_half_cb(half_index);
-    } else {
-        drv_audio_dma_full_cb(half_index);
-    }
-    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_RX);
-}
-
-static void audio_sai_tx_cb(SAIDriver *saip, bool half) {
-    (void)saip;
-    uint8_t half_index = half ? 0U : 1U;
-    audio_dma_sync_mark(half_index, AUDIO_SYNC_FLAG_TX);
-}
-
 static void audio_sai_dump_regs(BaseSequentialStream *chp,
                                 const char *tag,
                                 const SAI_Block_TypeDef *block) {
