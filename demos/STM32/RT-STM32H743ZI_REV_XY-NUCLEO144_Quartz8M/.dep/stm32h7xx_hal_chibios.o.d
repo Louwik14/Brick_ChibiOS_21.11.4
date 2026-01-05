@@ -49,7 +49,7 @@ build/obj/stm32h7xx_hal_chibios.o: drivers/stm32h7xx_hal_chibios.c \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
  ../../../os/rt/include/chdynamic.h ../../../os/hal/osal/rt-nil/osal.h \
  cfg/halconf.h cfg/mcuconf.h cfg/mcuconf.h \
- ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h \
+ ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h \
  ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
  ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h \
  ../../../os/hal/ports/common/ARMCMx/nvic.h \
@@ -157,7 +157,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 cfg/halconf.h:
 cfg/mcuconf.h:
 cfg/mcuconf.h:
-../../../os/hal/boards/STM32H743_LQFP176_CUSTOM/board.h:
+../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h:
 ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h:
 ../../../os/hal/ports/STM32/STM32H7xx/stm32_registry.h:
 ../../../os/hal/ports/common/ARMCMx/nvic.h:

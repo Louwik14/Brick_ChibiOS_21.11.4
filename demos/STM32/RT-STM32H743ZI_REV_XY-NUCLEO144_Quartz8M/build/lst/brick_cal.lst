@@ -1,0 +1,2724 @@
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 1
+
+
+   1              		.cpu cortex-m7
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"brick_cal.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	brick_cal_state
+  18              		.section	.bss.brick_cal_state,"aw",%nobits
+  19              		.align	2
+  20              		.type	brick_cal_state, %object
+  21              		.size	brick_cal_state, 148
+  22              	brick_cal_state:
+  23 0000 00000000 		.space	148
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  23      00000000 
+  24              		.section	.text.channel_valid,"ax",%progbits
+  25              		.align	1
+  26              		.syntax unified
+  27              		.thumb
+  28              		.thumb_func
+  29              		.type	channel_valid, %function
+  30              	channel_valid:
+  31              	.LFB0:
+  32              		.file 1 "drivers/HallEffect/brick_cal.c"
+  33              		.loc 1 10 71
+  34              		.cfi_startproc
+  35              		@ args = 0, pretend = 0, frame = 8
+  36              		@ frame_needed = 1, uses_anonymous_args = 0
+  37              		@ link register save eliminated.
+  38 0000 80B4     		push	{r7}
+  39              		.cfi_def_cfa_offset 4
+  40              		.cfi_offset 7, -4
+  41 0002 83B0     		sub	sp, sp, #12
+  42              		.cfi_def_cfa_offset 16
+  43 0004 00AF     		add	r7, sp, #0
+  44              		.cfi_def_cfa_register 7
+  45 0006 7860     		str	r0, [r7, #4]
+  46 0008 0B46     		mov	r3, r1
+  47 000a FB70     		strb	r3, [r7, #3]
+  48              		.loc 1 11 6
+  49 000c 7B68     		ldr	r3, [r7, #4]
+  50 000e 002B     		cmp	r3, #0
+  51 0010 01D1     		bne	.L2
+  52              		.loc 1 12 12
+  53 0012 0023     		movs	r3, #0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 2
+
+
+  54 0014 0DE0     		b	.L3
+  55              	.L2:
+  56              		.loc 1 15 23
+  57 0016 7B68     		ldr	r3, [r7, #4]
+  58 0018 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+  59              		.loc 1 15 32
+  60 001a FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+  61 001c 9A42     		cmp	r2, r3
+  62 001e 04D2     		bcs	.L4
+  63              		.loc 1 15 32 is_stmt 0 discriminator 1
+  64 0020 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+  65 0022 0F2B     		cmp	r3, #15
+  66 0024 01D8     		bhi	.L4
+  67              		.loc 1 15 32 discriminator 3
+  68 0026 0123     		movs	r3, #1
+  69 0028 00E0     		b	.L5
+  70              	.L4:
+  71              		.loc 1 15 32 discriminator 4
+  72 002a 0023     		movs	r3, #0
+  73              	.L5:
+  74              		.loc 1 15 32 discriminator 6
+  75 002c 03F00103 		and	r3, r3, #1
+  76 0030 DBB2     		uxtb	r3, r3
+  77              	.L3:
+  78              		.loc 1 16 1 is_stmt 1
+  79 0032 1846     		mov	r0, r3
+  80 0034 0C37     		adds	r7, r7, #12
+  81              		.cfi_def_cfa_offset 4
+  82 0036 BD46     		mov	sp, r7
+  83              		.cfi_def_cfa_register 13
+  84              		@ sp needed
+  85 0038 80BC     		pop	{r7}
+  86              		.cfi_restore 7
+  87              		.cfi_def_cfa_offset 0
+  88 003a 7047     		bx	lr
+  89              		.cfi_endproc
+  90              	.LFE0:
+  91              		.size	channel_valid, .-channel_valid
+  92              		.section	.text.brick_cal_pot_init,"ax",%progbits
+  93              		.align	1
+  94              		.global	brick_cal_pot_init
+  95              		.syntax unified
+  96              		.thumb
+  97              		.thumb_func
+  98              		.type	brick_cal_pot_init, %function
+  99              	brick_cal_pot_init:
+ 100              	.LFB1:
+ 101              		.loc 1 18 87
+ 102              		.cfi_startproc
+ 103              		@ args = 0, pretend = 0, frame = 16
+ 104              		@ frame_needed = 1, uses_anonymous_args = 0
+ 105              		@ link register save eliminated.
+ 106 0000 80B4     		push	{r7}
+ 107              		.cfi_def_cfa_offset 4
+ 108              		.cfi_offset 7, -4
+ 109 0002 85B0     		sub	sp, sp, #20
+ 110              		.cfi_def_cfa_offset 24
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 3
+
+
+ 111 0004 00AF     		add	r7, sp, #0
+ 112              		.cfi_def_cfa_register 7
+ 113 0006 7860     		str	r0, [r7, #4]
+ 114 0008 0B46     		mov	r3, r1
+ 115 000a FB70     		strb	r3, [r7, #3]
+ 116 000c 1346     		mov	r3, r2
+ 117 000e BB70     		strb	r3, [r7, #2]
+ 118              		.loc 1 19 6
+ 119 0010 7B68     		ldr	r3, [r7, #4]
+ 120 0012 002B     		cmp	r3, #0
+ 121 0014 01D1     		bne	.L7
+ 122              		.loc 1 20 12
+ 123 0016 0123     		movs	r3, #1
+ 124 0018 4AE0     		b	.L8
+ 125              	.L7:
+ 126              		.loc 1 23 6
+ 127 001a FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 128 001c 102B     		cmp	r3, #16
+ 129 001e 01D9     		bls	.L9
+ 130              		.loc 1 24 16
+ 131 0020 1023     		movs	r3, #16
+ 132 0022 FB70     		strb	r3, [r7, #3]
+ 133              	.L9:
+ 134              		.loc 1 27 19
+ 135 0024 7B68     		ldr	r3, [r7, #4]
+ 136 0026 FA78     		ldrb	r2, [r7, #3]
+ 137 0028 1A70     		strb	r2, [r3]
+ 138              		.loc 1 28 76
+ 139 002a BB78     		ldrb	r3, [r7, #2]	@ zero_extendqisi2
+ 140 002c 102B     		cmp	r3, #16
+ 141 002e 28BF     		it	cs
+ 142 0030 1023     		movcs	r3, #16
+ 143 0032 DAB2     		uxtb	r2, r3
+ 144              		.loc 1 28 15
+ 145 0034 7B68     		ldr	r3, [r7, #4]
+ 146 0036 5A70     		strb	r2, [r3, #1]
+ 147              		.loc 1 29 18
+ 148 0038 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 149 003a 0F2B     		cmp	r3, #15
+ 150 003c 05D8     		bhi	.L10
+ 151              		.loc 1 29 68 discriminator 1
+ 152 003e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 153 0040 0122     		movs	r2, #1
+ 154 0042 02FA03F3 		lsl	r3, r2, r3
+ 155              		.loc 1 29 18 discriminator 1
+ 156 0046 9AB2     		uxth	r2, r3
+ 157 0048 01E0     		b	.L11
+ 158              	.L10:
+ 159              		.loc 1 29 18 is_stmt 0 discriminator 2
+ 160 004a 4FF6FF72 		movw	r2, #65535
+ 161              	.L11:
+ 162              		.loc 1 29 16 is_stmt 1 discriminator 4
+ 163 004e 7B68     		ldr	r3, [r7, #4]
+ 164 0050 5A80     		strh	r2, [r3, #2]	@ movhi
+ 165              	.LBB2:
+ 166              		.loc 1 31 16 discriminator 4
+ 167 0052 0023     		movs	r3, #0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 4
+
+
+ 168 0054 FB73     		strb	r3, [r7, #15]
+ 169              		.loc 1 31 3 discriminator 4
+ 170 0056 27E0     		b	.L12
+ 171              	.L13:
+ 172              		.loc 1 32 13 discriminator 3
+ 173 0058 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 174              		.loc 1 32 22 discriminator 3
+ 175 005a 7A68     		ldr	r2, [r7, #4]
+ 176 005c 5188     		ldrh	r1, [r2, #2]
+ 177              		.loc 1 32 17 discriminator 3
+ 178 005e 7A68     		ldr	r2, [r7, #4]
+ 179 0060 5B00     		lsls	r3, r3, #1
+ 180 0062 1344     		add	r3, r3, r2
+ 181 0064 0A46     		mov	r2, r1	@ movhi
+ 182 0066 9A80     		strh	r2, [r3, #4]	@ movhi
+ 183              		.loc 1 33 13 discriminator 3
+ 184 0068 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 185              		.loc 1 33 17 discriminator 3
+ 186 006a 7A68     		ldr	r2, [r7, #4]
+ 187 006c 1033     		adds	r3, r3, #16
+ 188 006e 5B00     		lsls	r3, r3, #1
+ 189 0070 1344     		add	r3, r3, r2
+ 190 0072 0022     		movs	r2, #0
+ 191 0074 9A80     		strh	r2, [r3, #4]	@ movhi
+ 192              		.loc 1 34 16 discriminator 3
+ 193 0076 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 194              		.loc 1 34 20 discriminator 3
+ 195 0078 7A68     		ldr	r2, [r7, #4]
+ 196 007a 1344     		add	r3, r3, r2
+ 197 007c 0022     		movs	r2, #0
+ 198 007e 83F88420 		strb	r2, [r3, #132]
+ 199              		.loc 1 35 18 discriminator 3
+ 200 0082 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 201              		.loc 1 35 22 discriminator 3
+ 202 0084 7A68     		ldr	r2, [r7, #4]
+ 203 0086 2033     		adds	r3, r3, #32
+ 204 0088 5B00     		lsls	r3, r3, #1
+ 205 008a 1344     		add	r3, r3, r2
+ 206 008c 0022     		movs	r2, #0
+ 207 008e 9A80     		strh	r2, [r3, #4]	@ movhi
+ 208              		.loc 1 36 18 discriminator 3
+ 209 0090 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 210              		.loc 1 36 27 discriminator 3
+ 211 0092 7A68     		ldr	r2, [r7, #4]
+ 212 0094 5188     		ldrh	r1, [r2, #2]
+ 213              		.loc 1 36 22 discriminator 3
+ 214 0096 7A68     		ldr	r2, [r7, #4]
+ 215 0098 3033     		adds	r3, r3, #48
+ 216 009a 5B00     		lsls	r3, r3, #1
+ 217 009c 1344     		add	r3, r3, r2
+ 218 009e 0A46     		mov	r2, r1	@ movhi
+ 219 00a0 9A80     		strh	r2, [r3, #4]	@ movhi
+ 220              		.loc 1 31 51 discriminator 3
+ 221 00a2 FB7B     		ldrb	r3, [r7, #15]
+ 222 00a4 0133     		adds	r3, r3, #1
+ 223 00a6 FB73     		strb	r3, [r7, #15]
+ 224              	.L12:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 5
+
+
+ 225              		.loc 1 31 25 discriminator 1
+ 226 00a8 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 227 00aa 0F2B     		cmp	r3, #15
+ 228 00ac D4D9     		bls	.L13
+ 229              	.LBE2:
+ 230              		.loc 1 39 10
+ 231 00ae 0023     		movs	r3, #0
+ 232              	.L8:
+ 233              		.loc 1 40 1
+ 234 00b0 1846     		mov	r0, r3
+ 235 00b2 1437     		adds	r7, r7, #20
+ 236              		.cfi_def_cfa_offset 4
+ 237 00b4 BD46     		mov	sp, r7
+ 238              		.cfi_def_cfa_register 13
+ 239              		@ sp needed
+ 240 00b6 80BC     		pop	{r7}
+ 241              		.cfi_restore 7
+ 242              		.cfi_def_cfa_offset 0
+ 243 00b8 7047     		bx	lr
+ 244              		.cfi_endproc
+ 245              	.LFE1:
+ 246              		.size	brick_cal_pot_init, .-brick_cal_pot_init
+ 247              		.section	.text.brick_cal_pot_enable_range,"ax",%progbits
+ 248              		.align	1
+ 249              		.global	brick_cal_pot_enable_range
+ 250              		.syntax unified
+ 251              		.thumb
+ 252              		.thumb_func
+ 253              		.type	brick_cal_pot_enable_range, %function
+ 254              	brick_cal_pot_enable_range:
+ 255              	.LFB2:
+ 256              		.loc 1 42 90
+ 257              		.cfi_startproc
+ 258              		@ args = 0, pretend = 0, frame = 16
+ 259              		@ frame_needed = 1, uses_anonymous_args = 0
+ 260              		@ link register save eliminated.
+ 261 0000 80B4     		push	{r7}
+ 262              		.cfi_def_cfa_offset 4
+ 263              		.cfi_offset 7, -4
+ 264 0002 85B0     		sub	sp, sp, #20
+ 265              		.cfi_def_cfa_offset 24
+ 266 0004 00AF     		add	r7, sp, #0
+ 267              		.cfi_def_cfa_register 7
+ 268 0006 7860     		str	r0, [r7, #4]
+ 269 0008 0B46     		mov	r3, r1
+ 270 000a FB70     		strb	r3, [r7, #3]
+ 271 000c 1346     		mov	r3, r2
+ 272 000e BB70     		strb	r3, [r7, #2]
+ 273              		.loc 1 43 6
+ 274 0010 7B68     		ldr	r3, [r7, #4]
+ 275 0012 002B     		cmp	r3, #0
+ 276 0014 03D0     		beq	.L15
+ 277              		.loc 1 43 25 discriminator 1
+ 278 0016 7B68     		ldr	r3, [r7, #4]
+ 279 0018 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 280              		.loc 1 43 19 discriminator 1
+ 281 001a 002B     		cmp	r3, #0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 6
+
+
+ 282 001c 01D1     		bne	.L16
+ 283              	.L15:
+ 284              		.loc 1 44 12
+ 285 001e 0123     		movs	r3, #1
+ 286 0020 24E0     		b	.L17
+ 287              	.L16:
+ 288              		.loc 1 47 19
+ 289 0022 7B68     		ldr	r3, [r7, #4]
+ 290 0024 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 291              		.loc 1 47 6
+ 292 0026 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 293 0028 9A42     		cmp	r2, r3
+ 294 002a 01D3     		bcc	.L18
+ 295              		.loc 1 48 12
+ 296 002c 0123     		movs	r3, #1
+ 297 002e 1DE0     		b	.L17
+ 298              	.L18:
+ 299              		.loc 1 50 7
+ 300 0030 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 301              		.loc 1 50 23
+ 302 0032 BB78     		ldrb	r3, [r7, #2]	@ zero_extendqisi2
+ 303 0034 1344     		add	r3, r3, r2
+ 304              		.loc 1 50 37
+ 305 0036 7A68     		ldr	r2, [r7, #4]
+ 306 0038 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 307              		.loc 1 50 6
+ 308 003a 9342     		cmp	r3, r2
+ 309 003c 01DD     		ble	.L19
+ 310              		.loc 1 51 12
+ 311 003e 0123     		movs	r3, #1
+ 312 0040 14E0     		b	.L17
+ 313              	.L19:
+ 314              		.loc 1 54 11
+ 315 0042 FA78     		ldrb	r2, [r7, #3]
+ 316 0044 BB78     		ldrb	r3, [r7, #2]
+ 317 0046 1344     		add	r3, r3, r2
+ 318 0048 BB73     		strb	r3, [r7, #14]
+ 319              	.LBB3:
+ 320              		.loc 1 55 16
+ 321 004a FB78     		ldrb	r3, [r7, #3]
+ 322 004c FB73     		strb	r3, [r7, #15]
+ 323              		.loc 1 55 3
+ 324 004e 08E0     		b	.L20
+ 325              	.L21:
+ 326              		.loc 1 56 16 discriminator 3
+ 327 0050 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 328              		.loc 1 56 20 discriminator 3
+ 329 0052 7A68     		ldr	r2, [r7, #4]
+ 330 0054 1344     		add	r3, r3, r2
+ 331 0056 0122     		movs	r2, #1
+ 332 0058 83F88420 		strb	r2, [r3, #132]
+ 333              		.loc 1 55 36 discriminator 3
+ 334 005c FB7B     		ldrb	r3, [r7, #15]
+ 335 005e 0133     		adds	r3, r3, #1
+ 336 0060 FB73     		strb	r3, [r7, #15]
+ 337              	.L20:
+ 338              		.loc 1 55 29 discriminator 1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 7
+
+
+ 339 0062 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 340 0064 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 341 0066 9A42     		cmp	r2, r3
+ 342 0068 F2D3     		bcc	.L21
+ 343              	.LBE3:
+ 344              		.loc 1 59 10
+ 345 006a 0023     		movs	r3, #0
+ 346              	.L17:
+ 347              		.loc 1 60 1
+ 348 006c 1846     		mov	r0, r3
+ 349 006e 1437     		adds	r7, r7, #20
+ 350              		.cfi_def_cfa_offset 4
+ 351 0070 BD46     		mov	sp, r7
+ 352              		.cfi_def_cfa_register 13
+ 353              		@ sp needed
+ 354 0072 80BC     		pop	{r7}
+ 355              		.cfi_restore 7
+ 356              		.cfi_def_cfa_offset 0
+ 357 0074 7047     		bx	lr
+ 358              		.cfi_endproc
+ 359              	.LFE2:
+ 360              		.size	brick_cal_pot_enable_range, .-brick_cal_pot_enable_range
+ 361              		.section	.text.brick_cal_pot_enable_get,"ax",%progbits
+ 362              		.align	1
+ 363              		.global	brick_cal_pot_enable_get
+ 364              		.syntax unified
+ 365              		.thumb
+ 366              		.thumb_func
+ 367              		.type	brick_cal_pot_enable_get, %function
+ 368              	brick_cal_pot_enable_get:
+ 369              	.LFB3:
+ 370              		.loc 1 62 91
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 16
+ 373              		@ frame_needed = 1, uses_anonymous_args = 0
+ 374 0000 80B5     		push	{r7, lr}
+ 375              		.cfi_def_cfa_offset 8
+ 376              		.cfi_offset 7, -8
+ 377              		.cfi_offset 14, -4
+ 378 0002 84B0     		sub	sp, sp, #16
+ 379              		.cfi_def_cfa_offset 24
+ 380 0004 00AF     		add	r7, sp, #0
+ 381              		.cfi_def_cfa_register 7
+ 382 0006 F860     		str	r0, [r7, #12]
+ 383 0008 0B46     		mov	r3, r1
+ 384 000a 7A60     		str	r2, [r7, #4]
+ 385 000c FB72     		strb	r3, [r7, #11]
+ 386              		.loc 1 63 6
+ 387 000e FB68     		ldr	r3, [r7, #12]
+ 388 0010 002B     		cmp	r3, #0
+ 389 0012 02D0     		beq	.L23
+ 390              		.loc 1 63 19 discriminator 1
+ 391 0014 7B68     		ldr	r3, [r7, #4]
+ 392 0016 002B     		cmp	r3, #0
+ 393 0018 01D1     		bne	.L24
+ 394              	.L23:
+ 395              		.loc 1 64 12
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 8
+
+
+ 396 001a 0123     		movs	r3, #1
+ 397 001c 14E0     		b	.L25
+ 398              	.L24:
+ 399              		.loc 1 67 8
+ 400 001e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 401 0020 1946     		mov	r1, r3
+ 402 0022 F868     		ldr	r0, [r7, #12]
+ 403 0024 FFF7FEFF 		bl	channel_valid
+ 404 0028 0346     		mov	r3, r0
+ 405              		.loc 1 67 7
+ 406 002a 83F00103 		eor	r3, r3, #1
+ 407 002e DBB2     		uxtb	r3, r3
+ 408              		.loc 1 67 6
+ 409 0030 002B     		cmp	r3, #0
+ 410 0032 01D0     		beq	.L26
+ 411              		.loc 1 68 12
+ 412 0034 0123     		movs	r3, #1
+ 413 0036 07E0     		b	.L25
+ 414              	.L26:
+ 415              		.loc 1 71 24
+ 416 0038 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 417 003a FA68     		ldr	r2, [r7, #12]
+ 418 003c 1344     		add	r3, r3, r2
+ 419 003e 93F88420 		ldrb	r2, [r3, #132]	@ zero_extendqisi2
+ 420              		.loc 1 71 11
+ 421 0042 7B68     		ldr	r3, [r7, #4]
+ 422 0044 1A70     		strb	r2, [r3]
+ 423              		.loc 1 72 10
+ 424 0046 0023     		movs	r3, #0
+ 425              	.L25:
+ 426              		.loc 1 73 1
+ 427 0048 1846     		mov	r0, r3
+ 428 004a 1037     		adds	r7, r7, #16
+ 429              		.cfi_def_cfa_offset 8
+ 430 004c BD46     		mov	sp, r7
+ 431              		.cfi_def_cfa_register 13
+ 432              		@ sp needed
+ 433 004e 80BD     		pop	{r7, pc}
+ 434              		.cfi_endproc
+ 435              	.LFE3:
+ 436              		.size	brick_cal_pot_enable_get, .-brick_cal_pot_enable_get
+ 437              		.section	.text.brick_cal_pot_detent_get,"ax",%progbits
+ 438              		.align	1
+ 439              		.global	brick_cal_pot_detent_get
+ 440              		.syntax unified
+ 441              		.thumb
+ 442              		.thumb_func
+ 443              		.type	brick_cal_pot_detent_get, %function
+ 444              	brick_cal_pot_detent_get:
+ 445              	.LFB4:
+ 446              		.loc 1 75 103
+ 447              		.cfi_startproc
+ 448              		@ args = 0, pretend = 0, frame = 16
+ 449              		@ frame_needed = 1, uses_anonymous_args = 0
+ 450 0000 80B5     		push	{r7, lr}
+ 451              		.cfi_def_cfa_offset 8
+ 452              		.cfi_offset 7, -8
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 9
+
+
+ 453              		.cfi_offset 14, -4
+ 454 0002 84B0     		sub	sp, sp, #16
+ 455              		.cfi_def_cfa_offset 24
+ 456 0004 00AF     		add	r7, sp, #0
+ 457              		.cfi_def_cfa_register 7
+ 458 0006 F860     		str	r0, [r7, #12]
+ 459 0008 7A60     		str	r2, [r7, #4]
+ 460 000a 1A46     		mov	r2, r3
+ 461 000c 0B46     		mov	r3, r1
+ 462 000e FB72     		strb	r3, [r7, #11]
+ 463 0010 1346     		mov	r3, r2
+ 464 0012 BB72     		strb	r3, [r7, #10]
+ 465              		.loc 1 76 6
+ 466 0014 FB68     		ldr	r3, [r7, #12]
+ 467 0016 002B     		cmp	r3, #0
+ 468 0018 02D0     		beq	.L28
+ 469              		.loc 1 76 19 discriminator 1
+ 470 001a 7B68     		ldr	r3, [r7, #4]
+ 471 001c 002B     		cmp	r3, #0
+ 472 001e 01D1     		bne	.L29
+ 473              	.L28:
+ 474              		.loc 1 77 12
+ 475 0020 0123     		movs	r3, #1
+ 476 0022 1FE0     		b	.L30
+ 477              	.L29:
+ 478              		.loc 1 80 8
+ 479 0024 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 480 0026 1946     		mov	r1, r3
+ 481 0028 F868     		ldr	r0, [r7, #12]
+ 482 002a FFF7FEFF 		bl	channel_valid
+ 483 002e 0346     		mov	r3, r0
+ 484              		.loc 1 80 7
+ 485 0030 83F00103 		eor	r3, r3, #1
+ 486 0034 DBB2     		uxtb	r3, r3
+ 487              		.loc 1 80 6
+ 488 0036 002B     		cmp	r3, #0
+ 489 0038 01D0     		beq	.L31
+ 490              		.loc 1 81 12
+ 491 003a 0123     		movs	r3, #1
+ 492 003c 12E0     		b	.L30
+ 493              	.L31:
+ 494              		.loc 1 84 11
+ 495 003e BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 496 0040 002B     		cmp	r3, #0
+ 497 0042 06D0     		beq	.L32
+ 498              		.loc 1 84 33 discriminator 1
+ 499 0044 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 500              		.loc 1 84 11 discriminator 1
+ 501 0046 FA68     		ldr	r2, [r7, #12]
+ 502 0048 3033     		adds	r3, r3, #48
+ 503 004a 5B00     		lsls	r3, r3, #1
+ 504 004c 1344     		add	r3, r3, r2
+ 505 004e 9B88     		ldrh	r3, [r3, #4]
+ 506 0050 05E0     		b	.L33
+ 507              	.L32:
+ 508              		.loc 1 84 58 discriminator 2
+ 509 0052 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 10
+
+
+ 510              		.loc 1 84 11 discriminator 2
+ 511 0054 FA68     		ldr	r2, [r7, #12]
+ 512 0056 2033     		adds	r3, r3, #32
+ 513 0058 5B00     		lsls	r3, r3, #1
+ 514 005a 1344     		add	r3, r3, r2
+ 515 005c 9B88     		ldrh	r3, [r3, #4]
+ 516              	.L33:
+ 517              		.loc 1 84 11 is_stmt 0 discriminator 4
+ 518 005e 7A68     		ldr	r2, [r7, #4]
+ 519 0060 1380     		strh	r3, [r2]	@ movhi
+ 520              		.loc 1 85 10 is_stmt 1 discriminator 4
+ 521 0062 0023     		movs	r3, #0
+ 522              	.L30:
+ 523              		.loc 1 86 1
+ 524 0064 1846     		mov	r0, r3
+ 525 0066 1037     		adds	r7, r7, #16
+ 526              		.cfi_def_cfa_offset 8
+ 527 0068 BD46     		mov	sp, r7
+ 528              		.cfi_def_cfa_register 13
+ 529              		@ sp needed
+ 530 006a 80BD     		pop	{r7, pc}
+ 531              		.cfi_endproc
+ 532              	.LFE4:
+ 533              		.size	brick_cal_pot_detent_get, .-brick_cal_pot_detent_get
+ 534              		.section	.text.brick_cal_pot_detent_set,"ax",%progbits
+ 535              		.align	1
+ 536              		.global	brick_cal_pot_detent_set
+ 537              		.syntax unified
+ 538              		.thumb
+ 539              		.thumb_func
+ 540              		.type	brick_cal_pot_detent_set, %function
+ 541              	brick_cal_pot_detent_set:
+ 542              	.LFB5:
+ 543              		.loc 1 88 102
+ 544              		.cfi_startproc
+ 545              		@ args = 0, pretend = 0, frame = 8
+ 546              		@ frame_needed = 1, uses_anonymous_args = 0
+ 547 0000 80B5     		push	{r7, lr}
+ 548              		.cfi_def_cfa_offset 8
+ 549              		.cfi_offset 7, -8
+ 550              		.cfi_offset 14, -4
+ 551 0002 82B0     		sub	sp, sp, #8
+ 552              		.cfi_def_cfa_offset 16
+ 553 0004 00AF     		add	r7, sp, #0
+ 554              		.cfi_def_cfa_register 7
+ 555 0006 7860     		str	r0, [r7, #4]
+ 556 0008 0846     		mov	r0, r1
+ 557 000a 1146     		mov	r1, r2
+ 558 000c 1A46     		mov	r2, r3
+ 559 000e 0346     		mov	r3, r0
+ 560 0010 FB70     		strb	r3, [r7, #3]
+ 561 0012 0B46     		mov	r3, r1	@ movhi
+ 562 0014 3B80     		strh	r3, [r7]	@ movhi
+ 563 0016 1346     		mov	r3, r2
+ 564 0018 BB70     		strb	r3, [r7, #2]
+ 565              		.loc 1 89 6
+ 566 001a 7B68     		ldr	r3, [r7, #4]
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 11
+
+
+ 567 001c 002B     		cmp	r3, #0
+ 568 001e 01D1     		bne	.L35
+ 569              		.loc 1 90 12
+ 570 0020 0123     		movs	r3, #1
+ 571 0022 28E0     		b	.L36
+ 572              	.L35:
+ 573              		.loc 1 93 8
+ 574 0024 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 575 0026 1946     		mov	r1, r3
+ 576 0028 7868     		ldr	r0, [r7, #4]
+ 577 002a FFF7FEFF 		bl	channel_valid
+ 578 002e 0346     		mov	r3, r0
+ 579              		.loc 1 93 7
+ 580 0030 83F00103 		eor	r3, r3, #1
+ 581 0034 DBB2     		uxtb	r3, r3
+ 582              		.loc 1 93 6
+ 583 0036 002B     		cmp	r3, #0
+ 584 0038 01D0     		beq	.L37
+ 585              		.loc 1 94 12
+ 586 003a 0123     		movs	r3, #1
+ 587 003c 1BE0     		b	.L36
+ 588              	.L37:
+ 589              		.loc 1 97 19
+ 590 003e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 591 0040 7A68     		ldr	r2, [r7, #4]
+ 592 0042 1344     		add	r3, r3, r2
+ 593 0044 93F88430 		ldrb	r3, [r3, #132]	@ zero_extendqisi2
+ 594              		.loc 1 97 6
+ 595 0048 002B     		cmp	r3, #0
+ 596 004a 01D1     		bne	.L38
+ 597              		.loc 1 98 12
+ 598 004c 0123     		movs	r3, #1
+ 599 004e 12E0     		b	.L36
+ 600              	.L38:
+ 601              		.loc 1 101 6
+ 602 0050 BB78     		ldrb	r3, [r7, #2]	@ zero_extendqisi2
+ 603 0052 002B     		cmp	r3, #0
+ 604 0054 07D0     		beq	.L39
+ 605              		.loc 1 102 18
+ 606 0056 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 607              		.loc 1 102 28
+ 608 0058 7A68     		ldr	r2, [r7, #4]
+ 609 005a 3033     		adds	r3, r3, #48
+ 610 005c 5B00     		lsls	r3, r3, #1
+ 611 005e 1344     		add	r3, r3, r2
+ 612 0060 3A88     		ldrh	r2, [r7]	@ movhi
+ 613 0062 9A80     		strh	r2, [r3, #4]	@ movhi
+ 614 0064 06E0     		b	.L40
+ 615              	.L39:
+ 616              		.loc 1 104 18
+ 617 0066 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 618              		.loc 1 104 28
+ 619 0068 7A68     		ldr	r2, [r7, #4]
+ 620 006a 2033     		adds	r3, r3, #32
+ 621 006c 5B00     		lsls	r3, r3, #1
+ 622 006e 1344     		add	r3, r3, r2
+ 623 0070 3A88     		ldrh	r2, [r7]	@ movhi
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 12
+
+
+ 624 0072 9A80     		strh	r2, [r3, #4]	@ movhi
+ 625              	.L40:
+ 626              		.loc 1 107 10
+ 627 0074 0023     		movs	r3, #0
+ 628              	.L36:
+ 629              		.loc 1 108 1
+ 630 0076 1846     		mov	r0, r3
+ 631 0078 0837     		adds	r7, r7, #8
+ 632              		.cfi_def_cfa_offset 8
+ 633 007a BD46     		mov	sp, r7
+ 634              		.cfi_def_cfa_register 13
+ 635              		@ sp needed
+ 636 007c 80BD     		pop	{r7, pc}
+ 637              		.cfi_endproc
+ 638              	.LFE5:
+ 639              		.size	brick_cal_pot_detent_set, .-brick_cal_pot_detent_set
+ 640              		.section	.text.brick_cal_pot_min_get,"ax",%progbits
+ 641              		.align	1
+ 642              		.global	brick_cal_pot_min_get
+ 643              		.syntax unified
+ 644              		.thumb
+ 645              		.thumb_func
+ 646              		.type	brick_cal_pot_min_get, %function
+ 647              	brick_cal_pot_min_get:
+ 648              	.LFB6:
+ 649              		.loc 1 110 92
+ 650              		.cfi_startproc
+ 651              		@ args = 0, pretend = 0, frame = 16
+ 652              		@ frame_needed = 1, uses_anonymous_args = 0
+ 653 0000 80B5     		push	{r7, lr}
+ 654              		.cfi_def_cfa_offset 8
+ 655              		.cfi_offset 7, -8
+ 656              		.cfi_offset 14, -4
+ 657 0002 84B0     		sub	sp, sp, #16
+ 658              		.cfi_def_cfa_offset 24
+ 659 0004 00AF     		add	r7, sp, #0
+ 660              		.cfi_def_cfa_register 7
+ 661 0006 F860     		str	r0, [r7, #12]
+ 662 0008 0B46     		mov	r3, r1
+ 663 000a 7A60     		str	r2, [r7, #4]
+ 664 000c FB72     		strb	r3, [r7, #11]
+ 665              		.loc 1 111 6
+ 666 000e FB68     		ldr	r3, [r7, #12]
+ 667 0010 002B     		cmp	r3, #0
+ 668 0012 02D0     		beq	.L42
+ 669              		.loc 1 111 19 discriminator 1
+ 670 0014 7B68     		ldr	r3, [r7, #4]
+ 671 0016 002B     		cmp	r3, #0
+ 672 0018 01D1     		bne	.L43
+ 673              	.L42:
+ 674              		.loc 1 112 12
+ 675 001a 0123     		movs	r3, #1
+ 676 001c 14E0     		b	.L44
+ 677              	.L43:
+ 678              		.loc 1 115 8
+ 679 001e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 680 0020 1946     		mov	r1, r3
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 13
+
+
+ 681 0022 F868     		ldr	r0, [r7, #12]
+ 682 0024 FFF7FEFF 		bl	channel_valid
+ 683 0028 0346     		mov	r3, r0
+ 684              		.loc 1 115 7
+ 685 002a 83F00103 		eor	r3, r3, #1
+ 686 002e DBB2     		uxtb	r3, r3
+ 687              		.loc 1 115 6
+ 688 0030 002B     		cmp	r3, #0
+ 689 0032 01D0     		beq	.L45
+ 690              		.loc 1 116 12
+ 691 0034 0123     		movs	r3, #1
+ 692 0036 07E0     		b	.L44
+ 693              	.L45:
+ 694              		.loc 1 119 24
+ 695 0038 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 696 003a FA68     		ldr	r2, [r7, #12]
+ 697 003c 5B00     		lsls	r3, r3, #1
+ 698 003e 1344     		add	r3, r3, r2
+ 699 0040 9A88     		ldrh	r2, [r3, #4]
+ 700              		.loc 1 119 14
+ 701 0042 7B68     		ldr	r3, [r7, #4]
+ 702 0044 1A80     		strh	r2, [r3]	@ movhi
+ 703              		.loc 1 120 10
+ 704 0046 0023     		movs	r3, #0
+ 705              	.L44:
+ 706              		.loc 1 121 1
+ 707 0048 1846     		mov	r0, r3
+ 708 004a 1037     		adds	r7, r7, #16
+ 709              		.cfi_def_cfa_offset 8
+ 710 004c BD46     		mov	sp, r7
+ 711              		.cfi_def_cfa_register 13
+ 712              		@ sp needed
+ 713 004e 80BD     		pop	{r7, pc}
+ 714              		.cfi_endproc
+ 715              	.LFE6:
+ 716              		.size	brick_cal_pot_min_get, .-brick_cal_pot_min_get
+ 717              		.section	.text.brick_cal_pot_max_get,"ax",%progbits
+ 718              		.align	1
+ 719              		.global	brick_cal_pot_max_get
+ 720              		.syntax unified
+ 721              		.thumb
+ 722              		.thumb_func
+ 723              		.type	brick_cal_pot_max_get, %function
+ 724              	brick_cal_pot_max_get:
+ 725              	.LFB7:
+ 726              		.loc 1 123 92
+ 727              		.cfi_startproc
+ 728              		@ args = 0, pretend = 0, frame = 16
+ 729              		@ frame_needed = 1, uses_anonymous_args = 0
+ 730 0000 80B5     		push	{r7, lr}
+ 731              		.cfi_def_cfa_offset 8
+ 732              		.cfi_offset 7, -8
+ 733              		.cfi_offset 14, -4
+ 734 0002 84B0     		sub	sp, sp, #16
+ 735              		.cfi_def_cfa_offset 24
+ 736 0004 00AF     		add	r7, sp, #0
+ 737              		.cfi_def_cfa_register 7
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 14
+
+
+ 738 0006 F860     		str	r0, [r7, #12]
+ 739 0008 0B46     		mov	r3, r1
+ 740 000a 7A60     		str	r2, [r7, #4]
+ 741 000c FB72     		strb	r3, [r7, #11]
+ 742              		.loc 1 124 6
+ 743 000e FB68     		ldr	r3, [r7, #12]
+ 744 0010 002B     		cmp	r3, #0
+ 745 0012 02D0     		beq	.L47
+ 746              		.loc 1 124 19 discriminator 1
+ 747 0014 7B68     		ldr	r3, [r7, #4]
+ 748 0016 002B     		cmp	r3, #0
+ 749 0018 01D1     		bne	.L48
+ 750              	.L47:
+ 751              		.loc 1 125 12
+ 752 001a 0123     		movs	r3, #1
+ 753 001c 15E0     		b	.L49
+ 754              	.L48:
+ 755              		.loc 1 128 8
+ 756 001e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 757 0020 1946     		mov	r1, r3
+ 758 0022 F868     		ldr	r0, [r7, #12]
+ 759 0024 FFF7FEFF 		bl	channel_valid
+ 760 0028 0346     		mov	r3, r0
+ 761              		.loc 1 128 7
+ 762 002a 83F00103 		eor	r3, r3, #1
+ 763 002e DBB2     		uxtb	r3, r3
+ 764              		.loc 1 128 6
+ 765 0030 002B     		cmp	r3, #0
+ 766 0032 01D0     		beq	.L50
+ 767              		.loc 1 129 12
+ 768 0034 0123     		movs	r3, #1
+ 769 0036 08E0     		b	.L49
+ 770              	.L50:
+ 771              		.loc 1 132 24
+ 772 0038 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 773 003a FA68     		ldr	r2, [r7, #12]
+ 774 003c 1033     		adds	r3, r3, #16
+ 775 003e 5B00     		lsls	r3, r3, #1
+ 776 0040 1344     		add	r3, r3, r2
+ 777 0042 9A88     		ldrh	r2, [r3, #4]
+ 778              		.loc 1 132 14
+ 779 0044 7B68     		ldr	r3, [r7, #4]
+ 780 0046 1A80     		strh	r2, [r3]	@ movhi
+ 781              		.loc 1 133 10
+ 782 0048 0023     		movs	r3, #0
+ 783              	.L49:
+ 784              		.loc 1 134 1
+ 785 004a 1846     		mov	r0, r3
+ 786 004c 1037     		adds	r7, r7, #16
+ 787              		.cfi_def_cfa_offset 8
+ 788 004e BD46     		mov	sp, r7
+ 789              		.cfi_def_cfa_register 13
+ 790              		@ sp needed
+ 791 0050 80BD     		pop	{r7, pc}
+ 792              		.cfi_endproc
+ 793              	.LFE7:
+ 794              		.size	brick_cal_pot_max_get, .-brick_cal_pot_max_get
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 15
+
+
+ 795              		.section	.text.update_detent,"ax",%progbits
+ 796              		.align	1
+ 797              		.syntax unified
+ 798              		.thumb
+ 799              		.thumb_func
+ 800              		.type	update_detent, %function
+ 801              	update_detent:
+ 802              	.LFB8:
+ 803              		.loc 1 136 104
+ 804              		.cfi_startproc
+ 805              		@ args = 0, pretend = 0, frame = 24
+ 806              		@ frame_needed = 1, uses_anonymous_args = 0
+ 807              		@ link register save eliminated.
+ 808 0000 80B4     		push	{r7}
+ 809              		.cfi_def_cfa_offset 4
+ 810              		.cfi_offset 7, -4
+ 811 0002 87B0     		sub	sp, sp, #28
+ 812              		.cfi_def_cfa_offset 32
+ 813 0004 00AF     		add	r7, sp, #0
+ 814              		.cfi_def_cfa_register 7
+ 815 0006 F860     		str	r0, [r7, #12]
+ 816 0008 0846     		mov	r0, r1
+ 817 000a 1146     		mov	r1, r2
+ 818 000c 1A46     		mov	r2, r3
+ 819 000e 0346     		mov	r3, r0
+ 820 0010 FB72     		strb	r3, [r7, #11]
+ 821 0012 0B46     		mov	r3, r1	@ movhi
+ 822 0014 3B81     		strh	r3, [r7, #8]	@ movhi
+ 823 0016 1346     		mov	r3, r2	@ movhi
+ 824 0018 FB80     		strh	r3, [r7, #6]	@ movhi
+ 825              		.loc 1 137 12
+ 826 001a 3B89     		ldrh	r3, [r7, #8]
+ 827 001c 174A     		ldr	r2, .L55
+ 828 001e A2FB0323 		umull	r2, r3, r2, r3
+ 829 0022 5B09     		lsrs	r3, r3, #5
+ 830 0024 BB82     		strh	r3, [r7, #20]	@ movhi
+ 831              		.loc 1 138 12
+ 832 0026 FA88     		ldrh	r2, [r7, #6]
+ 833 0028 BB8A     		ldrh	r3, [r7, #20]
+ 834 002a 9A42     		cmp	r2, r3
+ 835 002c 04D9     		bls	.L52
+ 836              		.loc 1 138 12 is_stmt 0 discriminator 1
+ 837 002e FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 838 0030 BB8A     		ldrh	r3, [r7, #20]	@ movhi
+ 839 0032 D31A     		subs	r3, r2, r3
+ 840 0034 9BB2     		uxth	r3, r3
+ 841 0036 00E0     		b	.L53
+ 842              	.L52:
+ 843              		.loc 1 138 12 discriminator 2
+ 844 0038 0023     		movs	r3, #0
+ 845              	.L53:
+ 846              		.loc 1 138 12 discriminator 4
+ 847 003a 7B82     		strh	r3, [r7, #18]	@ movhi
+ 848              		.loc 1 139 12 is_stmt 1 discriminator 4
+ 849 003c FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 850 003e BB8A     		ldrh	r3, [r7, #20]	@ movhi
+ 851 0040 1344     		add	r3, r3, r2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 16
+
+
+ 852 0042 FB82     		strh	r3, [r7, #22]	@ movhi
+ 853              		.loc 1 140 15 discriminator 4
+ 854 0044 FB68     		ldr	r3, [r7, #12]
+ 855 0046 5B88     		ldrh	r3, [r3, #2]
+ 856              		.loc 1 140 6 discriminator 4
+ 857 0048 FA8A     		ldrh	r2, [r7, #22]
+ 858 004a 9A42     		cmp	r2, r3
+ 859 004c 02D9     		bls	.L54
+ 860              		.loc 1 141 8
+ 861 004e FB68     		ldr	r3, [r7, #12]
+ 862 0050 5B88     		ldrh	r3, [r3, #2]	@ movhi
+ 863 0052 FB82     		strh	r3, [r7, #22]	@ movhi
+ 864              	.L54:
+ 865              		.loc 1 143 16
+ 866 0054 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 867              		.loc 1 143 26
+ 868 0056 FA68     		ldr	r2, [r7, #12]
+ 869 0058 2033     		adds	r3, r3, #32
+ 870 005a 5B00     		lsls	r3, r3, #1
+ 871 005c 1344     		add	r3, r3, r2
+ 872 005e 7A8A     		ldrh	r2, [r7, #18]	@ movhi
+ 873 0060 9A80     		strh	r2, [r3, #4]	@ movhi
+ 874              		.loc 1 144 16
+ 875 0062 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 876              		.loc 1 144 26
+ 877 0064 FA68     		ldr	r2, [r7, #12]
+ 878 0066 3033     		adds	r3, r3, #48
+ 879 0068 5B00     		lsls	r3, r3, #1
+ 880 006a 1344     		add	r3, r3, r2
+ 881 006c FA8A     		ldrh	r2, [r7, #22]	@ movhi
+ 882 006e 9A80     		strh	r2, [r3, #4]	@ movhi
+ 883              		.loc 1 145 1
+ 884 0070 00BF     		nop
+ 885 0072 1C37     		adds	r7, r7, #28
+ 886              		.cfi_def_cfa_offset 4
+ 887 0074 BD46     		mov	sp, r7
+ 888              		.cfi_def_cfa_register 13
+ 889              		@ sp needed
+ 890 0076 80BC     		pop	{r7}
+ 891              		.cfi_restore 7
+ 892              		.cfi_def_cfa_offset 0
+ 893 0078 7047     		bx	lr
+ 894              	.L56:
+ 895 007a 00BF     		.align	2
+ 896              	.L55:
+ 897 007c CDCCCCCC 		.word	-858993459
+ 898              		.cfi_endproc
+ 899              	.LFE8:
+ 900              		.size	update_detent, .-update_detent
+ 901              		.section	.text.clamp_to_maximum,"ax",%progbits
+ 902              		.align	1
+ 903              		.syntax unified
+ 904              		.thumb
+ 905              		.thumb_func
+ 906              		.type	clamp_to_maximum, %function
+ 907              	clamp_to_maximum:
+ 908              	.LFB9:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 17
+
+
+ 909              		.loc 1 147 77
+ 910              		.cfi_startproc
+ 911              		@ args = 0, pretend = 0, frame = 8
+ 912              		@ frame_needed = 1, uses_anonymous_args = 0
+ 913              		@ link register save eliminated.
+ 914 0000 80B4     		push	{r7}
+ 915              		.cfi_def_cfa_offset 4
+ 916              		.cfi_offset 7, -4
+ 917 0002 83B0     		sub	sp, sp, #12
+ 918              		.cfi_def_cfa_offset 16
+ 919 0004 00AF     		add	r7, sp, #0
+ 920              		.cfi_def_cfa_register 7
+ 921 0006 7860     		str	r0, [r7, #4]
+ 922 0008 0B46     		mov	r3, r1
+ 923 000a 7B80     		strh	r3, [r7, #2]	@ movhi
+ 924              		.loc 1 148 6
+ 925 000c 7B68     		ldr	r3, [r7, #4]
+ 926 000e 002B     		cmp	r3, #0
+ 927 0010 01D1     		bne	.L58
+ 928              		.loc 1 149 12
+ 929 0012 7B88     		ldrh	r3, [r7, #2]
+ 930 0014 08E0     		b	.L59
+ 931              	.L58:
+ 932              		.loc 1 151 18
+ 933 0016 7B68     		ldr	r3, [r7, #4]
+ 934 0018 5B88     		ldrh	r3, [r3, #2]
+ 935              		.loc 1 151 6
+ 936 001a 7A88     		ldrh	r2, [r7, #2]
+ 937 001c 9A42     		cmp	r2, r3
+ 938 001e 02D9     		bls	.L60
+ 939              		.loc 1 152 15
+ 940 0020 7B68     		ldr	r3, [r7, #4]
+ 941 0022 5B88     		ldrh	r3, [r3, #2]
+ 942 0024 00E0     		b	.L59
+ 943              	.L60:
+ 944              		.loc 1 154 10
+ 945 0026 7B88     		ldrh	r3, [r7, #2]
+ 946              	.L59:
+ 947              		.loc 1 155 1
+ 948 0028 1846     		mov	r0, r3
+ 949 002a 0C37     		adds	r7, r7, #12
+ 950              		.cfi_def_cfa_offset 4
+ 951 002c BD46     		mov	sp, r7
+ 952              		.cfi_def_cfa_register 13
+ 953              		@ sp needed
+ 954 002e 80BC     		pop	{r7}
+ 955              		.cfi_restore 7
+ 956              		.cfi_def_cfa_offset 0
+ 957 0030 7047     		bx	lr
+ 958              		.cfi_endproc
+ 959              	.LFE9:
+ 960              		.size	clamp_to_maximum, .-clamp_to_maximum
+ 961              		.section	.text.brick_cal_pot_next,"ax",%progbits
+ 962              		.align	1
+ 963              		.global	brick_cal_pot_next
+ 964              		.syntax unified
+ 965              		.thumb
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 18
+
+
+ 966              		.thumb_func
+ 967              		.type	brick_cal_pot_next, %function
+ 968              	brick_cal_pot_next:
+ 969              	.LFB10:
+ 970              		.loc 1 157 96
+ 971              		.cfi_startproc
+ 972              		@ args = 0, pretend = 0, frame = 24
+ 973              		@ frame_needed = 1, uses_anonymous_args = 0
+ 974 0000 80B5     		push	{r7, lr}
+ 975              		.cfi_def_cfa_offset 8
+ 976              		.cfi_offset 7, -8
+ 977              		.cfi_offset 14, -4
+ 978 0002 86B0     		sub	sp, sp, #24
+ 979              		.cfi_def_cfa_offset 32
+ 980 0004 00AF     		add	r7, sp, #0
+ 981              		.cfi_def_cfa_register 7
+ 982 0006 F860     		str	r0, [r7, #12]
+ 983 0008 7B60     		str	r3, [r7, #4]
+ 984 000a 0B46     		mov	r3, r1
+ 985 000c FB72     		strb	r3, [r7, #11]
+ 986 000e 1346     		mov	r3, r2	@ movhi
+ 987 0010 3B81     		strh	r3, [r7, #8]	@ movhi
+ 988              		.loc 1 158 6
+ 989 0012 FB68     		ldr	r3, [r7, #12]
+ 990 0014 002B     		cmp	r3, #0
+ 991 0016 02D0     		beq	.L62
+ 992              		.loc 1 158 19 discriminator 1
+ 993 0018 7B68     		ldr	r3, [r7, #4]
+ 994 001a 002B     		cmp	r3, #0
+ 995 001c 01D1     		bne	.L63
+ 996              	.L62:
+ 997              		.loc 1 159 12
+ 998 001e 0123     		movs	r3, #1
+ 999 0020 7DE0     		b	.L64
+ 1000              	.L63:
+ 1001              		.loc 1 162 8
+ 1002 0022 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1003 0024 1946     		mov	r1, r3
+ 1004 0026 F868     		ldr	r0, [r7, #12]
+ 1005 0028 FFF7FEFF 		bl	channel_valid
+ 1006 002c 0346     		mov	r3, r0
+ 1007              		.loc 1 162 7
+ 1008 002e 83F00103 		eor	r3, r3, #1
+ 1009 0032 DBB2     		uxtb	r3, r3
+ 1010              		.loc 1 162 6
+ 1011 0034 002B     		cmp	r3, #0
+ 1012 0036 01D0     		beq	.L65
+ 1013              		.loc 1 163 12
+ 1014 0038 0123     		movs	r3, #1
+ 1015 003a 70E0     		b	.L64
+ 1016              	.L65:
+ 1017              		.loc 1 166 8
+ 1018 003c 3B89     		ldrh	r3, [r7, #8]
+ 1019 003e 1946     		mov	r1, r3
+ 1020 0040 F868     		ldr	r0, [r7, #12]
+ 1021 0042 FFF7FEFF 		bl	clamp_to_maximum
+ 1022 0046 0346     		mov	r3, r0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 19
+
+
+ 1023 0048 3B81     		strh	r3, [r7, #8]	@ movhi
+ 1024              		.loc 1 168 19
+ 1025 004a FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1026 004c FA68     		ldr	r2, [r7, #12]
+ 1027 004e 1344     		add	r3, r3, r2
+ 1028 0050 93F88430 		ldrb	r3, [r3, #132]	@ zero_extendqisi2
+ 1029              		.loc 1 168 6
+ 1030 0054 002B     		cmp	r3, #0
+ 1031 0056 04D1     		bne	.L66
+ 1032              		.loc 1 169 10
+ 1033 0058 7B68     		ldr	r3, [r7, #4]
+ 1034 005a 3A89     		ldrh	r2, [r7, #8]	@ movhi
+ 1035 005c 1A80     		strh	r2, [r3]	@ movhi
+ 1036              		.loc 1 170 12
+ 1037 005e 0023     		movs	r3, #0
+ 1038 0060 5DE0     		b	.L64
+ 1039              	.L66:
+ 1040              		.loc 1 173 20
+ 1041 0062 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1042 0064 FA68     		ldr	r2, [r7, #12]
+ 1043 0066 5B00     		lsls	r3, r3, #1
+ 1044 0068 1344     		add	r3, r3, r2
+ 1045 006a 9B88     		ldrh	r3, [r3, #4]
+ 1046              		.loc 1 173 6
+ 1047 006c 3A89     		ldrh	r2, [r7, #8]
+ 1048 006e 9A42     		cmp	r2, r3
+ 1049 0070 05D2     		bcs	.L67
+ 1050              		.loc 1 174 13
+ 1051 0072 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1052              		.loc 1 174 23
+ 1053 0074 FA68     		ldr	r2, [r7, #12]
+ 1054 0076 5B00     		lsls	r3, r3, #1
+ 1055 0078 1344     		add	r3, r3, r2
+ 1056 007a 3A89     		ldrh	r2, [r7, #8]	@ movhi
+ 1057 007c 9A80     		strh	r2, [r3, #4]	@ movhi
+ 1058              	.L67:
+ 1059              		.loc 1 176 20
+ 1060 007e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1061 0080 FA68     		ldr	r2, [r7, #12]
+ 1062 0082 1033     		adds	r3, r3, #16
+ 1063 0084 5B00     		lsls	r3, r3, #1
+ 1064 0086 1344     		add	r3, r3, r2
+ 1065 0088 9B88     		ldrh	r3, [r3, #4]
+ 1066              		.loc 1 176 6
+ 1067 008a 3A89     		ldrh	r2, [r7, #8]
+ 1068 008c 9A42     		cmp	r2, r3
+ 1069 008e 06D9     		bls	.L68
+ 1070              		.loc 1 177 13
+ 1071 0090 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1072              		.loc 1 177 23
+ 1073 0092 FA68     		ldr	r2, [r7, #12]
+ 1074 0094 1033     		adds	r3, r3, #16
+ 1075 0096 5B00     		lsls	r3, r3, #1
+ 1076 0098 1344     		add	r3, r3, r2
+ 1077 009a 3A89     		ldrh	r2, [r7, #8]	@ movhi
+ 1078 009c 9A80     		strh	r2, [r3, #4]	@ movhi
+ 1079              	.L68:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 20
+
+
+ 1080              		.loc 1 180 15
+ 1081 009e FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1082 00a0 FA68     		ldr	r2, [r7, #12]
+ 1083 00a2 1033     		adds	r3, r3, #16
+ 1084 00a4 5B00     		lsls	r3, r3, #1
+ 1085 00a6 1344     		add	r3, r3, r2
+ 1086 00a8 9A88     		ldrh	r2, [r3, #4]
+ 1087              		.loc 1 180 35
+ 1088 00aa FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1089 00ac F968     		ldr	r1, [r7, #12]
+ 1090 00ae 5B00     		lsls	r3, r3, #1
+ 1091 00b0 0B44     		add	r3, r3, r1
+ 1092 00b2 9B88     		ldrh	r3, [r3, #4]
+ 1093              		.loc 1 180 6
+ 1094 00b4 9A42     		cmp	r2, r3
+ 1095 00b6 0CD2     		bcs	.L69
+ 1096              		.loc 1 181 33
+ 1097 00b8 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1098              		.loc 1 181 13
+ 1099 00ba F97A     		ldrb	r1, [r7, #11]	@ zero_extendqisi2
+ 1100              		.loc 1 181 33
+ 1101 00bc FA68     		ldr	r2, [r7, #12]
+ 1102 00be 5B00     		lsls	r3, r3, #1
+ 1103 00c0 1344     		add	r3, r3, r2
+ 1104 00c2 9888     		ldrh	r0, [r3, #4]
+ 1105              		.loc 1 181 23
+ 1106 00c4 FA68     		ldr	r2, [r7, #12]
+ 1107 00c6 01F11003 		add	r3, r1, #16
+ 1108 00ca 5B00     		lsls	r3, r3, #1
+ 1109 00cc 1344     		add	r3, r3, r2
+ 1110 00ce 0246     		mov	r2, r0	@ movhi
+ 1111 00d0 9A80     		strh	r2, [r3, #4]	@ movhi
+ 1112              	.L69:
+ 1113              		.loc 1 184 39
+ 1114 00d2 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1115 00d4 FA68     		ldr	r2, [r7, #12]
+ 1116 00d6 1033     		adds	r3, r3, #16
+ 1117 00d8 5B00     		lsls	r3, r3, #1
+ 1118 00da 1344     		add	r3, r3, r2
+ 1119 00dc 9A88     		ldrh	r2, [r3, #4]
+ 1120              		.loc 1 184 59
+ 1121 00de FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1122 00e0 F968     		ldr	r1, [r7, #12]
+ 1123 00e2 5B00     		lsls	r3, r3, #1
+ 1124 00e4 0B44     		add	r3, r3, r1
+ 1125 00e6 9B88     		ldrh	r3, [r3, #4]
+ 1126              		.loc 1 184 12
+ 1127 00e8 D31A     		subs	r3, r2, r3
+ 1128 00ea FB82     		strh	r3, [r7, #22]	@ movhi
+ 1129              		.loc 1 185 6
+ 1130 00ec FB8A     		ldrh	r3, [r7, #22]
+ 1131 00ee 002B     		cmp	r3, #0
+ 1132 00f0 01D1     		bne	.L70
+ 1133              		.loc 1 186 11
+ 1134 00f2 0123     		movs	r3, #1
+ 1135 00f4 FB82     		strh	r3, [r7, #22]	@ movhi
+ 1136              	.L70:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 21
+
+
+ 1137              		.loc 1 188 40
+ 1138 00f6 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1139 00f8 FA68     		ldr	r2, [r7, #12]
+ 1140 00fa 5B00     		lsls	r3, r3, #1
+ 1141 00fc 1344     		add	r3, r3, r2
+ 1142 00fe 9A88     		ldrh	r2, [r3, #4]
+ 1143              		.loc 1 188 21
+ 1144 0100 FB8A     		ldrh	r3, [r7, #22]
+ 1145 0102 5B08     		lsrs	r3, r3, #1
+ 1146 0104 9BB2     		uxth	r3, r3
+ 1147              		.loc 1 188 12
+ 1148 0106 1344     		add	r3, r3, r2
+ 1149 0108 BB82     		strh	r3, [r7, #20]	@ movhi
+ 1150              		.loc 1 189 3
+ 1151 010a BB8A     		ldrh	r3, [r7, #20]
+ 1152 010c FA8A     		ldrh	r2, [r7, #22]
+ 1153 010e F97A     		ldrb	r1, [r7, #11]	@ zero_extendqisi2
+ 1154 0110 F868     		ldr	r0, [r7, #12]
+ 1155 0112 FFF7FEFF 		bl	update_detent
+ 1156              		.loc 1 191 8
+ 1157 0116 7B68     		ldr	r3, [r7, #4]
+ 1158 0118 3A89     		ldrh	r2, [r7, #8]	@ movhi
+ 1159 011a 1A80     		strh	r2, [r3]	@ movhi
+ 1160              		.loc 1 192 10
+ 1161 011c 0023     		movs	r3, #0
+ 1162              	.L64:
+ 1163              		.loc 1 193 1
+ 1164 011e 1846     		mov	r0, r3
+ 1165 0120 1837     		adds	r7, r7, #24
+ 1166              		.cfi_def_cfa_offset 8
+ 1167 0122 BD46     		mov	sp, r7
+ 1168              		.cfi_def_cfa_register 13
+ 1169              		@ sp needed
+ 1170 0124 80BD     		pop	{r7, pc}
+ 1171              		.cfi_endproc
+ 1172              	.LFE10:
+ 1173              		.size	brick_cal_pot_next, .-brick_cal_pot_next
+ 1174              		.text
+ 1175              	.Letext0:
+ 1176              		.file 2 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\mac
+ 1177              		.file 3 "c:\\chibistudio\\tools\\gnu tools arm embedded\\11.3 2022.08\\arm-none-eabi\\include\\sys
+ 1178              		.file 4 "drivers/HallEffect/brick_cal.h"
+ 1179              		.section	.debug_info,"",%progbits
+ 1180              	.Ldebug_info0:
+ 1181 0000 EC040000 		.4byte	0x4ec
+ 1182 0004 0500     		.2byte	0x5
+ 1183 0006 01       		.byte	0x1
+ 1184 0007 04       		.byte	0x4
+ 1185 0008 00000000 		.4byte	.Ldebug_abbrev0
+ 1186 000c 10       		.uleb128 0x10
+ 1187 000d 87010000 		.4byte	.LASF45
+ 1188 0011 1D       		.byte	0x1d
+ 1189 0012 12020000 		.4byte	.LASF46
+ 1190 0016 FB000000 		.4byte	.LASF47
+ 1191 001a 0C000000 		.4byte	.LLRL0
+ 1192 001e 00000000 		.4byte	0
+ 1193 0022 00000000 		.4byte	.Ldebug_line0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 22
+
+
+ 1194 0026 03       		.uleb128 0x3
+ 1195 0027 01       		.byte	0x1
+ 1196 0028 06       		.byte	0x6
+ 1197 0029 44030000 		.4byte	.LASF0
+ 1198 002d 07       		.uleb128 0x7
+ 1199 002e 2D000000 		.4byte	.LASF3
+ 1200 0032 02       		.byte	0x2
+ 1201 0033 2B       		.byte	0x2b
+ 1202 0034 18       		.byte	0x18
+ 1203 0035 39000000 		.4byte	0x39
+ 1204 0039 03       		.uleb128 0x3
+ 1205 003a 01       		.byte	0x1
+ 1206 003b 08       		.byte	0x8
+ 1207 003c B9000000 		.4byte	.LASF1
+ 1208 0040 03       		.uleb128 0x3
+ 1209 0041 02       		.byte	0x2
+ 1210 0042 05       		.byte	0x5
+ 1211 0043 FB020000 		.4byte	.LASF2
+ 1212 0047 07       		.uleb128 0x7
+ 1213 0048 5A010000 		.4byte	.LASF4
+ 1214 004c 02       		.byte	0x2
+ 1215 004d 39       		.byte	0x39
+ 1216 004e 19       		.byte	0x19
+ 1217 004f 53000000 		.4byte	0x53
+ 1218 0053 03       		.uleb128 0x3
+ 1219 0054 02       		.byte	0x2
+ 1220 0055 07       		.byte	0x7
+ 1221 0056 C7000000 		.4byte	.LASF5
+ 1222 005a 03       		.uleb128 0x3
+ 1223 005b 04       		.byte	0x4
+ 1224 005c 05       		.byte	0x5
+ 1225 005d 2F030000 		.4byte	.LASF6
+ 1226 0061 03       		.uleb128 0x3
+ 1227 0062 04       		.byte	0x4
+ 1228 0063 07       		.byte	0x7
+ 1229 0064 65010000 		.4byte	.LASF7
+ 1230 0068 03       		.uleb128 0x3
+ 1231 0069 08       		.byte	0x8
+ 1232 006a 05       		.byte	0x5
+ 1233 006b BA020000 		.4byte	.LASF8
+ 1234 006f 03       		.uleb128 0x3
+ 1235 0070 08       		.byte	0x8
+ 1236 0071 07       		.byte	0x7
+ 1237 0072 44020000 		.4byte	.LASF9
+ 1238 0076 11       		.uleb128 0x11
+ 1239 0077 04       		.byte	0x4
+ 1240 0078 05       		.byte	0x5
+ 1241 0079 696E7400 		.ascii	"int\000"
+ 1242 007d 03       		.uleb128 0x3
+ 1243 007e 04       		.byte	0x4
+ 1244 007f 07       		.byte	0x7
+ 1245 0080 37020000 		.4byte	.LASF10
+ 1246 0084 07       		.uleb128 0x7
+ 1247 0085 5B020000 		.4byte	.LASF11
+ 1248 0089 03       		.byte	0x3
+ 1249 008a 18       		.byte	0x18
+ 1250 008b 13       		.byte	0x13
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 23
+
+
+ 1251 008c 2D000000 		.4byte	0x2d
+ 1252 0090 07       		.uleb128 0x7
+ 1253 0091 F2020000 		.4byte	.LASF12
+ 1254 0095 03       		.byte	0x3
+ 1255 0096 24       		.byte	0x24
+ 1256 0097 14       		.byte	0x14
+ 1257 0098 47000000 		.4byte	0x47
+ 1258 009c 03       		.uleb128 0x3
+ 1259 009d 01       		.byte	0x1
+ 1260 009e 08       		.byte	0x8
+ 1261 009f 28000000 		.4byte	.LASF13
+ 1262 00a3 0A       		.uleb128 0xa
+ 1263 00a4 3F000000 		.4byte	.LASF20
+ 1264 00a8 94       		.byte	0x94
+ 1265 00a9 0F       		.byte	0xf
+ 1266 00aa 0D010000 		.4byte	0x10d
+ 1267 00ae 04       		.uleb128 0x4
+ 1268 00af 50030000 		.4byte	.LASF14
+ 1269 00b3 10       		.byte	0x10
+ 1270 00b4 0B       		.byte	0xb
+ 1271 00b5 84000000 		.4byte	0x84
+ 1272 00b9 00       		.byte	0
+ 1273 00ba 04       		.uleb128 0x4
+ 1274 00bb 61030000 		.4byte	.LASF15
+ 1275 00bf 11       		.byte	0x11
+ 1276 00c0 0B       		.byte	0xb
+ 1277 00c1 84000000 		.4byte	0x84
+ 1278 00c5 01       		.byte	0x1
+ 1279 00c6 04       		.uleb128 0x4
+ 1280 00c7 DA000000 		.4byte	.LASF16
+ 1281 00cb 12       		.byte	0x12
+ 1282 00cc 0C       		.byte	0xc
+ 1283 00cd 90000000 		.4byte	0x90
+ 1284 00d1 02       		.byte	0x2
+ 1285 00d2 0B       		.uleb128 0xb
+ 1286 00d3 6D696E00 		.ascii	"min\000"
+ 1287 00d7 13       		.byte	0x13
+ 1288 00d8 0D010000 		.4byte	0x10d
+ 1289 00dc 04       		.byte	0x4
+ 1290 00dd 0B       		.uleb128 0xb
+ 1291 00de 6D617800 		.ascii	"max\000"
+ 1292 00e2 14       		.byte	0x14
+ 1293 00e3 0D010000 		.4byte	0x10d
+ 1294 00e7 24       		.byte	0x24
+ 1295 00e8 04       		.uleb128 0x4
+ 1296 00e9 97000000 		.4byte	.LASF17
+ 1297 00ed 15       		.byte	0x15
+ 1298 00ee 0C       		.byte	0xc
+ 1299 00ef 0D010000 		.4byte	0x10d
+ 1300 00f3 44       		.byte	0x44
+ 1301 00f4 04       		.uleb128 0x4
+ 1302 00f5 4D000000 		.4byte	.LASF18
+ 1303 00f9 16       		.byte	0x16
+ 1304 00fa 0C       		.byte	0xc
+ 1305 00fb 0D010000 		.4byte	0x10d
+ 1306 00ff 64       		.byte	0x64
+ 1307 0100 04       		.uleb128 0x4
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 24
+
+
+ 1308 0101 6C000000 		.4byte	.LASF19
+ 1309 0105 17       		.byte	0x17
+ 1310 0106 0B       		.byte	0xb
+ 1311 0107 1C010000 		.4byte	0x11c
+ 1312 010b 84       		.byte	0x84
+ 1313 010c 00       		.byte	0
+ 1314 010d 0C       		.uleb128 0xc
+ 1315 010e 90000000 		.4byte	0x90
+ 1316 0112 1C010000 		.4byte	0x11c
+ 1317 0116 0D       		.uleb128 0xd
+ 1318 0117 7D000000 		.4byte	0x7d
+ 1319 011b 00       		.byte	0
+ 1320 011c 0C       		.uleb128 0xc
+ 1321 011d 84000000 		.4byte	0x84
+ 1322 0121 2B010000 		.4byte	0x12b
+ 1323 0125 0D       		.uleb128 0xd
+ 1324 0126 7D000000 		.4byte	0x7d
+ 1325 012a 00       		.byte	0
+ 1326 012b 0A       		.uleb128 0xa
+ 1327 012c 77010000 		.4byte	.LASF21
+ 1328 0130 94       		.byte	0x94
+ 1329 0131 23       		.byte	0x23
+ 1330 0132 43010000 		.4byte	0x143
+ 1331 0136 04       		.uleb128 0x4
+ 1332 0137 8E000000 		.4byte	.LASF22
+ 1333 013b 24       		.byte	0x24
+ 1334 013c 18       		.byte	0x18
+ 1335 013d A3000000 		.4byte	0xa3
+ 1336 0141 00       		.byte	0
+ 1337 0142 00       		.byte	0
+ 1338 0143 12       		.uleb128 0x12
+ 1339 0144 0C030000 		.4byte	.LASF48
+ 1340 0148 04       		.byte	0x4
+ 1341 0149 27       		.byte	0x27
+ 1342 014a 1F       		.byte	0x1f
+ 1343 014b 2B010000 		.4byte	0x12b
+ 1344 014f 03       		.uleb128 0x3
+ 1345 0150 08       		.byte	0x8
+ 1346 0151 04       		.byte	0x4
+ 1347 0152 38030000 		.4byte	.LASF23
+ 1348 0156 13       		.uleb128 0x13
+ 1349 0157 43010000 		.4byte	0x143
+ 1350 015b 01       		.byte	0x1
+ 1351 015c 08       		.byte	0x8
+ 1352 015d 18       		.byte	0x18
+ 1353 015e 05       		.uleb128 0x5
+ 1354 015f 03       		.byte	0x3
+ 1355 0160 00000000 		.4byte	brick_cal_state
+ 1356 0164 05       		.uleb128 0x5
+ 1357 0165 1C030000 		.4byte	.LASF29
+ 1358 0169 9D       		.byte	0x9d
+ 1359 016a 76000000 		.4byte	0x76
+ 1360 016e 00000000 		.4byte	.LFB10
+ 1361 0172 26010000 		.4byte	.LFE10-.LFB10
+ 1362 0176 01       		.uleb128 0x1
+ 1363 0177 9C       		.byte	0x9c
+ 1364 0178 CE010000 		.4byte	0x1ce
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 25
+
+
+ 1365 017c 02       		.uleb128 0x2
+ 1366 017d 63616C00 		.ascii	"cal\000"
+ 1367 0181 9D       		.byte	0x9d
+ 1368 0182 2E       		.byte	0x2e
+ 1369 0183 CE010000 		.4byte	0x1ce
+ 1370 0187 02       		.uleb128 0x2
+ 1371 0188 91       		.byte	0x91
+ 1372 0189 6C       		.sleb128 -20
+ 1373 018a 01       		.uleb128 0x1
+ 1374 018b 37000000 		.4byte	.LASF24
+ 1375 018f 9D       		.byte	0x9d
+ 1376 0190 3B       		.byte	0x3b
+ 1377 0191 84000000 		.4byte	0x84
+ 1378 0195 02       		.uleb128 0x2
+ 1379 0196 91       		.byte	0x91
+ 1380 0197 6B       		.sleb128 -21
+ 1381 0198 02       		.uleb128 0x2
+ 1382 0199 696E00   		.ascii	"in\000"
+ 1383 019c 9D       		.byte	0x9d
+ 1384 019d 4D       		.byte	0x4d
+ 1385 019e 90000000 		.4byte	0x90
+ 1386 01a2 02       		.uleb128 0x2
+ 1387 01a3 91       		.byte	0x91
+ 1388 01a4 68       		.sleb128 -24
+ 1389 01a5 02       		.uleb128 0x2
+ 1390 01a6 6F757400 		.ascii	"out\000"
+ 1391 01aa 9D       		.byte	0x9d
+ 1392 01ab 5B       		.byte	0x5b
+ 1393 01ac D3010000 		.4byte	0x1d3
+ 1394 01b0 02       		.uleb128 0x2
+ 1395 01b1 91       		.byte	0x91
+ 1396 01b2 64       		.sleb128 -28
+ 1397 01b3 08       		.uleb128 0x8
+ 1398 01b4 31020000 		.4byte	.LASF25
+ 1399 01b8 B8       		.byte	0xb8
+ 1400 01b9 90000000 		.4byte	0x90
+ 1401 01bd 02       		.uleb128 0x2
+ 1402 01be 91       		.byte	0x91
+ 1403 01bf 76       		.sleb128 -10
+ 1404 01c0 08       		.uleb128 0x8
+ 1405 01c1 05030000 		.4byte	.LASF26
+ 1406 01c5 BC       		.byte	0xbc
+ 1407 01c6 90000000 		.4byte	0x90
+ 1408 01ca 02       		.uleb128 0x2
+ 1409 01cb 91       		.byte	0x91
+ 1410 01cc 74       		.sleb128 -12
+ 1411 01cd 00       		.byte	0
+ 1412 01ce 09       		.uleb128 0x9
+ 1413 01cf A3000000 		.4byte	0xa3
+ 1414 01d3 09       		.uleb128 0x9
+ 1415 01d4 90000000 		.4byte	0x90
+ 1416 01d8 14       		.uleb128 0x14
+ 1417 01d9 E1020000 		.4byte	.LASF49
+ 1418 01dd 01       		.byte	0x1
+ 1419 01de 93       		.byte	0x93
+ 1420 01df 11       		.byte	0x11
+ 1421 01e0 90000000 		.4byte	0x90
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 26
+
+
+ 1422 01e4 00000000 		.4byte	.LFB9
+ 1423 01e8 32000000 		.4byte	.LFE9-.LFB9
+ 1424 01ec 01       		.uleb128 0x1
+ 1425 01ed 9C       		.byte	0x9c
+ 1426 01ee 0F020000 		.4byte	0x20f
+ 1427 01f2 02       		.uleb128 0x2
+ 1428 01f3 63616C00 		.ascii	"cal\000"
+ 1429 01f7 93       		.byte	0x93
+ 1430 01f8 38       		.byte	0x38
+ 1431 01f9 CE010000 		.4byte	0x1ce
+ 1432 01fd 02       		.uleb128 0x2
+ 1433 01fe 91       		.byte	0x91
+ 1434 01ff 74       		.sleb128 -12
+ 1435 0200 01       		.uleb128 0x1
+ 1436 0201 56000000 		.4byte	.LASF27
+ 1437 0205 93       		.byte	0x93
+ 1438 0206 46       		.byte	0x46
+ 1439 0207 90000000 		.4byte	0x90
+ 1440 020b 02       		.uleb128 0x2
+ 1441 020c 91       		.byte	0x91
+ 1442 020d 72       		.sleb128 -14
+ 1443 020e 00       		.byte	0
+ 1444 020f 15       		.uleb128 0x15
+ 1445 0210 00000000 		.4byte	.LASF43
+ 1446 0214 01       		.byte	0x1
+ 1447 0215 88       		.byte	0x88
+ 1448 0216 0D       		.byte	0xd
+ 1449 0217 00000000 		.4byte	.LFB8
+ 1450 021b 80000000 		.4byte	.LFE8-.LFB8
+ 1451 021f 01       		.uleb128 0x1
+ 1452 0220 9C       		.byte	0x9c
+ 1453 0221 85020000 		.4byte	0x285
+ 1454 0225 02       		.uleb128 0x2
+ 1455 0226 63616C00 		.ascii	"cal\000"
+ 1456 022a 88       		.byte	0x88
+ 1457 022b 31       		.byte	0x31
+ 1458 022c CE010000 		.4byte	0x1ce
+ 1459 0230 02       		.uleb128 0x2
+ 1460 0231 91       		.byte	0x91
+ 1461 0232 6C       		.sleb128 -20
+ 1462 0233 01       		.uleb128 0x1
+ 1463 0234 37000000 		.4byte	.LASF24
+ 1464 0238 88       		.byte	0x88
+ 1465 0239 3E       		.byte	0x3e
+ 1466 023a 84000000 		.4byte	0x84
+ 1467 023e 02       		.uleb128 0x2
+ 1468 023f 91       		.byte	0x91
+ 1469 0240 6B       		.sleb128 -21
+ 1470 0241 01       		.uleb128 0x1
+ 1471 0242 31020000 		.4byte	.LASF25
+ 1472 0246 88       		.byte	0x88
+ 1473 0247 50       		.byte	0x50
+ 1474 0248 90000000 		.4byte	0x90
+ 1475 024c 02       		.uleb128 0x2
+ 1476 024d 91       		.byte	0x91
+ 1477 024e 68       		.sleb128 -24
+ 1478 024f 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 27
+
+
+ 1479 0250 05030000 		.4byte	.LASF26
+ 1480 0254 88       		.byte	0x88
+ 1481 0255 60       		.byte	0x60
+ 1482 0256 90000000 		.4byte	0x90
+ 1483 025a 02       		.uleb128 0x2
+ 1484 025b 91       		.byte	0x91
+ 1485 025c 66       		.sleb128 -26
+ 1486 025d 08       		.uleb128 0x8
+ 1487 025e 9E020000 		.4byte	.LASF28
+ 1488 0262 89       		.byte	0x89
+ 1489 0263 90000000 		.4byte	0x90
+ 1490 0267 02       		.uleb128 0x2
+ 1491 0268 91       		.byte	0x91
+ 1492 0269 74       		.sleb128 -12
+ 1493 026a 06       		.uleb128 0x6
+ 1494 026b 6C6F00   		.ascii	"lo\000"
+ 1495 026e 8A       		.byte	0x8a
+ 1496 026f 0C       		.byte	0xc
+ 1497 0270 90000000 		.4byte	0x90
+ 1498 0274 02       		.uleb128 0x2
+ 1499 0275 91       		.byte	0x91
+ 1500 0276 72       		.sleb128 -14
+ 1501 0277 06       		.uleb128 0x6
+ 1502 0278 686900   		.ascii	"hi\000"
+ 1503 027b 8B       		.byte	0x8b
+ 1504 027c 0C       		.byte	0xc
+ 1505 027d 90000000 		.4byte	0x90
+ 1506 0281 02       		.uleb128 0x2
+ 1507 0282 91       		.byte	0x91
+ 1508 0283 76       		.sleb128 -10
+ 1509 0284 00       		.byte	0
+ 1510 0285 05       		.uleb128 0x5
+ 1511 0286 78000000 		.4byte	.LASF30
+ 1512 028a 7B       		.byte	0x7b
+ 1513 028b 76000000 		.4byte	0x76
+ 1514 028f 00000000 		.4byte	.LFB7
+ 1515 0293 52000000 		.4byte	.LFE7-.LFB7
+ 1516 0297 01       		.uleb128 0x1
+ 1517 0298 9C       		.byte	0x9c
+ 1518 0299 C8020000 		.4byte	0x2c8
+ 1519 029d 02       		.uleb128 0x2
+ 1520 029e 63616C00 		.ascii	"cal\000"
+ 1521 02a2 7B       		.byte	0x7b
+ 1522 02a3 31       		.byte	0x31
+ 1523 02a4 CE010000 		.4byte	0x1ce
+ 1524 02a8 02       		.uleb128 0x2
+ 1525 02a9 91       		.byte	0x91
+ 1526 02aa 74       		.sleb128 -12
+ 1527 02ab 01       		.uleb128 0x1
+ 1528 02ac 37000000 		.4byte	.LASF24
+ 1529 02b0 7B       		.byte	0x7b
+ 1530 02b1 3E       		.byte	0x3e
+ 1531 02b2 84000000 		.4byte	0x84
+ 1532 02b6 02       		.uleb128 0x2
+ 1533 02b7 91       		.byte	0x91
+ 1534 02b8 73       		.sleb128 -13
+ 1535 02b9 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 28
+
+
+ 1536 02ba 7E020000 		.4byte	.LASF31
+ 1537 02be 7B       		.byte	0x7b
+ 1538 02bf 51       		.byte	0x51
+ 1539 02c0 D3010000 		.4byte	0x1d3
+ 1540 02c4 02       		.uleb128 0x2
+ 1541 02c5 91       		.byte	0x91
+ 1542 02c6 6C       		.sleb128 -20
+ 1543 02c7 00       		.byte	0
+ 1544 02c8 05       		.uleb128 0x5
+ 1545 02c9 88020000 		.4byte	.LASF32
+ 1546 02cd 6E       		.byte	0x6e
+ 1547 02ce 76000000 		.4byte	0x76
+ 1548 02d2 00000000 		.4byte	.LFB6
+ 1549 02d6 50000000 		.4byte	.LFE6-.LFB6
+ 1550 02da 01       		.uleb128 0x1
+ 1551 02db 9C       		.byte	0x9c
+ 1552 02dc 0B030000 		.4byte	0x30b
+ 1553 02e0 02       		.uleb128 0x2
+ 1554 02e1 63616C00 		.ascii	"cal\000"
+ 1555 02e5 6E       		.byte	0x6e
+ 1556 02e6 31       		.byte	0x31
+ 1557 02e7 CE010000 		.4byte	0x1ce
+ 1558 02eb 02       		.uleb128 0x2
+ 1559 02ec 91       		.byte	0x91
+ 1560 02ed 74       		.sleb128 -12
+ 1561 02ee 01       		.uleb128 0x1
+ 1562 02ef 37000000 		.4byte	.LASF24
+ 1563 02f3 6E       		.byte	0x6e
+ 1564 02f4 3E       		.byte	0x3e
+ 1565 02f5 84000000 		.4byte	0x84
+ 1566 02f9 02       		.uleb128 0x2
+ 1567 02fa 91       		.byte	0x91
+ 1568 02fb 73       		.sleb128 -13
+ 1569 02fc 01       		.uleb128 0x1
+ 1570 02fd 62000000 		.4byte	.LASF33
+ 1571 0301 6E       		.byte	0x6e
+ 1572 0302 51       		.byte	0x51
+ 1573 0303 D3010000 		.4byte	0x1d3
+ 1574 0307 02       		.uleb128 0x2
+ 1575 0308 91       		.byte	0x91
+ 1576 0309 6C       		.sleb128 -20
+ 1577 030a 00       		.byte	0
+ 1578 030b 05       		.uleb128 0x5
+ 1579 030c E2000000 		.4byte	.LASF34
+ 1580 0310 58       		.byte	0x58
+ 1581 0311 76000000 		.4byte	0x76
+ 1582 0315 00000000 		.4byte	.LFB5
+ 1583 0319 7E000000 		.4byte	.LFE5-.LFB5
+ 1584 031d 01       		.uleb128 0x1
+ 1585 031e 9C       		.byte	0x9c
+ 1586 031f 5C030000 		.4byte	0x35c
+ 1587 0323 02       		.uleb128 0x2
+ 1588 0324 63616C00 		.ascii	"cal\000"
+ 1589 0328 58       		.byte	0x58
+ 1590 0329 34       		.byte	0x34
+ 1591 032a CE010000 		.4byte	0x1ce
+ 1592 032e 02       		.uleb128 0x2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 29
+
+
+ 1593 032f 91       		.byte	0x91
+ 1594 0330 74       		.sleb128 -12
+ 1595 0331 01       		.uleb128 0x1
+ 1596 0332 37000000 		.4byte	.LASF24
+ 1597 0336 58       		.byte	0x58
+ 1598 0337 41       		.byte	0x41
+ 1599 0338 84000000 		.4byte	0x84
+ 1600 033c 02       		.uleb128 0x2
+ 1601 033d 91       		.byte	0x91
+ 1602 033e 73       		.sleb128 -13
+ 1603 033f 01       		.uleb128 0x1
+ 1604 0340 21000000 		.4byte	.LASF35
+ 1605 0344 58       		.byte	0x58
+ 1606 0345 53       		.byte	0x53
+ 1607 0346 90000000 		.4byte	0x90
+ 1608 034a 02       		.uleb128 0x2
+ 1609 034b 91       		.byte	0x91
+ 1610 034c 70       		.sleb128 -16
+ 1611 034d 01       		.uleb128 0x1
+ 1612 034e 73000000 		.4byte	.LASF36
+ 1613 0352 58       		.byte	0x58
+ 1614 0353 60       		.byte	0x60
+ 1615 0354 5C030000 		.4byte	0x35c
+ 1616 0358 02       		.uleb128 0x2
+ 1617 0359 91       		.byte	0x91
+ 1618 035a 72       		.sleb128 -14
+ 1619 035b 00       		.byte	0
+ 1620 035c 03       		.uleb128 0x3
+ 1621 035d 01       		.byte	0x1
+ 1622 035e 02       		.byte	0x2
+ 1623 035f 5B030000 		.4byte	.LASF37
+ 1624 0363 05       		.uleb128 0x5
+ 1625 0364 A0000000 		.4byte	.LASF38
+ 1626 0368 4B       		.byte	0x4b
+ 1627 0369 76000000 		.4byte	0x76
+ 1628 036d 00000000 		.4byte	.LFB4
+ 1629 0371 6C000000 		.4byte	.LFE4-.LFB4
+ 1630 0375 01       		.uleb128 0x1
+ 1631 0376 9C       		.byte	0x9c
+ 1632 0377 B4030000 		.4byte	0x3b4
+ 1633 037b 02       		.uleb128 0x2
+ 1634 037c 63616C00 		.ascii	"cal\000"
+ 1635 0380 4B       		.byte	0x4b
+ 1636 0381 34       		.byte	0x34
+ 1637 0382 CE010000 		.4byte	0x1ce
+ 1638 0386 02       		.uleb128 0x2
+ 1639 0387 91       		.byte	0x91
+ 1640 0388 74       		.sleb128 -12
+ 1641 0389 01       		.uleb128 0x1
+ 1642 038a 37000000 		.4byte	.LASF24
+ 1643 038e 4B       		.byte	0x4b
+ 1644 038f 41       		.byte	0x41
+ 1645 0390 84000000 		.4byte	0x84
+ 1646 0394 02       		.uleb128 0x2
+ 1647 0395 91       		.byte	0x91
+ 1648 0396 73       		.sleb128 -13
+ 1649 0397 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 30
+
+
+ 1650 0398 21000000 		.4byte	.LASF35
+ 1651 039c 4B       		.byte	0x4b
+ 1652 039d 54       		.byte	0x54
+ 1653 039e D3010000 		.4byte	0x1d3
+ 1654 03a2 02       		.uleb128 0x2
+ 1655 03a3 91       		.byte	0x91
+ 1656 03a4 6C       		.sleb128 -20
+ 1657 03a5 01       		.uleb128 0x1
+ 1658 03a6 73000000 		.4byte	.LASF36
+ 1659 03aa 4B       		.byte	0x4b
+ 1660 03ab 61       		.byte	0x61
+ 1661 03ac 5C030000 		.4byte	0x35c
+ 1662 03b0 02       		.uleb128 0x2
+ 1663 03b1 91       		.byte	0x91
+ 1664 03b2 72       		.sleb128 -14
+ 1665 03b3 00       		.byte	0
+ 1666 03b4 05       		.uleb128 0x5
+ 1667 03b5 C8020000 		.4byte	.LASF39
+ 1668 03b9 3E       		.byte	0x3e
+ 1669 03ba 76000000 		.4byte	0x76
+ 1670 03be 00000000 		.4byte	.LFB3
+ 1671 03c2 50000000 		.4byte	.LFE3-.LFB3
+ 1672 03c6 01       		.uleb128 0x1
+ 1673 03c7 9C       		.byte	0x9c
+ 1674 03c8 F7030000 		.4byte	0x3f7
+ 1675 03cc 02       		.uleb128 0x2
+ 1676 03cd 63616C00 		.ascii	"cal\000"
+ 1677 03d1 3E       		.byte	0x3e
+ 1678 03d2 34       		.byte	0x34
+ 1679 03d3 CE010000 		.4byte	0x1ce
+ 1680 03d7 02       		.uleb128 0x2
+ 1681 03d8 91       		.byte	0x91
+ 1682 03d9 74       		.sleb128 -12
+ 1683 03da 01       		.uleb128 0x1
+ 1684 03db 37000000 		.4byte	.LASF24
+ 1685 03df 3E       		.byte	0x3e
+ 1686 03e0 41       		.byte	0x41
+ 1687 03e1 84000000 		.4byte	0x84
+ 1688 03e5 02       		.uleb128 0x2
+ 1689 03e6 91       		.byte	0x91
+ 1690 03e7 73       		.sleb128 -13
+ 1691 03e8 01       		.uleb128 0x1
+ 1692 03e9 6C000000 		.4byte	.LASF19
+ 1693 03ed 3E       		.byte	0x3e
+ 1694 03ee 53       		.byte	0x53
+ 1695 03ef F7030000 		.4byte	0x3f7
+ 1696 03f3 02       		.uleb128 0x2
+ 1697 03f4 91       		.byte	0x91
+ 1698 03f5 6C       		.sleb128 -20
+ 1699 03f6 00       		.byte	0
+ 1700 03f7 09       		.uleb128 0x9
+ 1701 03f8 84000000 		.4byte	0x84
+ 1702 03fc 0E       		.uleb128 0xe
+ 1703 03fd 63020000 		.4byte	.LASF40
+ 1704 0401 2A       		.byte	0x2a
+ 1705 0402 76000000 		.4byte	0x76
+ 1706 0406 00000000 		.4byte	.LFB2
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 31
+
+
+ 1707 040a 76000000 		.4byte	.LFE2-.LFB2
+ 1708 040e 01       		.uleb128 0x1
+ 1709 040f 9C       		.byte	0x9c
+ 1710 0410 63040000 		.4byte	0x463
+ 1711 0414 02       		.uleb128 0x2
+ 1712 0415 63616C00 		.ascii	"cal\000"
+ 1713 0419 2A       		.byte	0x2a
+ 1714 041a 36       		.byte	0x36
+ 1715 041b CE010000 		.4byte	0x1ce
+ 1716 041f 02       		.uleb128 0x2
+ 1717 0420 91       		.byte	0x91
+ 1718 0421 6C       		.sleb128 -20
+ 1719 0422 01       		.uleb128 0x1
+ 1720 0423 5C000000 		.4byte	.LASF41
+ 1721 0427 2A       		.byte	0x2a
+ 1722 0428 43       		.byte	0x43
+ 1723 0429 84000000 		.4byte	0x84
+ 1724 042d 02       		.uleb128 0x2
+ 1725 042e 91       		.byte	0x91
+ 1726 042f 6B       		.sleb128 -21
+ 1727 0430 01       		.uleb128 0x1
+ 1728 0431 61030000 		.4byte	.LASF15
+ 1729 0435 2A       		.byte	0x2a
+ 1730 0436 52       		.byte	0x52
+ 1731 0437 84000000 		.4byte	0x84
+ 1732 043b 02       		.uleb128 0x2
+ 1733 043c 91       		.byte	0x91
+ 1734 043d 6A       		.sleb128 -22
+ 1735 043e 06       		.uleb128 0x6
+ 1736 043f 656E6400 		.ascii	"end\000"
+ 1737 0443 36       		.byte	0x36
+ 1738 0444 0B       		.byte	0xb
+ 1739 0445 84000000 		.4byte	0x84
+ 1740 0449 02       		.uleb128 0x2
+ 1741 044a 91       		.byte	0x91
+ 1742 044b 76       		.sleb128 -10
+ 1743 044c 0F       		.uleb128 0xf
+ 1744 044d 4A000000 		.4byte	.LBB3
+ 1745 0451 20000000 		.4byte	.LBE3-.LBB3
+ 1746 0455 06       		.uleb128 0x6
+ 1747 0456 6900     		.ascii	"i\000"
+ 1748 0458 37       		.byte	0x37
+ 1749 0459 10       		.byte	0x10
+ 1750 045a 84000000 		.4byte	0x84
+ 1751 045e 02       		.uleb128 0x2
+ 1752 045f 91       		.byte	0x91
+ 1753 0460 77       		.sleb128 -9
+ 1754 0461 00       		.byte	0
+ 1755 0462 00       		.byte	0
+ 1756 0463 0E       		.uleb128 0xe
+ 1757 0464 0E000000 		.4byte	.LASF42
+ 1758 0468 12       		.byte	0x12
+ 1759 0469 76000000 		.4byte	0x76
+ 1760 046d 00000000 		.4byte	.LFB1
+ 1761 0471 BA000000 		.4byte	.LFE1-.LFB1
+ 1762 0475 01       		.uleb128 0x1
+ 1763 0476 9C       		.byte	0x9c
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 32
+
+
+ 1764 0477 BC040000 		.4byte	0x4bc
+ 1765 047b 02       		.uleb128 0x2
+ 1766 047c 63616C00 		.ascii	"cal\000"
+ 1767 0480 12       		.byte	0x12
+ 1768 0481 2E       		.byte	0x2e
+ 1769 0482 CE010000 		.4byte	0x1ce
+ 1770 0486 02       		.uleb128 0x2
+ 1771 0487 91       		.byte	0x91
+ 1772 0488 6C       		.sleb128 -20
+ 1773 0489 01       		.uleb128 0x1
+ 1774 048a 50030000 		.4byte	.LASF14
+ 1775 048e 12       		.byte	0x12
+ 1776 048f 3B       		.byte	0x3b
+ 1777 0490 84000000 		.4byte	0x84
+ 1778 0494 02       		.uleb128 0x2
+ 1779 0495 91       		.byte	0x91
+ 1780 0496 6B       		.sleb128 -21
+ 1781 0497 01       		.uleb128 0x1
+ 1782 0498 61030000 		.4byte	.LASF15
+ 1783 049c 12       		.byte	0x12
+ 1784 049d 4F       		.byte	0x4f
+ 1785 049e 84000000 		.4byte	0x84
+ 1786 04a2 02       		.uleb128 0x2
+ 1787 04a3 91       		.byte	0x91
+ 1788 04a4 6A       		.sleb128 -22
+ 1789 04a5 0F       		.uleb128 0xf
+ 1790 04a6 52000000 		.4byte	.LBB2
+ 1791 04aa 5C000000 		.4byte	.LBE2-.LBB2
+ 1792 04ae 06       		.uleb128 0x6
+ 1793 04af 6900     		.ascii	"i\000"
+ 1794 04b1 1F       		.byte	0x1f
+ 1795 04b2 10       		.byte	0x10
+ 1796 04b3 84000000 		.4byte	0x84
+ 1797 04b7 02       		.uleb128 0x2
+ 1798 04b8 91       		.byte	0x91
+ 1799 04b9 77       		.sleb128 -9
+ 1800 04ba 00       		.byte	0
+ 1801 04bb 00       		.byte	0
+ 1802 04bc 16       		.uleb128 0x16
+ 1803 04bd AC020000 		.4byte	.LASF44
+ 1804 04c1 01       		.byte	0x1
+ 1805 04c2 0A       		.byte	0xa
+ 1806 04c3 0D       		.byte	0xd
+ 1807 04c4 5C030000 		.4byte	0x35c
+ 1808 04c8 00000000 		.4byte	.LFB0
+ 1809 04cc 3C000000 		.4byte	.LFE0-.LFB0
+ 1810 04d0 01       		.uleb128 0x1
+ 1811 04d1 9C       		.byte	0x9c
+ 1812 04d2 02       		.uleb128 0x2
+ 1813 04d3 63616C00 		.ascii	"cal\000"
+ 1814 04d7 0A       		.byte	0xa
+ 1815 04d8 31       		.byte	0x31
+ 1816 04d9 CE010000 		.4byte	0x1ce
+ 1817 04dd 02       		.uleb128 0x2
+ 1818 04de 91       		.byte	0x91
+ 1819 04df 74       		.sleb128 -12
+ 1820 04e0 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 33
+
+
+ 1821 04e1 37000000 		.4byte	.LASF24
+ 1822 04e5 0A       		.byte	0xa
+ 1823 04e6 3E       		.byte	0x3e
+ 1824 04e7 84000000 		.4byte	0x84
+ 1825 04eb 02       		.uleb128 0x2
+ 1826 04ec 91       		.byte	0x91
+ 1827 04ed 73       		.sleb128 -13
+ 1828 04ee 00       		.byte	0
+ 1829 04ef 00       		.byte	0
+ 1830              		.section	.debug_abbrev,"",%progbits
+ 1831              	.Ldebug_abbrev0:
+ 1832 0000 01       		.uleb128 0x1
+ 1833 0001 05       		.uleb128 0x5
+ 1834 0002 00       		.byte	0
+ 1835 0003 03       		.uleb128 0x3
+ 1836 0004 0E       		.uleb128 0xe
+ 1837 0005 3A       		.uleb128 0x3a
+ 1838 0006 21       		.uleb128 0x21
+ 1839 0007 01       		.sleb128 1
+ 1840 0008 3B       		.uleb128 0x3b
+ 1841 0009 0B       		.uleb128 0xb
+ 1842 000a 39       		.uleb128 0x39
+ 1843 000b 0B       		.uleb128 0xb
+ 1844 000c 49       		.uleb128 0x49
+ 1845 000d 13       		.uleb128 0x13
+ 1846 000e 02       		.uleb128 0x2
+ 1847 000f 18       		.uleb128 0x18
+ 1848 0010 00       		.byte	0
+ 1849 0011 00       		.byte	0
+ 1850 0012 02       		.uleb128 0x2
+ 1851 0013 05       		.uleb128 0x5
+ 1852 0014 00       		.byte	0
+ 1853 0015 03       		.uleb128 0x3
+ 1854 0016 08       		.uleb128 0x8
+ 1855 0017 3A       		.uleb128 0x3a
+ 1856 0018 21       		.uleb128 0x21
+ 1857 0019 01       		.sleb128 1
+ 1858 001a 3B       		.uleb128 0x3b
+ 1859 001b 0B       		.uleb128 0xb
+ 1860 001c 39       		.uleb128 0x39
+ 1861 001d 0B       		.uleb128 0xb
+ 1862 001e 49       		.uleb128 0x49
+ 1863 001f 13       		.uleb128 0x13
+ 1864 0020 02       		.uleb128 0x2
+ 1865 0021 18       		.uleb128 0x18
+ 1866 0022 00       		.byte	0
+ 1867 0023 00       		.byte	0
+ 1868 0024 03       		.uleb128 0x3
+ 1869 0025 24       		.uleb128 0x24
+ 1870 0026 00       		.byte	0
+ 1871 0027 0B       		.uleb128 0xb
+ 1872 0028 0B       		.uleb128 0xb
+ 1873 0029 3E       		.uleb128 0x3e
+ 1874 002a 0B       		.uleb128 0xb
+ 1875 002b 03       		.uleb128 0x3
+ 1876 002c 0E       		.uleb128 0xe
+ 1877 002d 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 34
+
+
+ 1878 002e 00       		.byte	0
+ 1879 002f 04       		.uleb128 0x4
+ 1880 0030 0D       		.uleb128 0xd
+ 1881 0031 00       		.byte	0
+ 1882 0032 03       		.uleb128 0x3
+ 1883 0033 0E       		.uleb128 0xe
+ 1884 0034 3A       		.uleb128 0x3a
+ 1885 0035 21       		.uleb128 0x21
+ 1886 0036 04       		.sleb128 4
+ 1887 0037 3B       		.uleb128 0x3b
+ 1888 0038 0B       		.uleb128 0xb
+ 1889 0039 39       		.uleb128 0x39
+ 1890 003a 0B       		.uleb128 0xb
+ 1891 003b 49       		.uleb128 0x49
+ 1892 003c 13       		.uleb128 0x13
+ 1893 003d 38       		.uleb128 0x38
+ 1894 003e 0B       		.uleb128 0xb
+ 1895 003f 00       		.byte	0
+ 1896 0040 00       		.byte	0
+ 1897 0041 05       		.uleb128 0x5
+ 1898 0042 2E       		.uleb128 0x2e
+ 1899 0043 01       		.byte	0x1
+ 1900 0044 3F       		.uleb128 0x3f
+ 1901 0045 19       		.uleb128 0x19
+ 1902 0046 03       		.uleb128 0x3
+ 1903 0047 0E       		.uleb128 0xe
+ 1904 0048 3A       		.uleb128 0x3a
+ 1905 0049 21       		.uleb128 0x21
+ 1906 004a 01       		.sleb128 1
+ 1907 004b 3B       		.uleb128 0x3b
+ 1908 004c 0B       		.uleb128 0xb
+ 1909 004d 39       		.uleb128 0x39
+ 1910 004e 21       		.uleb128 0x21
+ 1911 004f 05       		.sleb128 5
+ 1912 0050 27       		.uleb128 0x27
+ 1913 0051 19       		.uleb128 0x19
+ 1914 0052 49       		.uleb128 0x49
+ 1915 0053 13       		.uleb128 0x13
+ 1916 0054 11       		.uleb128 0x11
+ 1917 0055 01       		.uleb128 0x1
+ 1918 0056 12       		.uleb128 0x12
+ 1919 0057 06       		.uleb128 0x6
+ 1920 0058 40       		.uleb128 0x40
+ 1921 0059 18       		.uleb128 0x18
+ 1922 005a 7C       		.uleb128 0x7c
+ 1923 005b 19       		.uleb128 0x19
+ 1924 005c 01       		.uleb128 0x1
+ 1925 005d 13       		.uleb128 0x13
+ 1926 005e 00       		.byte	0
+ 1927 005f 00       		.byte	0
+ 1928 0060 06       		.uleb128 0x6
+ 1929 0061 34       		.uleb128 0x34
+ 1930 0062 00       		.byte	0
+ 1931 0063 03       		.uleb128 0x3
+ 1932 0064 08       		.uleb128 0x8
+ 1933 0065 3A       		.uleb128 0x3a
+ 1934 0066 21       		.uleb128 0x21
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 35
+
+
+ 1935 0067 01       		.sleb128 1
+ 1936 0068 3B       		.uleb128 0x3b
+ 1937 0069 0B       		.uleb128 0xb
+ 1938 006a 39       		.uleb128 0x39
+ 1939 006b 0B       		.uleb128 0xb
+ 1940 006c 49       		.uleb128 0x49
+ 1941 006d 13       		.uleb128 0x13
+ 1942 006e 02       		.uleb128 0x2
+ 1943 006f 18       		.uleb128 0x18
+ 1944 0070 00       		.byte	0
+ 1945 0071 00       		.byte	0
+ 1946 0072 07       		.uleb128 0x7
+ 1947 0073 16       		.uleb128 0x16
+ 1948 0074 00       		.byte	0
+ 1949 0075 03       		.uleb128 0x3
+ 1950 0076 0E       		.uleb128 0xe
+ 1951 0077 3A       		.uleb128 0x3a
+ 1952 0078 0B       		.uleb128 0xb
+ 1953 0079 3B       		.uleb128 0x3b
+ 1954 007a 0B       		.uleb128 0xb
+ 1955 007b 39       		.uleb128 0x39
+ 1956 007c 0B       		.uleb128 0xb
+ 1957 007d 49       		.uleb128 0x49
+ 1958 007e 13       		.uleb128 0x13
+ 1959 007f 00       		.byte	0
+ 1960 0080 00       		.byte	0
+ 1961 0081 08       		.uleb128 0x8
+ 1962 0082 34       		.uleb128 0x34
+ 1963 0083 00       		.byte	0
+ 1964 0084 03       		.uleb128 0x3
+ 1965 0085 0E       		.uleb128 0xe
+ 1966 0086 3A       		.uleb128 0x3a
+ 1967 0087 21       		.uleb128 0x21
+ 1968 0088 01       		.sleb128 1
+ 1969 0089 3B       		.uleb128 0x3b
+ 1970 008a 0B       		.uleb128 0xb
+ 1971 008b 39       		.uleb128 0x39
+ 1972 008c 21       		.uleb128 0x21
+ 1973 008d 0C       		.sleb128 12
+ 1974 008e 49       		.uleb128 0x49
+ 1975 008f 13       		.uleb128 0x13
+ 1976 0090 02       		.uleb128 0x2
+ 1977 0091 18       		.uleb128 0x18
+ 1978 0092 00       		.byte	0
+ 1979 0093 00       		.byte	0
+ 1980 0094 09       		.uleb128 0x9
+ 1981 0095 0F       		.uleb128 0xf
+ 1982 0096 00       		.byte	0
+ 1983 0097 0B       		.uleb128 0xb
+ 1984 0098 21       		.uleb128 0x21
+ 1985 0099 04       		.sleb128 4
+ 1986 009a 49       		.uleb128 0x49
+ 1987 009b 13       		.uleb128 0x13
+ 1988 009c 00       		.byte	0
+ 1989 009d 00       		.byte	0
+ 1990 009e 0A       		.uleb128 0xa
+ 1991 009f 13       		.uleb128 0x13
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 36
+
+
+ 1992 00a0 01       		.byte	0x1
+ 1993 00a1 03       		.uleb128 0x3
+ 1994 00a2 0E       		.uleb128 0xe
+ 1995 00a3 0B       		.uleb128 0xb
+ 1996 00a4 0B       		.uleb128 0xb
+ 1997 00a5 3A       		.uleb128 0x3a
+ 1998 00a6 21       		.uleb128 0x21
+ 1999 00a7 04       		.sleb128 4
+ 2000 00a8 3B       		.uleb128 0x3b
+ 2001 00a9 0B       		.uleb128 0xb
+ 2002 00aa 39       		.uleb128 0x39
+ 2003 00ab 21       		.uleb128 0x21
+ 2004 00ac 08       		.sleb128 8
+ 2005 00ad 01       		.uleb128 0x1
+ 2006 00ae 13       		.uleb128 0x13
+ 2007 00af 00       		.byte	0
+ 2008 00b0 00       		.byte	0
+ 2009 00b1 0B       		.uleb128 0xb
+ 2010 00b2 0D       		.uleb128 0xd
+ 2011 00b3 00       		.byte	0
+ 2012 00b4 03       		.uleb128 0x3
+ 2013 00b5 08       		.uleb128 0x8
+ 2014 00b6 3A       		.uleb128 0x3a
+ 2015 00b7 21       		.uleb128 0x21
+ 2016 00b8 04       		.sleb128 4
+ 2017 00b9 3B       		.uleb128 0x3b
+ 2018 00ba 0B       		.uleb128 0xb
+ 2019 00bb 39       		.uleb128 0x39
+ 2020 00bc 21       		.uleb128 0x21
+ 2021 00bd 0C       		.sleb128 12
+ 2022 00be 49       		.uleb128 0x49
+ 2023 00bf 13       		.uleb128 0x13
+ 2024 00c0 38       		.uleb128 0x38
+ 2025 00c1 0B       		.uleb128 0xb
+ 2026 00c2 00       		.byte	0
+ 2027 00c3 00       		.byte	0
+ 2028 00c4 0C       		.uleb128 0xc
+ 2029 00c5 01       		.uleb128 0x1
+ 2030 00c6 01       		.byte	0x1
+ 2031 00c7 49       		.uleb128 0x49
+ 2032 00c8 13       		.uleb128 0x13
+ 2033 00c9 01       		.uleb128 0x1
+ 2034 00ca 13       		.uleb128 0x13
+ 2035 00cb 00       		.byte	0
+ 2036 00cc 00       		.byte	0
+ 2037 00cd 0D       		.uleb128 0xd
+ 2038 00ce 21       		.uleb128 0x21
+ 2039 00cf 00       		.byte	0
+ 2040 00d0 49       		.uleb128 0x49
+ 2041 00d1 13       		.uleb128 0x13
+ 2042 00d2 2F       		.uleb128 0x2f
+ 2043 00d3 21       		.uleb128 0x21
+ 2044 00d4 0F       		.sleb128 15
+ 2045 00d5 00       		.byte	0
+ 2046 00d6 00       		.byte	0
+ 2047 00d7 0E       		.uleb128 0xe
+ 2048 00d8 2E       		.uleb128 0x2e
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 37
+
+
+ 2049 00d9 01       		.byte	0x1
+ 2050 00da 3F       		.uleb128 0x3f
+ 2051 00db 19       		.uleb128 0x19
+ 2052 00dc 03       		.uleb128 0x3
+ 2053 00dd 0E       		.uleb128 0xe
+ 2054 00de 3A       		.uleb128 0x3a
+ 2055 00df 21       		.uleb128 0x21
+ 2056 00e0 01       		.sleb128 1
+ 2057 00e1 3B       		.uleb128 0x3b
+ 2058 00e2 0B       		.uleb128 0xb
+ 2059 00e3 39       		.uleb128 0x39
+ 2060 00e4 21       		.uleb128 0x21
+ 2061 00e5 05       		.sleb128 5
+ 2062 00e6 27       		.uleb128 0x27
+ 2063 00e7 19       		.uleb128 0x19
+ 2064 00e8 49       		.uleb128 0x49
+ 2065 00e9 13       		.uleb128 0x13
+ 2066 00ea 11       		.uleb128 0x11
+ 2067 00eb 01       		.uleb128 0x1
+ 2068 00ec 12       		.uleb128 0x12
+ 2069 00ed 06       		.uleb128 0x6
+ 2070 00ee 40       		.uleb128 0x40
+ 2071 00ef 18       		.uleb128 0x18
+ 2072 00f0 7A       		.uleb128 0x7a
+ 2073 00f1 19       		.uleb128 0x19
+ 2074 00f2 01       		.uleb128 0x1
+ 2075 00f3 13       		.uleb128 0x13
+ 2076 00f4 00       		.byte	0
+ 2077 00f5 00       		.byte	0
+ 2078 00f6 0F       		.uleb128 0xf
+ 2079 00f7 0B       		.uleb128 0xb
+ 2080 00f8 01       		.byte	0x1
+ 2081 00f9 11       		.uleb128 0x11
+ 2082 00fa 01       		.uleb128 0x1
+ 2083 00fb 12       		.uleb128 0x12
+ 2084 00fc 06       		.uleb128 0x6
+ 2085 00fd 00       		.byte	0
+ 2086 00fe 00       		.byte	0
+ 2087 00ff 10       		.uleb128 0x10
+ 2088 0100 11       		.uleb128 0x11
+ 2089 0101 01       		.byte	0x1
+ 2090 0102 25       		.uleb128 0x25
+ 2091 0103 0E       		.uleb128 0xe
+ 2092 0104 13       		.uleb128 0x13
+ 2093 0105 0B       		.uleb128 0xb
+ 2094 0106 03       		.uleb128 0x3
+ 2095 0107 0E       		.uleb128 0xe
+ 2096 0108 1B       		.uleb128 0x1b
+ 2097 0109 0E       		.uleb128 0xe
+ 2098 010a 55       		.uleb128 0x55
+ 2099 010b 17       		.uleb128 0x17
+ 2100 010c 11       		.uleb128 0x11
+ 2101 010d 01       		.uleb128 0x1
+ 2102 010e 10       		.uleb128 0x10
+ 2103 010f 17       		.uleb128 0x17
+ 2104 0110 00       		.byte	0
+ 2105 0111 00       		.byte	0
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 38
+
+
+ 2106 0112 11       		.uleb128 0x11
+ 2107 0113 24       		.uleb128 0x24
+ 2108 0114 00       		.byte	0
+ 2109 0115 0B       		.uleb128 0xb
+ 2110 0116 0B       		.uleb128 0xb
+ 2111 0117 3E       		.uleb128 0x3e
+ 2112 0118 0B       		.uleb128 0xb
+ 2113 0119 03       		.uleb128 0x3
+ 2114 011a 08       		.uleb128 0x8
+ 2115 011b 00       		.byte	0
+ 2116 011c 00       		.byte	0
+ 2117 011d 12       		.uleb128 0x12
+ 2118 011e 34       		.uleb128 0x34
+ 2119 011f 00       		.byte	0
+ 2120 0120 03       		.uleb128 0x3
+ 2121 0121 0E       		.uleb128 0xe
+ 2122 0122 3A       		.uleb128 0x3a
+ 2123 0123 0B       		.uleb128 0xb
+ 2124 0124 3B       		.uleb128 0x3b
+ 2125 0125 0B       		.uleb128 0xb
+ 2126 0126 39       		.uleb128 0x39
+ 2127 0127 0B       		.uleb128 0xb
+ 2128 0128 49       		.uleb128 0x49
+ 2129 0129 13       		.uleb128 0x13
+ 2130 012a 3F       		.uleb128 0x3f
+ 2131 012b 19       		.uleb128 0x19
+ 2132 012c 3C       		.uleb128 0x3c
+ 2133 012d 19       		.uleb128 0x19
+ 2134 012e 00       		.byte	0
+ 2135 012f 00       		.byte	0
+ 2136 0130 13       		.uleb128 0x13
+ 2137 0131 34       		.uleb128 0x34
+ 2138 0132 00       		.byte	0
+ 2139 0133 47       		.uleb128 0x47
+ 2140 0134 13       		.uleb128 0x13
+ 2141 0135 3A       		.uleb128 0x3a
+ 2142 0136 0B       		.uleb128 0xb
+ 2143 0137 3B       		.uleb128 0x3b
+ 2144 0138 0B       		.uleb128 0xb
+ 2145 0139 39       		.uleb128 0x39
+ 2146 013a 0B       		.uleb128 0xb
+ 2147 013b 02       		.uleb128 0x2
+ 2148 013c 18       		.uleb128 0x18
+ 2149 013d 00       		.byte	0
+ 2150 013e 00       		.byte	0
+ 2151 013f 14       		.uleb128 0x14
+ 2152 0140 2E       		.uleb128 0x2e
+ 2153 0141 01       		.byte	0x1
+ 2154 0142 03       		.uleb128 0x3
+ 2155 0143 0E       		.uleb128 0xe
+ 2156 0144 3A       		.uleb128 0x3a
+ 2157 0145 0B       		.uleb128 0xb
+ 2158 0146 3B       		.uleb128 0x3b
+ 2159 0147 0B       		.uleb128 0xb
+ 2160 0148 39       		.uleb128 0x39
+ 2161 0149 0B       		.uleb128 0xb
+ 2162 014a 27       		.uleb128 0x27
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 39
+
+
+ 2163 014b 19       		.uleb128 0x19
+ 2164 014c 49       		.uleb128 0x49
+ 2165 014d 13       		.uleb128 0x13
+ 2166 014e 11       		.uleb128 0x11
+ 2167 014f 01       		.uleb128 0x1
+ 2168 0150 12       		.uleb128 0x12
+ 2169 0151 06       		.uleb128 0x6
+ 2170 0152 40       		.uleb128 0x40
+ 2171 0153 18       		.uleb128 0x18
+ 2172 0154 7A       		.uleb128 0x7a
+ 2173 0155 19       		.uleb128 0x19
+ 2174 0156 01       		.uleb128 0x1
+ 2175 0157 13       		.uleb128 0x13
+ 2176 0158 00       		.byte	0
+ 2177 0159 00       		.byte	0
+ 2178 015a 15       		.uleb128 0x15
+ 2179 015b 2E       		.uleb128 0x2e
+ 2180 015c 01       		.byte	0x1
+ 2181 015d 03       		.uleb128 0x3
+ 2182 015e 0E       		.uleb128 0xe
+ 2183 015f 3A       		.uleb128 0x3a
+ 2184 0160 0B       		.uleb128 0xb
+ 2185 0161 3B       		.uleb128 0x3b
+ 2186 0162 0B       		.uleb128 0xb
+ 2187 0163 39       		.uleb128 0x39
+ 2188 0164 0B       		.uleb128 0xb
+ 2189 0165 27       		.uleb128 0x27
+ 2190 0166 19       		.uleb128 0x19
+ 2191 0167 11       		.uleb128 0x11
+ 2192 0168 01       		.uleb128 0x1
+ 2193 0169 12       		.uleb128 0x12
+ 2194 016a 06       		.uleb128 0x6
+ 2195 016b 40       		.uleb128 0x40
+ 2196 016c 18       		.uleb128 0x18
+ 2197 016d 7A       		.uleb128 0x7a
+ 2198 016e 19       		.uleb128 0x19
+ 2199 016f 01       		.uleb128 0x1
+ 2200 0170 13       		.uleb128 0x13
+ 2201 0171 00       		.byte	0
+ 2202 0172 00       		.byte	0
+ 2203 0173 16       		.uleb128 0x16
+ 2204 0174 2E       		.uleb128 0x2e
+ 2205 0175 01       		.byte	0x1
+ 2206 0176 03       		.uleb128 0x3
+ 2207 0177 0E       		.uleb128 0xe
+ 2208 0178 3A       		.uleb128 0x3a
+ 2209 0179 0B       		.uleb128 0xb
+ 2210 017a 3B       		.uleb128 0x3b
+ 2211 017b 0B       		.uleb128 0xb
+ 2212 017c 39       		.uleb128 0x39
+ 2213 017d 0B       		.uleb128 0xb
+ 2214 017e 27       		.uleb128 0x27
+ 2215 017f 19       		.uleb128 0x19
+ 2216 0180 49       		.uleb128 0x49
+ 2217 0181 13       		.uleb128 0x13
+ 2218 0182 11       		.uleb128 0x11
+ 2219 0183 01       		.uleb128 0x1
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 40
+
+
+ 2220 0184 12       		.uleb128 0x12
+ 2221 0185 06       		.uleb128 0x6
+ 2222 0186 40       		.uleb128 0x40
+ 2223 0187 18       		.uleb128 0x18
+ 2224 0188 7A       		.uleb128 0x7a
+ 2225 0189 19       		.uleb128 0x19
+ 2226 018a 00       		.byte	0
+ 2227 018b 00       		.byte	0
+ 2228 018c 00       		.byte	0
+ 2229              		.section	.debug_aranges,"",%progbits
+ 2230 0000 6C000000 		.4byte	0x6c
+ 2231 0004 0200     		.2byte	0x2
+ 2232 0006 00000000 		.4byte	.Ldebug_info0
+ 2233 000a 04       		.byte	0x4
+ 2234 000b 00       		.byte	0
+ 2235 000c 0000     		.2byte	0
+ 2236 000e 0000     		.2byte	0
+ 2237 0010 00000000 		.4byte	.LFB0
+ 2238 0014 3C000000 		.4byte	.LFE0-.LFB0
+ 2239 0018 00000000 		.4byte	.LFB1
+ 2240 001c BA000000 		.4byte	.LFE1-.LFB1
+ 2241 0020 00000000 		.4byte	.LFB2
+ 2242 0024 76000000 		.4byte	.LFE2-.LFB2
+ 2243 0028 00000000 		.4byte	.LFB3
+ 2244 002c 50000000 		.4byte	.LFE3-.LFB3
+ 2245 0030 00000000 		.4byte	.LFB4
+ 2246 0034 6C000000 		.4byte	.LFE4-.LFB4
+ 2247 0038 00000000 		.4byte	.LFB5
+ 2248 003c 7E000000 		.4byte	.LFE5-.LFB5
+ 2249 0040 00000000 		.4byte	.LFB6
+ 2250 0044 50000000 		.4byte	.LFE6-.LFB6
+ 2251 0048 00000000 		.4byte	.LFB7
+ 2252 004c 52000000 		.4byte	.LFE7-.LFB7
+ 2253 0050 00000000 		.4byte	.LFB8
+ 2254 0054 80000000 		.4byte	.LFE8-.LFB8
+ 2255 0058 00000000 		.4byte	.LFB9
+ 2256 005c 32000000 		.4byte	.LFE9-.LFB9
+ 2257 0060 00000000 		.4byte	.LFB10
+ 2258 0064 26010000 		.4byte	.LFE10-.LFB10
+ 2259 0068 00000000 		.4byte	0
+ 2260 006c 00000000 		.4byte	0
+ 2261              		.section	.debug_rnglists,"",%progbits
+ 2262              	.Ldebug_ranges0:
+ 2263 0000 4E000000 		.4byte	.Ldebug_ranges3-.Ldebug_ranges2
+ 2264              	.Ldebug_ranges2:
+ 2265 0004 0500     		.2byte	0x5
+ 2266 0006 04       		.byte	0x4
+ 2267 0007 00       		.byte	0
+ 2268 0008 00000000 		.4byte	0
+ 2269              	.LLRL0:
+ 2270 000c 07       		.byte	0x7
+ 2271 000d 00000000 		.4byte	.LFB0
+ 2272 0011 3C       		.uleb128 .LFE0-.LFB0
+ 2273 0012 07       		.byte	0x7
+ 2274 0013 00000000 		.4byte	.LFB1
+ 2275 0017 BA01     		.uleb128 .LFE1-.LFB1
+ 2276 0019 07       		.byte	0x7
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 41
+
+
+ 2277 001a 00000000 		.4byte	.LFB2
+ 2278 001e 76       		.uleb128 .LFE2-.LFB2
+ 2279 001f 07       		.byte	0x7
+ 2280 0020 00000000 		.4byte	.LFB3
+ 2281 0024 50       		.uleb128 .LFE3-.LFB3
+ 2282 0025 07       		.byte	0x7
+ 2283 0026 00000000 		.4byte	.LFB4
+ 2284 002a 6C       		.uleb128 .LFE4-.LFB4
+ 2285 002b 07       		.byte	0x7
+ 2286 002c 00000000 		.4byte	.LFB5
+ 2287 0030 7E       		.uleb128 .LFE5-.LFB5
+ 2288 0031 07       		.byte	0x7
+ 2289 0032 00000000 		.4byte	.LFB6
+ 2290 0036 50       		.uleb128 .LFE6-.LFB6
+ 2291 0037 07       		.byte	0x7
+ 2292 0038 00000000 		.4byte	.LFB7
+ 2293 003c 52       		.uleb128 .LFE7-.LFB7
+ 2294 003d 07       		.byte	0x7
+ 2295 003e 00000000 		.4byte	.LFB8
+ 2296 0042 8001     		.uleb128 .LFE8-.LFB8
+ 2297 0044 07       		.byte	0x7
+ 2298 0045 00000000 		.4byte	.LFB9
+ 2299 0049 32       		.uleb128 .LFE9-.LFB9
+ 2300 004a 07       		.byte	0x7
+ 2301 004b 00000000 		.4byte	.LFB10
+ 2302 004f A602     		.uleb128 .LFE10-.LFB10
+ 2303 0051 00       		.byte	0
+ 2304              	.Ldebug_ranges3:
+ 2305              		.section	.debug_line,"",%progbits
+ 2306              	.Ldebug_line0:
+ 2307 0000 AB040000 		.section	.debug_str,"MS",%progbits,1
+ 2307      03000F01 
+ 2307      00000201 
+ 2307      FB0E0D00 
+ 2307      01010101 
+ 2308              	.LASF43:
+ 2309 0000 75706461 		.ascii	"update_detent\000"
+ 2309      74655F64 
+ 2309      6574656E 
+ 2309      7400
+ 2310              	.LASF42:
+ 2311 000e 62726963 		.ascii	"brick_cal_pot_init\000"
+ 2311      6B5F6361 
+ 2311      6C5F706F 
+ 2311      745F696E 
+ 2311      697400
+ 2312              	.LASF35:
+ 2313 0021 64657465 		.ascii	"detent\000"
+ 2313      6E7400
+ 2314              	.LASF13:
+ 2315 0028 63686172 		.ascii	"char\000"
+ 2315      00
+ 2316              	.LASF3:
+ 2317 002d 5F5F7569 		.ascii	"__uint8_t\000"
+ 2317      6E74385F 
+ 2317      7400
+ 2318              	.LASF24:
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 42
+
+
+ 2319 0037 6368616E 		.ascii	"channel\000"
+ 2319      6E656C00 
+ 2320              	.LASF20:
+ 2321 003f 62726963 		.ascii	"brick_cal_pot\000"
+ 2321      6B5F6361 
+ 2321      6C5F706F 
+ 2321      7400
+ 2322              	.LASF18:
+ 2323 004d 64657465 		.ascii	"detenthi\000"
+ 2323      6E746869 
+ 2323      00
+ 2324              	.LASF27:
+ 2325 0056 76616C75 		.ascii	"value\000"
+ 2325      6500
+ 2326              	.LASF41:
+ 2327 005c 73746172 		.ascii	"start\000"
+ 2327      7400
+ 2328              	.LASF33:
+ 2329 0062 6D696E5F 		.ascii	"min_value\000"
+ 2329      76616C75 
+ 2329      6500
+ 2330              	.LASF19:
+ 2331 006c 656E6162 		.ascii	"enable\000"
+ 2331      6C6500
+ 2332              	.LASF36:
+ 2333 0073 68696768 		.ascii	"high\000"
+ 2333      00
+ 2334              	.LASF30:
+ 2335 0078 62726963 		.ascii	"brick_cal_pot_max_get\000"
+ 2335      6B5F6361 
+ 2335      6C5F706F 
+ 2335      745F6D61 
+ 2335      785F6765 
+ 2336              	.LASF22:
+ 2337 008e 706F746D 		.ascii	"potmeter\000"
+ 2337      65746572 
+ 2337      00
+ 2338              	.LASF17:
+ 2339 0097 64657465 		.ascii	"detentlo\000"
+ 2339      6E746C6F 
+ 2339      00
+ 2340              	.LASF38:
+ 2341 00a0 62726963 		.ascii	"brick_cal_pot_detent_get\000"
+ 2341      6B5F6361 
+ 2341      6C5F706F 
+ 2341      745F6465 
+ 2341      74656E74 
+ 2342              	.LASF1:
+ 2343 00b9 756E7369 		.ascii	"unsigned char\000"
+ 2343      676E6564 
+ 2343      20636861 
+ 2343      7200
+ 2344              	.LASF5:
+ 2345 00c7 73686F72 		.ascii	"short unsigned int\000"
+ 2345      7420756E 
+ 2345      7369676E 
+ 2345      65642069 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 43
+
+
+ 2345      6E7400
+ 2346              	.LASF16:
+ 2347 00da 6D617869 		.ascii	"maximum\000"
+ 2347      6D756D00 
+ 2348              	.LASF34:
+ 2349 00e2 62726963 		.ascii	"brick_cal_pot_detent_set\000"
+ 2349      6B5F6361 
+ 2349      6C5F706F 
+ 2349      745F6465 
+ 2349      74656E74 
+ 2350              	.LASF47:
+ 2351 00fb 433A5C50 		.ascii	"C:\\PROJET\\ChibiOS project\\ChibiOS_21.11.4\\demos"
+ 2351      524F4A45 
+ 2351      545C4368 
+ 2351      6962694F 
+ 2351      53207072 
+ 2352 012a 5C53544D 		.ascii	"\\STM32\\RT-STM32H743ZI_REV_XY-NUCLEO144_Quartz8M\000"
+ 2352      33325C52 
+ 2352      542D5354 
+ 2352      4D333248 
+ 2352      3734335A 
+ 2353              	.LASF4:
+ 2354 015a 5F5F7569 		.ascii	"__uint16_t\000"
+ 2354      6E743136 
+ 2354      5F7400
+ 2355              	.LASF7:
+ 2356 0165 6C6F6E67 		.ascii	"long unsigned int\000"
+ 2356      20756E73 
+ 2356      69676E65 
+ 2356      6420696E 
+ 2356      7400
+ 2357              	.LASF21:
+ 2358 0177 62726963 		.ascii	"brick_cal_model\000"
+ 2358      6B5F6361 
+ 2358      6C5F6D6F 
+ 2358      64656C00 
+ 2359              	.LASF45:
+ 2360 0187 474E5520 		.ascii	"GNU C17 11.3.1 20220712 -mcpu=cortex-m7 -mthumb -mf"
+ 2360      43313720 
+ 2360      31312E33 
+ 2360      2E312032 
+ 2360      30323230 
+ 2361 01ba 6C6F6174 		.ascii	"loat-abi=soft -march=armv7e-m -ggdb -O0 -ffunction-"
+ 2361      2D616269 
+ 2361      3D736F66 
+ 2361      74202D6D 
+ 2361      61726368 
+ 2362 01ed 73656374 		.ascii	"sections -fdata-sections -fno-common\000"
+ 2362      696F6E73 
+ 2362      202D6664 
+ 2362      6174612D 
+ 2362      73656374 
+ 2363              	.LASF46:
+ 2364 0212 64726976 		.ascii	"drivers/HallEffect/brick_cal.c\000"
+ 2364      6572732F 
+ 2364      48616C6C 
+ 2364      45666665 
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 44
+
+
+ 2364      63742F62 
+ 2365              	.LASF25:
+ 2366 0231 72616E67 		.ascii	"range\000"
+ 2366      6500
+ 2367              	.LASF10:
+ 2368 0237 756E7369 		.ascii	"unsigned int\000"
+ 2368      676E6564 
+ 2368      20696E74 
+ 2368      00
+ 2369              	.LASF9:
+ 2370 0244 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 2370      206C6F6E 
+ 2370      6720756E 
+ 2370      7369676E 
+ 2370      65642069 
+ 2371              	.LASF11:
+ 2372 025b 75696E74 		.ascii	"uint8_t\000"
+ 2372      385F7400 
+ 2373              	.LASF40:
+ 2374 0263 62726963 		.ascii	"brick_cal_pot_enable_range\000"
+ 2374      6B5F6361 
+ 2374      6C5F706F 
+ 2374      745F656E 
+ 2374      61626C65 
+ 2375              	.LASF31:
+ 2376 027e 6D61785F 		.ascii	"max_value\000"
+ 2376      76616C75 
+ 2376      6500
+ 2377              	.LASF32:
+ 2378 0288 62726963 		.ascii	"brick_cal_pot_min_get\000"
+ 2378      6B5F6361 
+ 2378      6C5F706F 
+ 2378      745F6D69 
+ 2378      6E5F6765 
+ 2379              	.LASF28:
+ 2380 029e 68616C66 		.ascii	"half_deadzone\000"
+ 2380      5F646561 
+ 2380      647A6F6E 
+ 2380      6500
+ 2381              	.LASF44:
+ 2382 02ac 6368616E 		.ascii	"channel_valid\000"
+ 2382      6E656C5F 
+ 2382      76616C69 
+ 2382      6400
+ 2383              	.LASF8:
+ 2384 02ba 6C6F6E67 		.ascii	"long long int\000"
+ 2384      206C6F6E 
+ 2384      6720696E 
+ 2384      7400
+ 2385              	.LASF39:
+ 2386 02c8 62726963 		.ascii	"brick_cal_pot_enable_get\000"
+ 2386      6B5F6361 
+ 2386      6C5F706F 
+ 2386      745F656E 
+ 2386      61626C65 
+ 2387              	.LASF49:
+ 2388 02e1 636C616D 		.ascii	"clamp_to_maximum\000"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 45
+
+
+ 2388      705F746F 
+ 2388      5F6D6178 
+ 2388      696D756D 
+ 2388      00
+ 2389              	.LASF12:
+ 2390 02f2 75696E74 		.ascii	"uint16_t\000"
+ 2390      31365F74 
+ 2390      00
+ 2391              	.LASF2:
+ 2392 02fb 73686F72 		.ascii	"short int\000"
+ 2392      7420696E 
+ 2392      7400
+ 2393              	.LASF26:
+ 2394 0305 63656E74 		.ascii	"center\000"
+ 2394      657200
+ 2395              	.LASF48:
+ 2396 030c 62726963 		.ascii	"brick_cal_state\000"
+ 2396      6B5F6361 
+ 2396      6C5F7374 
+ 2396      61746500 
+ 2397              	.LASF29:
+ 2398 031c 62726963 		.ascii	"brick_cal_pot_next\000"
+ 2398      6B5F6361 
+ 2398      6C5F706F 
+ 2398      745F6E65 
+ 2398      787400
+ 2399              	.LASF6:
+ 2400 032f 6C6F6E67 		.ascii	"long int\000"
+ 2400      20696E74 
+ 2400      00
+ 2401              	.LASF23:
+ 2402 0338 6C6F6E67 		.ascii	"long double\000"
+ 2402      20646F75 
+ 2402      626C6500 
+ 2403              	.LASF0:
+ 2404 0344 7369676E 		.ascii	"signed char\000"
+ 2404      65642063 
+ 2404      68617200 
+ 2405              	.LASF14:
+ 2406 0350 7265736F 		.ascii	"resolution\000"
+ 2406      6C757469 
+ 2406      6F6E00
+ 2407              	.LASF37:
+ 2408 035b 5F426F6F 		.ascii	"_Bool\000"
+ 2408      6C00
+ 2409              	.LASF15:
+ 2410 0361 6C656E67 		.ascii	"length\000"
+ 2410      746800
+ 2411              		.ident	"GCC: (Arm GNU Toolchain 11.3.Rel1) 11.3.1 20220712"
+ARM GAS  C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s 			page 46
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 brick_cal.c
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:22     .bss.brick_cal_state:00000000 brick_cal_state
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:19     .bss.brick_cal_state:00000000 $d
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:25     .text.channel_valid:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:30     .text.channel_valid:00000000 channel_valid
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:93     .text.brick_cal_pot_init:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:99     .text.brick_cal_pot_init:00000000 brick_cal_pot_init
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:248    .text.brick_cal_pot_enable_range:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:254    .text.brick_cal_pot_enable_range:00000000 brick_cal_pot_enable_range
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:362    .text.brick_cal_pot_enable_get:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:368    .text.brick_cal_pot_enable_get:00000000 brick_cal_pot_enable_get
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:438    .text.brick_cal_pot_detent_get:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:444    .text.brick_cal_pot_detent_get:00000000 brick_cal_pot_detent_get
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:535    .text.brick_cal_pot_detent_set:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:541    .text.brick_cal_pot_detent_set:00000000 brick_cal_pot_detent_set
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:641    .text.brick_cal_pot_min_get:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:647    .text.brick_cal_pot_min_get:00000000 brick_cal_pot_min_get
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:718    .text.brick_cal_pot_max_get:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:724    .text.brick_cal_pot_max_get:00000000 brick_cal_pot_max_get
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:796    .text.update_detent:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:801    .text.update_detent:00000000 update_detent
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:897    .text.update_detent:0000007c $d
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:902    .text.clamp_to_maximum:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:907    .text.clamp_to_maximum:00000000 clamp_to_maximum
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:962    .text.brick_cal_pot_next:00000000 $t
+C:\Users\DEVELO~1\AppData\Local\Temp\cc2fes1i.s:968    .text.brick_cal_pot_next:00000000 brick_cal_pot_next
+
+NO UNDEFINED SYMBOLS
