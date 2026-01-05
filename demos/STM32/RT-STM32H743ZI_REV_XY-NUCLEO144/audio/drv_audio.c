@@ -45,6 +45,7 @@ static volatile uint32_t audio_rx_full_count = 0U;
 static volatile uint32_t audio_tx_half_count = 0U;
 static volatile uint32_t audio_tx_full_count = 0U;
 static volatile uint32_t audio_sync_error_count = 0U;
+static volatile uint32_t audio_dma_error_count = 0U;
 static volatile uint32_t audio_rx_checksums[2] = {0U, 0U};
 static volatile uint32_t audio_rx_cr1_start = 0U;
 static volatile uint32_t audio_rx_sr_start = 0U;
@@ -544,6 +545,7 @@ static void audio_reset_stats(void) {
     audio_tx_half_count = 0U;
     audio_tx_full_count = 0U;
     audio_sync_error_count = 0U;
+    audio_dma_error_count = 0U;
     audio_rx_checksums[0] = 0U;
     audio_rx_checksums[1] = 0U;
     audio_rx_cr1_start = 0U;
@@ -570,7 +572,14 @@ static void audio_capture_sai_start_state(void) {
             audio_sai_error_count++;
         }
     }
+#else
+    (void)audio_sai_error_mask;
 #endif
+}
+
+void __attribute__((weak)) sai_dma_error_hook(SAIDriver *saip) {
+    (void)saip;
+    audio_dma_error_count++;
 }
 
 static THD_FUNCTION(audioDisplayThread, arg) {
