@@ -103,21 +103,20 @@ LDSCRIPT = $(STARTUPLD)/STM32H743xI.ld
 # Sources
 #
 
+DRIVERS_SRC = $(wildcard drivers/*.c)
+DRIVERS_SRC := $(filter-out drivers/stm32h7xx_hal_chibios.c,$(DRIVERS_SRC))
+
 CSRC = $(ALLCSRC) \
        $(TESTSRC) \
        $(CHIBIOS)/os/various/syscalls.c \
        main.c \
-       $(wildcard drivers/*.c)\
+       $(DRIVERS_SRC) \
        $(wildcard midi/*.c)\
        $(wildcard mpu/*.c)\
        $(wildcard usb/*.c)\
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
-       $(wildcard audio/*.c) \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_dma.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_gpio.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai_ex.c
+       $(wildcard audio/*.c)
        
 CPPSRC = $(ALLCPPSRC)
 ASMSRC = $(ALLASMSRC)
@@ -135,8 +134,6 @@ INCDIR += mpu
 INCDIR += usb
 INCDIR += ui
 INCDIR += audio
-INCDIR += drivers/stm32h7xx-hal-driver/Inc
-INCDIR += drivers/stm32h7xx-hal-driver/Inc/Legacy
 
 
 ##############################################################################
