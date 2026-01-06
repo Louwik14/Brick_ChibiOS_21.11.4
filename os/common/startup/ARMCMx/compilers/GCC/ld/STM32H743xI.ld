@@ -100,6 +100,9 @@ INCLUDE rules_stacks.ld
 /* RAM region to be used for nocache segment.*/
 REGION_ALIAS("NOCACHE_RAM", ram3);
 
+/* RAM region to be used for DMA buffers (non cache-able).*/
+REGION_ALIAS("DMA_RAM", ram5);
+
 /* RAM region to be used for eth segment.*/
 REGION_ALIAS("ETH_RAM", ram3);
 
@@ -115,6 +118,17 @@ SECTIONS
         . = ALIGN(4);
         __nocache_end__ = .;
     } > NOCACHE_RAM
+
+    /* Special section for DMA buffers in non cache-able RAM.*/
+    .dma (NOLOAD) : ALIGN(4)
+    {
+        __dma_base__ = .;
+        *(.dma)
+        *(.dma.*)
+        *(.bss.__dma_*)
+        . = ALIGN(4);
+        __dma_end__ = .;
+    } > DMA_RAM
 
     /* Special section for Ethernet DMA non cache-able areas.*/
     .eth (NOLOAD) : ALIGN(4)
@@ -136,4 +150,3 @@ INCLUDE rules_data.ld
 
 /* Memory rules inclusion.*/
 INCLUDE rules_memory.ld
-
