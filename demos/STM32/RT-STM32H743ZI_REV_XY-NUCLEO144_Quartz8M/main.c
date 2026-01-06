@@ -14,7 +14,7 @@
 #define ADC_EXTERNAL_CHANNEL    ADC_CHANNEL_IN7
 #define ADC_EXTERNAL_SEL        ADC_SELMASK_IN7
 
-static adcsample_t adc_buf[1];
+static adcsample_t adc_buf[1] __attribute__((section(".nocache"), aligned(32)));
 
 static const ADCConfig adccfg = {
   .difsel = 0U,
