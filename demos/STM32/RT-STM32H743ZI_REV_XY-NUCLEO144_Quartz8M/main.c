@@ -102,8 +102,8 @@ static void adc1_init(void) {
   ADC1->SQR1 |= (ADC_CHANNEL << ADC_SQR1_SQ1_Pos);
 
   /* Continuous conversion with DMA circular mode (DMNGT=0b10). */
-  ADC1->CFGR &= ~ADC_CFGR_DMNGT_Msk;
-  ADC1->CFGR |= ADC_CFGR_CONT | ADC_CFGR_DMNGT_1;
+  ADC1->CFGR &= ~(ADC_CFGR_DMNGT_Msk | ADC_CFGR_DMAEN);
+  ADC1->CFGR |= ADC_CFGR_CONT | ADC_CFGR_DMNGT_1 | ADC_CFGR_DMAEN;
 
   /* Clear ready flag and enable ADC. */
   ADC1->ISR |= ADC_ISR_ADRDY;
@@ -150,7 +150,7 @@ int main(void) {
     counter++;
 
     drv_display_clear();
-    drv_display_draw_text(0, 0, "ADC1 POLL OK");
+    drv_display_draw_text(0, 0, "ADC1 DMA OK");
 
     snprintf(line1, sizeof(line1), "VAL = %u", (unsigned)v);
     drv_display_draw_text(0, 12, line1);
