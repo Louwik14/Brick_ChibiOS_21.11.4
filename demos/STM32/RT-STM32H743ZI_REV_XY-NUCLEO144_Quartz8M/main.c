@@ -150,7 +150,7 @@ int main(void) {
     counter++;
 
     drv_display_clear();
-    drv_display_draw_text(0, 0, "ADC1 DMA OK");
+    drv_display_draw_text(0, 0, "ADC1 POLL OK");
 
     snprintf(line1, sizeof(line1), "VAL = %u", (unsigned)v);
     drv_display_draw_text(0, 12, line1);
