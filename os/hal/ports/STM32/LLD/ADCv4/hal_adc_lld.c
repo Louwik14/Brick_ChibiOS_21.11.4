@@ -114,13 +114,15 @@ static const ADCConfig default_config = {
  */
 static void adc_lld_vreg_on(ADCDriver *adcp) {
 
-  adcp->adcm->CR = ADC_CR_ADVREGEN;
+  adcp->adcm->CR &= ~ADC_CR_DEEPPWD;
+  adcp->adcm->CR |= ADC_CR_ADVREGEN;
 #if STM32_ADC_DUAL_MODE
   if (&ADCD1 == adcp) {
-    adcp->adcs->CR = ADC_CR_ADVREGEN;
+    adcp->adcs->CR &= ~ADC_CR_DEEPPWD;
+    adcp->adcs->CR |= ADC_CR_ADVREGEN;
   }
 #endif
-  osalSysPolledDelayX(OSAL_US2RTC(STM32_SYS_CK, 10U));
+  osalSysPolledDelayX(OSAL_US2RTC(STM32_SYS_CK, 20U));
 }
 
 /**
@@ -193,6 +195,7 @@ static void adc_lld_calibrate(ADCDriver *adcp) {
   adcp->adcm->CR |= ADC_CR_ADCAL;
   while ((adcp->adcm->CR & ADC_CR_ADCAL) != 0U)
     ;
+  osalSysPolledDelayX(OSAL_US2RTC(STM32_SYS_CK, 2U));
 #if STM32_ADC_DUAL_MODE
   if (&ADCD1 == adcp) {
     osalDbgAssert(adcp->adcs->CR == ADC_CR_ADVREGEN, "invalid register state");
@@ -203,6 +206,7 @@ static void adc_lld_calibrate(ADCDriver *adcp) {
     adcp->adcs->CR |= ADC_CR_ADCAL;
     while ((adcp->adcs->CR & ADC_CR_ADCAL) != 0U)
       ;
+    osalSysPolledDelayX(OSAL_US2RTC(STM32_SYS_CK, 2U));
   }
 #endif
 }
