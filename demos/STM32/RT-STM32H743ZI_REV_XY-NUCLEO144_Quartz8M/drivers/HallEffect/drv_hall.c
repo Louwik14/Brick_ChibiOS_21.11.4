@@ -92,7 +92,7 @@ static inline uint8_t clamp_uint8(int32_t v) {
     if (v < 0) {
         return 0;
     }
-    if (v > (int32_t)HALL_NORMALIZE_MAX) {
+    if (v > HALL_NORMALIZE_MAX) {
         return HALL_NORMALIZE_MAX;
     }
     return (uint8_t)v;
@@ -290,7 +290,6 @@ void drv_hall_init(void) {
     palClearLine(HALL_LINE_MUX_S2);
 
     adcStart(&ADCD1, NULL);
-    adcStart(&ADCD3, NULL);
 
     hall_state_init();
     hall_initialized = true;
@@ -301,8 +300,9 @@ void drv_hall_task(void) {
         mux_select(mux);
         chThdSleepMicroseconds(HALL_SETTLE_US);
 
-        adcConvert(&ADCD1, &adcgrpcfg1, &adc_sample1, 1);
-        adcConvert(&ADCD3, &adcgrpcfg2, &adc_sample2, 1);
+        adcConvert(&ADCD1, &adcgrpcfg1, &adc_sample1, 1); // PC4 -> ADC1_INP4
+        adcConvert(&ADCD1, &adcgrpcfg2, &adc_sample2, 1); // PA7 -> ADC1_INP7
+
 
         uint16_t filtered1 = 0;
         uint16_t filtered2 = 0;

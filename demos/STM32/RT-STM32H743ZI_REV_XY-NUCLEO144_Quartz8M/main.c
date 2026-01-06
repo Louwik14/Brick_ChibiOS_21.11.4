@@ -1,141 +1,67 @@
 #include "ch.h"
 #include "hal.h"
 #include "drivers/drivers.h"
-#include "drv_hall.h"
-#include "ui/ui_model.h"
+#include "drv_display.h"
 #include <stdio.h>
 
-/* ====================================================================== */
-/*                           THREAD HALL                                  */
-/* ====================================================================== */
+/* ================== LOW LEVEL ADC ================== */
 
-static THD_WORKING_AREA(waHallTask, 512);
+static void adc_lowlevel_init(void) {
+  /* Enable ADC clock */
+  RCC->AHB1ENR |= RCC_AHB1ENR_ADC12EN;
+  __DSB();
 
-enum {
-  /* Scheduler is cooperative for equal priorities (CH_CFG_TIME_QUANTUM = 0).
-     Cadences below guarantee UI execution windows even under Hall load. */
-  HALL_TASK_PERIOD_MS = 20,
-  UI_TASK_PERIOD_MS = 100,
-  UI_FORCE_REFRESH_MS = 1000
-};
+  /* Exit deep power down, enable regulator */
+  ADC1->CR &= ~ADC_CR_DEEPPWD;
+  ADC1->CR |= ADC_CR_ADVREGEN;
+  chThdSleepMilliseconds(1);
 
-static uint16_t build_hall_mask(void) {
-  uint16_t mask = 0;
-  for (uint8_t i = 0; i < 16U; ++i) {
-    if (drv_hall_is_pressed(i)) {
-      mask |= (uint16_t)(1U << i);
-    }
-  }
-  return mask;
+  /* Calibrate */
+  ADC1->CR &= ~ADC_CR_ADEN;
+  ADC1->CR |= ADC_CR_ADCAL;
+  while (ADC1->CR & ADC_CR_ADCAL);
+
+  /* Configure ADC */
+  ADC1->CFGR = 0;
+  ADC1->SMPR1 = ADC_SMPR1_SMP4_2 | ADC_SMPR1_SMP4_1; // long sample time ch4
+  ADC1->SQR1 = (4 << ADC_SQR1_SQ1_Pos); // channel 4 = PC4
+
+  /* Enable ADC */
+  ADC1->ISR |= ADC_ISR_ADRDY;
+  ADC1->CR |= ADC_CR_ADEN;
+  while (!(ADC1->ISR & ADC_ISR_ADRDY));
 }
 
-static THD_FUNCTION(hallTask, arg) {
-  (void)arg;
-  chRegSetThreadName("HallTask");
-  systime_t next_wake = chVTGetSystemTimeX();
-
-  while (!chThdShouldTerminateX()) {
-    drv_hall_task();
-    ui_model_set_hall_mask(build_hall_mask());
-    next_wake = chThdSleepUntilWindowed(next_wake,
-                                        next_wake + TIME_MS2I(HALL_TASK_PERIOD_MS));
-  }
-
-  chThdExit(MSG_OK);
+static uint16_t adc_read_once(void) {
+  ADC1->CR |= ADC_CR_ADSTART;
+  while (!(ADC1->ISR & ADC_ISR_EOC));
+  return ADC1->DR;
 }
 
-/* ====================================================================== */
-/*                          AFFICHAGE OLED                                */
-/* ====================================================================== */
-
-static void draw_hall_states(uint16_t hall_mask, uint32_t heartbeat) {
-  char line[16];
-
-  drv_display_clear();
-
-  for (uint8_t row = 0; row < 8; ++row) {
-    uint8_t left  = row;
-    uint8_t right = (uint8_t)(row + 8);
-    uint8_t y     = (uint8_t)(row * 8);
-
-    snprintf(line, sizeof(line),
-             "B%u:%s",
-             (unsigned)(left + 1U),
-             (hall_mask & (1U << left)) ? "ON " : "OFF");
-    drv_display_draw_text(0, y, line);
-
-    snprintf(line, sizeof(line),
-             "B%u:%s",
-             (unsigned)(right + 1U),
-             (hall_mask & (1U << right)) ? "ON " : "OFF");
-    drv_display_draw_text(64, y, line);
-  }
-
-  snprintf(line, sizeof(line), "U%lu", (unsigned long)heartbeat);
-  drv_display_draw_text(96, 56, line);
-
-  drv_display_update();
-}
-
-static THD_WORKING_AREA(waUiTask, 512);
-
-static THD_FUNCTION(uiTask, arg) {
-  (void)arg;
-  chRegSetThreadName("UiTask");
-  systime_t next_wake = chVTGetSystemTimeX();
-  uint16_t last_mask = 0xFFFFU;
-  uint8_t refresh_ticks = 0;
-  uint32_t heartbeat = 0;
-
-  while (!chThdShouldTerminateX()) {
-    uint16_t hall_mask = ui_model_get_hall_mask();
-    bool force_refresh = (refresh_ticks >= (UI_FORCE_REFRESH_MS / UI_TASK_PERIOD_MS));
-    if (hall_mask != last_mask || force_refresh) {
-      draw_hall_states(hall_mask, heartbeat);
-      last_mask = hall_mask;
-      refresh_ticks = 0;
-    } else {
-      refresh_ticks++;
-    }
-
-    heartbeat++;
-    next_wake = chThdSleepUntilWindowed(next_wake,
-                                        next_wake + TIME_MS2I(UI_TASK_PERIOD_MS));
-  }
-
-  chThdExit(MSG_OK);
-}
-
-/* ====================================================================== */
-/*                                MAIN                                    */
-/* ====================================================================== */
+/* ================== MAIN ================== */
 
 int main(void) {
-
   halInit();
   chSysInit();
 
-  /* Init drivers globaux (GPIO, SPI, etc.) */
   drivers_init_all();
+  drv_display_init();
 
-  /* Init Hall */
-  drv_hall_init();
+  /* PC4 analog */
+  palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
 
-  /* Thread Hall (lecture capteurs uniquement) */
-  chThdCreateStatic(waHallTask,
-                    sizeof(waHallTask),
-                    NORMALPRIO,
-                    hallTask,
-                    NULL);
+  adc_lowlevel_init();
 
-  /* Thread UI (OLED best-effort, basse priorité) */
-  chThdCreateStatic(waUiTask,
-                    sizeof(waUiTask),
-                    LOWPRIO,
-                    uiTask,
-                    NULL);
+  char line[32];
 
   while (true) {
-    chThdSleepMilliseconds(1000);
+    uint16_t v = adc_read_once();
+
+    drv_display_clear();
+    snprintf(line, sizeof(line), "ADC PC4: %u", v);
+    drv_display_draw_text(0, 0, line);
+    drv_display_update();
+
+    chThdSleepMilliseconds(200);
   }
 }
