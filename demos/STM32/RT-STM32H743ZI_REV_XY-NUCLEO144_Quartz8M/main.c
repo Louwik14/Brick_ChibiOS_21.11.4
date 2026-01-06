@@ -34,7 +34,7 @@ static const ADCConversionGroup adcgrpcfg = {
   .num_channels = 1,
   .end_cb = adc_dma_callback,
   .error_cb = NULL,
-  .cfgr = ADC_CFGR_CONT,
+  .cfgr = ADC_CFGR_CONT_ENABLED | ADC_CFGR_DMNGT_CIRCULAR | ADC_CFGR_RES_12BITS,
   .cfgr2 = 0U,
   .ccr = 0U,
   .pcsel = ADC_SELMASK_IN7,
@@ -47,11 +47,11 @@ static const ADCConversionGroup adcgrpcfg = {
   .awd2cr = 0U,
   .awd3cr = 0U,
   .smpr = {
-    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_640P5),
+    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_810P5),
     0U,
   },
   .sqr = {
-    ADC_SQR1_SQ1_N(ADC_CHANNEL_IN7),
+    ADC_SQR1_NUM_CH(1U) | ADC_SQR1_SQ1_N(ADC_CHANNEL_IN7),
     0U,
     0U,
     0U

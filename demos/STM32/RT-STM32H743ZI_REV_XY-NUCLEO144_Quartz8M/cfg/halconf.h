@@ -50,9 +50,10 @@
 /**
  * @brief   Enables the ADC subsystem.
  */
-#if !defined(HAL_USE_ADC) || defined(__DOXYGEN__)
-#define HAL_USE_ADC                         FALSE
+#if defined(HAL_USE_ADC)
+#undef HAL_USE_ADC
 #endif
+#define HAL_USE_ADC                         TRUE
 
 /**
  * @brief   Enables the CAN subsystem.
