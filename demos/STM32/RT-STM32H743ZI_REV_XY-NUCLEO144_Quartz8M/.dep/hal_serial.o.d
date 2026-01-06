@@ -89,7 +89,6 @@ build/obj/hal_serial.o: ../../../os/hal/src/hal_serial.c \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
  ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_sai.h \
- ../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h \
  ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
@@ -236,7 +235,6 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_pwm.h:
 ../../../os/hal/include/hal_rtc.h:
 ../../../os/hal/include/hal_sai.h:
-../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h:
 ../../../os/hal/include/hal_serial.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:

@@ -179,7 +179,7 @@
  * @brief   Enables the SAI subsystem.
  */
 #if !defined(HAL_USE_SAI) || defined(__DOXYGEN__)
-#define HAL_USE_SAI                         TRUE
+#define HAL_USE_SAI                         FALSE
 #endif
 
 /**
