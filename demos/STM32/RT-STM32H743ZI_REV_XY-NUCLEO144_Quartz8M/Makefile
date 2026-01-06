@@ -113,11 +113,7 @@ CSRC = $(ALLCSRC) \
        $(wildcard usb/*.c)\
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
-       $(wildcard audio/*.c) \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_dma.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_gpio.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai.c \
-       drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai_ex.c
+
        
 CPPSRC = $(ALLCPPSRC)
 ASMSRC = $(ALLASMSRC)
@@ -134,9 +130,7 @@ INCDIR += sdram
 INCDIR += mpu
 INCDIR += usb
 INCDIR += ui
-INCDIR += audio
-INCDIR += drivers/stm32h7xx-hal-driver/Inc
-INCDIR += drivers/stm32h7xx-hal-driver/Inc/Legacy
+
 
 
 ##############################################################################
