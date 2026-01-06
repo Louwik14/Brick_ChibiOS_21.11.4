@@ -114,7 +114,6 @@ CSRC = $(ALLCSRC) \
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
        $(wildcard audio/*.c) \
-       $(wildcard drivers/HallEffect/*.c) \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_dma.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_gpio.c \
        drivers/stm32h7xx-hal-driver/Src/stm32h7xx_hal_sai.c \
@@ -130,7 +129,6 @@ ASMXSRC = $(ALLXASMSRC)
 
 INCDIR = $(CONFDIR) $(ALLINC) $(TESTINC)
 INCDIR += drivers
-INCDIR += drivers/HallEffect
 INCDIR += midi
 INCDIR += sdram
 INCDIR += mpu
