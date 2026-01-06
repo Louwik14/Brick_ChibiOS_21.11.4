@@ -13,6 +13,7 @@
 #define ADC_DMAMUX_CHANNEL     DMAMUX1_Channel8
 #define ADC_DMAMUX_REQ         STM32_DMAMUX1_ADC1
 #define ADC_DMA_BUFFER_DEPTH   16U
+#define RCC_AHB1ENR_DMAMUX1EN  (1UL << 2U)
 
 /* DMA buffer: MUST be 32-byte aligned and in DMA-safe memory. */
 static uint16_t adc_dma_buf[ADC_DMA_BUFFER_DEPTH]
@@ -32,6 +33,7 @@ static void adc1_gpio_init(void) {
 static void adc1_dma_init(void) {
   /* Enable DMA2 clock. */
   RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
+  RCC->AHB1ENR |= RCC_AHB1ENR_DMAMUX1EN;
   (void)RCC->AHB1ENR;
 
   /* Disable the stream before reconfiguration. */
