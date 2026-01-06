@@ -80,11 +80,10 @@ build/obj/rt_test_root.o: ../../../test/rt/source/test/rt_test_root.c \
  ../../../os/hal/include/hal_pal.h \
  ../../../os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.h \
  ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h \
- ../../../os/hal/include/hal_adc.h \
- ../../../os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h \
- ../../../os/hal/include/hal_can.h ../../../os/hal/include/hal_crypto.h \
- ../../../os/hal/include/hal_dac.h ../../../os/hal/include/hal_efl.h \
- ../../../os/hal/include/hal_gpt.h ../../../os/hal/include/hal_i2c.h \
+ ../../../os/hal/include/hal_adc.h ../../../os/hal/include/hal_can.h \
+ ../../../os/hal/include/hal_crypto.h ../../../os/hal/include/hal_dac.h \
+ ../../../os/hal/include/hal_efl.h ../../../os/hal/include/hal_gpt.h \
+ ../../../os/hal/include/hal_i2c.h \
  ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
@@ -235,7 +234,6 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/GPIOv2/hal_pal_lld.h:
 ../../../os/hal/ports/STM32/LLD/GPIOv2/stm32_gpio.h:
 ../../../os/hal/include/hal_adc.h:
-../../../os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h:
 ../../../os/hal/include/hal_can.h:
 ../../../os/hal/include/hal_crypto.h:
 ../../../os/hal/include/hal_dac.h:

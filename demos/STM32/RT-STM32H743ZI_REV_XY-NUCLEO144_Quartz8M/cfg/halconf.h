@@ -53,7 +53,7 @@
 #if defined(HAL_USE_ADC)
 #undef HAL_USE_ADC
 #endif
-#define HAL_USE_ADC                         TRUE
+#define HAL_USE_ADC                         FALSE
 
 /**
  * @brief   Enables the CAN subsystem.

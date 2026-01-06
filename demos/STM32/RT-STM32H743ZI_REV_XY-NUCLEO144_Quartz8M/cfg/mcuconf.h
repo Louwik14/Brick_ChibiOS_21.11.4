@@ -118,7 +118,7 @@
 #define STM32_PLL3_FRACN_VALUE              0
 #define STM32_PLL3_DIVP_VALUE               4      /* SPI123 kernel = 72 MHz */
 #define STM32_PLL3_DIVQ_VALUE               6      /* unused */
-#define STM32_PLL3_DIVR_VALUE               16      /* ADC kernel = 36 MHz */
+#define STM32_PLL3_DIVR_VALUE               8      /* ADC kernel = 36 MHz */
 
 /*
  * Core clocks dynamic settings (can be changed at runtime).
