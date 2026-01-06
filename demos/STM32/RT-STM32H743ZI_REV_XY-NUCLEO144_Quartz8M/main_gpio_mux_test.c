@@ -9,9 +9,9 @@
 #define MUX_S2_LINE LINE_MXH_S2
 
 static void mux_set(uint8_t sel) {
-  palWriteLine(MUX_S0_LINE, (sel & 0x01U) != 0U);
-  palWriteLine(MUX_S1_LINE, (sel & 0x02U) != 0U);
-  palWriteLine(MUX_S2_LINE, (sel & 0x04U) != 0U);
+  palWriteLine(MUX_S0_LINE, (palbool_t)((sel & 0x01U) ? 1U : 0U));
+  palWriteLine(MUX_S1_LINE, (palbool_t)((sel & 0x02U) ? 1U : 0U));
+  palWriteLine(MUX_S2_LINE, (palbool_t)((sel & 0x04U) ? 1U : 0U));
 }
 
 int main(void) {
