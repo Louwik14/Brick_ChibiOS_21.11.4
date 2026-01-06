@@ -70,11 +70,22 @@ int main(void) {
 
   palSetPadMode(GPIOA, 7, PAL_MODE_INPUT_ANALOG);
 
-  /* Start ADC in continuous mode (DMA circular). */
-  adcStart(&ADCD1, &adccfg);
-  adcStartConversion(&ADCD1, &adcgrpcfg, adc_buf, 1);
-
   char line[32];
+
+  /* Start ADC in continuous mode (DMA circular). */
+  msg_t adc_start = adcStart(&ADCD1, &adccfg);
+  if ((adc_start != HAL_RET_SUCCESS) || (ADCD1.data.dma == NULL)) {
+    drv_display_clear();
+    drv_display_draw_text(0, 0, "ADC DMA START FAIL");
+    snprintf(line, sizeof(line), "ret=%ld", (long)adc_start);
+    drv_display_draw_text(0, 12, line);
+    drv_display_update();
+    while (true) {
+      chThdSleepMilliseconds(1000);
+    }
+  }
+
+  adcStartConversion(&ADCD1, &adcgrpcfg, adc_buf, 1);
 
   while (true) {
 
