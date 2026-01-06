@@ -99,8 +99,9 @@ static void adc1_init(void) {
   ADC1->SQR1 &= ~(ADC_SQR1_L_Msk | ADC_SQR1_SQ1_Msk);
   ADC1->SQR1 |= (ADC_CHANNEL << ADC_SQR1_SQ1_Pos);
 
-  /* Continuous conversion with DMA in circular mode. */
-  ADC1->CFGR |= ADC_CFGR_CONT | ADC_CFGR_DMAEN | ADC_CFGR_DMACFG;
+  /* Continuous conversion with DMA circular mode (DMNGT=0b10). */
+  ADC1->CFGR &= ~ADC_CFGR_DMNGT_Msk;
+  ADC1->CFGR |= ADC_CFGR_CONT | ADC_CFGR_DMNGT_1;
 
   /* Clear ready flag and enable ADC. */
   ADC1->ISR |= ADC_ISR_ADRDY;
