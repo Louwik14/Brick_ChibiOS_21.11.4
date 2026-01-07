@@ -34,6 +34,7 @@ Logique présente
 - Sélection de multiplexeur via GPIOA[4..6].
 - Lecture des deux ADC (MUXA/MUXB) pour obtenir 16 capteurs.
 - Stockage des valeurs brutes dans hall_values[].
+- Normalisation MIDI (0..127), états ON/OFF avec hystérésis, velocity/pressure.
 
 Ce qui est utilisé / obsolète
 -----------------------------
@@ -61,6 +62,36 @@ Ce qui est réécrit / modifié
   - Calcul MIDI_VALUE (mapping brut temporaire).
   - Ajout d’API getters dédiés.
 
+Analyse des causes réelles (constaté dans le code)
+-------------------------------------------------
+- Les constantes de calibration (HALL_RAW_REST/PRESSED, HALL_ON/OFF_THRESHOLD,
+  HALL_VELOCITY_MAX_DELTA) sont exprimées à l’échelle **4k..6k** alors que les
+  valeurs ADC observées en runtime sont ~36k..64k.
+- Conséquences directes :
+  - hall_map_to_midi() reçoit toujours une valeur **au-dessus du max** → MIDI = 127.
+  - HALL_ON_THRESHOLD trop bas → gate bloqué sur ON, OFF jamais atteint.
+  - HALL_VELOCITY_MAX_DELTA trop bas → velocity saturée à 127.
+
+Ce qui était incorrect
+----------------------
+- Échelle des seuils et des min/max de mapping non cohérente avec les valeurs ADC
+  réellement remontées (facteur x10).
+
+Ce qui a été corrigé
+-------------------
+- Les constantes ont été remises à l’échelle du signal ADC (x10) :
+  - HALL_RAW_REST ~36000
+  - HALL_RAW_PRESSED ~64000
+  - HALL_ON_THRESHOLD ~42000
+  - HALL_OFF_THRESHOLD ~40000
+  - HALL_VELOCITY_MAX_DELTA ~20000
+
+Pourquoi
+--------
+- Rétablir une plage utile pour la normalisation MIDI (0..127).
+- Réactiver l’hystérésis ON/OFF afin que l’état commute correctement.
+- Éviter une velocity systématiquement saturée.
+
 Ajouts récents (après modification)
 ----------------------------------
 - Nouvelles APIs dans drv_hall.h:
@@ -73,8 +104,8 @@ Ajouts récents (après modification)
   - debug ciblé sur B5 (index 4) avec affichage RAW/MIDI/ON-OFF/VEL/PRES.
   - envoi MIDI Note On/Off + Aftertouch par le main, sans dépendance Hall->MIDI.
 
-Pourquoi
---------
+Pourquoi (historique)
+---------------------
 - Respecter la contrainte: driver Hall autonome (pas de dépendance MIDI/USB).
 - Centraliser la logique musicale dans le driver Hall pour les 16 capteurs.
 - Fournir au main des états et valeurs normalisées pour l’envoi MIDI et le debug.
