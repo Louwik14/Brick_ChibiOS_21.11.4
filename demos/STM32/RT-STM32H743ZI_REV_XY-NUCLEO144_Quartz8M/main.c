@@ -4,6 +4,7 @@
 #include "drv_display.h"
 #include "drivers/HallEffect/drv_hall.h"
 #include "midi/midi.h"
+#include "usb/usb_device.h"
 #include <stdio.h>
 
 int main(void) {
@@ -14,6 +15,7 @@ int main(void) {
   drivers_init_all();
   drv_display_init();
   hall_init();
+  usb_device_start();
   midi_init();
 
   char line[32];
