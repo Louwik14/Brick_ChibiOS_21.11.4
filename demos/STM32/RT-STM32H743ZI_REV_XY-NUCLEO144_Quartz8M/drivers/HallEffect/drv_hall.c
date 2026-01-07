@@ -17,6 +17,7 @@
 #define HALL_RETRIGGER_DELTA    900U
 #define HALL_VELOCITY_RATE_MIN  500U
 #define HALL_VELOCITY_RATE_MAX  20000U
+#define HALL_TRIGGER_RATE       2500U
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -140,11 +141,12 @@ static uint8_t hall_map_to_midi(uint16_t value, uint16_t min, uint16_t max) {
 static uint32_t hall_compute_rate(uint16_t prev, uint16_t current, systime_t prev_time, systime_t now) {
   uint16_t delta = (current > prev) ? (uint16_t)(current - prev) : 0U;
   systime_t diff = chTimeDiffX(prev_time, now);
-  uint32_t elapsed_ms = TIME_I2MS(diff);
-  if (elapsed_ms == 0U) {
-    elapsed_ms = 1U;
+  uint32_t elapsed_us = TIME_I2US(diff);
+  if (elapsed_us == 0U) {
+    elapsed_us = 1U;
   }
-  return ((uint32_t)delta * 1000U) / elapsed_ms;
+  uint64_t scaled = (uint64_t)delta * 1000000ULL;
+  return (uint32_t)(scaled / elapsed_us);
 }
 
 static uint8_t hall_velocity_from_rate(uint32_t rate) {
@@ -186,7 +188,10 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
     hall_armed[index] = true;
   }
 
-  if (adjusted >= on_threshold && hall_armed[index]) {
+  bool fast_rise = rate >= HALL_TRIGGER_RATE;
+  bool threshold_crossed = adjusted >= on_threshold;
+
+  if ((threshold_crossed || (fast_rise && adjusted >= retrigger_threshold)) && hall_armed[index]) {
     hall_gate[index] = true;
     hall_note_on[index] = true;
     hall_velocity[index] = hall_velocity_from_rate(rate);

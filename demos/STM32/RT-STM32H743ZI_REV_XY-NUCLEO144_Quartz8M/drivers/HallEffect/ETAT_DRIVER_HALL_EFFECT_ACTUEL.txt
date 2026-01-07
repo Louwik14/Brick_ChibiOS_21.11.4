@@ -66,7 +66,7 @@ Analyse des causes réelles (constaté dans le code)
 -------------------------------------------------
 - La velocity était calculée sur une simple différence de deux samples consécutifs.
   Cette approche dépendait directement du polling rate et du timing du scan mux,
-  rendant la vélocité instable et la latence perceptible.
+  rendant la vélocité instable et la latence perceptible (résolution ms).
 - La logique NOTE ON/OFF reposait uniquement sur un gate binaire; sans mécanisme
   de réarmement explicite, un relâchement partiel pouvait empêcher un retrigger
   (la valeur ne repassait pas sous le seuil OFF).
@@ -81,11 +81,13 @@ Ce qui a été corrigé
 - Ajout d’un état par capteur:
   - valeur précédente + timestamp précédent.
   - drapeau d’armement pour autoriser un retrigger.
-- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps).
+- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps en microsecondes).
 - Seuils distincts pour:
   - NOTE ON (franchissement vers le haut),
   - OFF (hystérésis),
   - réarmement (retrigger sans retour complet au repos).
+- NOTE ON peut aussi se déclencher sur pente rapide (slope trigger) dès qu’un
+  front montant est détecté, sans attendre d’atteindre le seuil fixe.
 
 Pourquoi
 --------
