@@ -82,8 +82,8 @@ Ce qui a été corrigé
 - Les constantes ont été remises à l’échelle du signal ADC (x10) :
   - HALL_RAW_REST ~36000
   - HALL_RAW_PRESSED ~64000
-  - HALL_ON_THRESHOLD ~42000
-  - HALL_OFF_THRESHOLD ~40000
+  - HALL_ON_THRESHOLD ~40000
+  - HALL_HYSTERESIS ~1500 (OFF = ON - hysteresis)
   - HALL_VELOCITY_MAX_DELTA ~20000
 
 Pourquoi
@@ -91,6 +91,16 @@ Pourquoi
 - Rétablir une plage utile pour la normalisation MIDI (0..127).
 - Réactiver l’hystérésis ON/OFF afin que l’état commute correctement.
 - Éviter une velocity systématiquement saturée.
+- Déclencher plus tôt pour réduire la latence perçue.
+
+Clarification multi-capteurs (confusion B5)
+-------------------------------------------
+- Le driver Hall gère bien **16 capteurs** indépendants (boucle 0..15 dans
+  hall_update + états par canal).
+- La confusion « seule B5 fonctionne » venait du **main**, qui n’envoyait des
+  messages MIDI que pour l’index 4 (B5) tout en affichant B5 en debug.
+- Le correctif côté main envoie désormais les notes pour **tous les capteurs**,
+  tout en gardant l’affichage debug focalisé sur B5.
 
 Ajouts récents (après modification)
 ----------------------------------
