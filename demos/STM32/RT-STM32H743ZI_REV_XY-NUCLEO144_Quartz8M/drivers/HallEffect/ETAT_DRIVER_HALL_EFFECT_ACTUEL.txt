@@ -55,43 +55,43 @@ Ce qui est conservé
 
 Ce qui est réécrit / modifié
 ----------------------------
-- drv_hall.c / drv_hall.h: ajout d’une logique musicale générique 16 capteurs.
-  - Détection NOTE ON/OFF avec hystérésis.
-  - Calcul VELOCITY (vitesse d’évolution à l’attaque).
+- drv_hall.c / drv_hall.h: logique musicale réécrite.
+  - Détection NOTE ON/OFF avec hystérésis et réarmement explicite.
+  - Calcul VELOCITY basé sur la dérivée temporelle (Δvaleur / Δtemps).
   - Calcul PRESSURE (valeur continue normalisée 0..127).
   - Calcul MIDI_VALUE (mapping brut temporaire).
-  - Ajout d’API getters dédiés.
+  - Ajout d’états par capteur (temps précédent, valeur précédente, armement).
 
 Analyse des causes réelles (constaté dans le code)
 -------------------------------------------------
-- Les constantes de calibration (HALL_RAW_REST/PRESSED, HALL_ON/OFF_THRESHOLD,
-  HALL_VELOCITY_MAX_DELTA) sont exprimées à l’échelle **4k..6k** alors que les
-  valeurs ADC observées en runtime sont ~36k..64k.
-- Conséquences directes :
-  - hall_map_to_midi() reçoit toujours une valeur **au-dessus du max** → MIDI = 127.
-  - HALL_ON_THRESHOLD trop bas → gate bloqué sur ON, OFF jamais atteint.
-  - HALL_VELOCITY_MAX_DELTA trop bas → velocity saturée à 127.
+- La velocity était calculée sur une simple différence de deux samples consécutifs.
+  Cette approche dépendait directement du polling rate et du timing du scan mux,
+  rendant la vélocité instable et la latence perceptible.
+- La logique NOTE ON/OFF reposait uniquement sur un gate binaire; sans mécanisme
+  de réarmement explicite, un relâchement partiel pouvait empêcher un retrigger
+  (la valeur ne repassait pas sous le seuil OFF).
 
 Ce qui était incorrect
 ----------------------
-- Échelle des seuils et des min/max de mapping non cohérente avec les valeurs ADC
-  réellement remontées (facteur x10).
+- Calcul de velocity basé sur Δvaleur sans Δtemps (dépendant du polling).
+- Réarmement implicite uniquement via franchissement du seuil OFF → retriggers ratés.
 
 Ce qui a été corrigé
 -------------------
-- Les constantes ont été remises à l’échelle du signal ADC (x10) :
-  - HALL_RAW_REST ~36000
-  - HALL_RAW_PRESSED ~64000
-  - HALL_ON_THRESHOLD ~40000
-  - HALL_HYSTERESIS ~1500 (OFF = ON - hysteresis)
-  - HALL_VELOCITY_MAX_DELTA ~20000
+- Ajout d’un état par capteur:
+  - valeur précédente + timestamp précédent.
+  - drapeau d’armement pour autoriser un retrigger.
+- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps).
+- Seuils distincts pour:
+  - NOTE ON (franchissement vers le haut),
+  - OFF (hystérésis),
+  - réarmement (retrigger sans retour complet au repos).
 
 Pourquoi
 --------
-- Rétablir une plage utile pour la normalisation MIDI (0..127).
-- Réactiver l’hystérésis ON/OFF afin que l’état commute correctement.
-- Éviter une velocity systématiquement saturée.
-- Déclencher plus tôt pour réduire la latence perçue.
+- Stabiliser la vélocité (indépendante du polling).
+- Supprimer la latence perçue à l’attaque.
+- Autoriser les retriggers même sans retour complet à zéro.
 
 Clarification multi-capteurs (confusion B5)
 -------------------------------------------
