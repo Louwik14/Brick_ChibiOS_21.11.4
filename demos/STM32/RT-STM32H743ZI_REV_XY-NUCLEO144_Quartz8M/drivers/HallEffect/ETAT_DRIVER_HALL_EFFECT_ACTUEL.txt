@@ -1,0 +1,80 @@
+ETAT DRIVER HALL EFFECT ACTUEL
+==============================
+
+Fichiers audités
+----------------
+- drivers/HallEffect/drv_hall.c
+- drivers/HallEffect/drv_hall.h
+- drivers/HallEffect/brick_asc.c
+- drivers/HallEffect/brick_asc.h
+- drivers/HallEffect/brick_cal.c
+- drivers/HallEffect/brick_cal.h
+
+Fonctions existantes (avant modification)
+----------------------------------------
+- drv_hall.c / drv_hall.h
+  - hall_init(): initialise ADC, DMA, GPIO des multiplexeurs et démarre la conversion.
+  - hall_update(): scanne les 8 positions des mux, remplit un tableau brut de 16 valeurs.
+  - hall_get(i): renvoie la valeur brute d’un capteur.
+  - Logique uniquement ADC/DMA + scan mux (pas de logique musicale).
+
+- brick_asc.c / brick_asc.h
+  - brick_asc_array_set_factors(): configure le lissage (moyenne mobile) par canal.
+  - brick_asc_process(): applique le lissage et renvoie quand le buffer est plein.
+  - Utilisation actuelle: aucune dans le driver Hall (potentiel futur pour filtrage).
+
+- brick_cal.c / brick_cal.h
+  - brick_cal_pot_*(): infrastructure de calibration (min/max/détent).
+  - brick_cal_state global disponible pour un usage optionnel.
+  - Utilisation actuelle: aucune dans le driver Hall.
+
+Logique présente
+---------------
+- Acquisition ADC + DMA en mode continu.
+- Sélection de multiplexeur via GPIOA[4..6].
+- Lecture des deux ADC (MUXA/MUXB) pour obtenir 16 capteurs.
+- Stockage des valeurs brutes dans hall_values[].
+
+Ce qui est utilisé / obsolète
+-----------------------------
+- Utilisé: l’ensemble ADC/DMA, mux_select(), hall_init(), hall_update(), hall_get().
+- Obsolète dans l’état actuel: aucune suppression immédiate.
+- Non utilisé actuellement mais conservé: brick_asc.*, brick_cal.* (prévu pour futur filtrage/calibration).
+
+Ce qui peut être supprimé
+-------------------------
+- Rien pour l’instant. Les modules brick_asc/brick_cal restent utiles pour les étapes
+  futures (filtrage et auto-calibration).
+
+Ce qui est conservé
+-------------------
+- L’architecture ADC/DMA + scan mux.
+- hall_init(), hall_update(), hall_get().
+- Les modules brick_asc.* et brick_cal.* tels quels.
+
+Ce qui est réécrit / modifié
+----------------------------
+- drv_hall.c / drv_hall.h: ajout d’une logique musicale générique 16 capteurs.
+  - Détection NOTE ON/OFF avec hystérésis.
+  - Calcul VELOCITY (vitesse d’évolution à l’attaque).
+  - Calcul PRESSURE (valeur continue normalisée 0..127).
+  - Calcul MIDI_VALUE (mapping brut temporaire).
+  - Ajout d’API getters dédiés.
+
+Ajouts récents (après modification)
+----------------------------------
+- Nouvelles APIs dans drv_hall.h:
+  - hall_get_note_on(), hall_get_note_off(), hall_get_velocity(),
+    hall_get_pressure(), hall_get_midi_value().
+- Nouvelles structures internes dans drv_hall.c:
+  - états note on/off, vélocité, pression, midi_value, gate par capteur.
+  - seuils ON/OFF + mapping analogique -> MIDI.
+- main.c:
+  - debug ciblé sur B5 (index 4) avec affichage RAW/MIDI/ON-OFF/VEL/PRES.
+  - envoi MIDI Note On/Off + Aftertouch par le main, sans dépendance Hall->MIDI.
+
+Pourquoi
+--------
+- Respecter la contrainte: driver Hall autonome (pas de dépendance MIDI/USB).
+- Centraliser la logique musicale dans le driver Hall pour les 16 capteurs.
+- Fournir au main des états et valeurs normalisées pour l’envoi MIDI et le debug.
