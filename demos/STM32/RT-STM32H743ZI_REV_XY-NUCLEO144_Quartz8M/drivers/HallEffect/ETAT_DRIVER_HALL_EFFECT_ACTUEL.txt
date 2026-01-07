@@ -64,36 +64,56 @@ Ce qui est réécrit / modifié
 
 Analyse des causes réelles (constaté dans le code)
 -------------------------------------------------
+- La boucle de scan imposait une attente de 2 ms par position de mux, ajoutant
+  une latence perceptible et ralentissant artificiellement la boucle.
 - La velocity était calculée sur une simple différence de deux samples consécutifs.
   Cette approche dépendait directement du polling rate et du timing du scan mux,
-  rendant la vélocité instable et la latence perceptible (résolution ms).
-- La logique NOTE ON/OFF reposait uniquement sur un gate binaire; sans mécanisme
-  de réarmement explicite, un relâchement partiel pouvait empêcher un retrigger
-  (la valeur ne repassait pas sous le seuil OFF).
+  rendant la vélocité instable et très agressive.
+- La logique NOTE ON/OFF attendait un seuil de position fixe à l’attaque; cela
+  retardait le déclenchement et manquait les attaques rapides.
+- Le réarmement n’autorisait pas de retrigger si la touche ne repassait pas sous
+  un seuil suffisamment bas.
 
 Ce qui était incorrect
 ----------------------
+- Scan mux ralenti par un délai millisecondes (latence cumulée).
 - Calcul de velocity basé sur Δvaleur sans Δtemps (dépendant du polling).
+- NOTE ON basé sur un seuil de position au lieu de la pente d’attaque.
 - Réarmement implicite uniquement via franchissement du seuil OFF → retriggers ratés.
 
 Ce qui a été corrigé
 -------------------
+- Scan mux accéléré: remplacement du délai millisecondes par une pause microsecondes.
+- Temps d’échantillonnage ADC réduit pour diminuer la latence globale.
 - Ajout d’un état par capteur:
   - valeur précédente + timestamp précédent.
   - drapeau d’armement pour autoriser un retrigger.
-- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps en microsecondes).
-- Seuils distincts pour:
-  - NOTE ON (franchissement vers le haut),
+  - filtre simple sur la dérivée pour stabiliser la vélocité.
+- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps en microsecondes),
+  avec normalisation plus douce vers 1..127.
+- Seuils de position utilisés uniquement pour:
   - OFF (hystérésis),
-  - réarmement (retrigger sans retour complet au repos).
-- NOTE ON peut aussi se déclencher sur pente rapide (slope trigger) dès qu’un
-  front montant est détecté, sans attendre d’atteindre le seuil fixe.
+  - réarmement (retrigger sans retour complet au repos),
+  - pression.
+- NOTE ON déclenché sur pente rapide (slope trigger) dès qu’un front montant est détecté,
+  sans attendre d’atteindre un seuil fixe.
 
 Pourquoi
 --------
 - Stabiliser la vélocité (indépendante du polling).
-- Supprimer la latence perçue à l’attaque.
+- Supprimer la latence perçue à l’attaque et accélérer la boucle de scan.
 - Autoriser les retriggers même sans retour complet à zéro.
+
+Paramètres réglables (nouveaux ou clarifiés)
+--------------------------------------------
+- HALL_VELOCITY_RATE_MIN / HALL_VELOCITY_RATE_MAX:
+  bornes de normalisation de la vélocité (adapter au capteur).
+- HALL_TRIGGER_RATE:
+  seuil de pente minimale pour déclencher un NOTE ON.
+- HALL_RATE_FILTER_SHIFT:
+  force du lissage de la dérivée (2 = filtre simple 1/4).
+- HALL_RETRIGGER_DELTA / HALL_HYSTERESIS:
+  seuils de réarmement et OFF indépendants.
 
 Clarification multi-capteurs (confusion B5)
 -------------------------------------------

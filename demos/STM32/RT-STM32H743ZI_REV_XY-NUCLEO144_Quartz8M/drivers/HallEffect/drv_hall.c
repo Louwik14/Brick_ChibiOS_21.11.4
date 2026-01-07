@@ -15,9 +15,10 @@
 #define HALL_ON_THRESHOLD       40000U
 #define HALL_HYSTERESIS         1500U
 #define HALL_RETRIGGER_DELTA    900U
-#define HALL_VELOCITY_RATE_MIN  500U
-#define HALL_VELOCITY_RATE_MAX  200000U
+#define HALL_VELOCITY_RATE_MIN  800U
+#define HALL_VELOCITY_RATE_MAX  120000U
 #define HALL_TRIGGER_RATE       2500U
+#define HALL_RATE_FILTER_SHIFT  2U
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -45,6 +46,7 @@ static uint8_t hall_velocity[HALL_SENSOR_COUNT];
 static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
+static uint32_t hall_rate_filtered[HALL_SENSOR_COUNT];
 static bool hall_initialized;
 
 static void adc_cb(ADCDriver *adcp) {
@@ -73,8 +75,8 @@ static const ADCConversionGroup adcgrpcfg = {
   .pcsel        = ADC_PCSEL,
 
   .smpr         = {
-    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_384P5) |
-    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_384P5),
+    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_47P5) |
+    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_47P5),
     0
   },
 
@@ -149,6 +151,13 @@ static uint32_t hall_compute_rate(uint16_t prev, uint16_t current, systime_t pre
   return (uint32_t)(scaled / elapsed_us);
 }
 
+static uint32_t hall_filter_rate(uint8_t index, uint32_t rate) {
+  uint32_t prev = hall_rate_filtered[index];
+  uint32_t filtered = (prev * ((1U << HALL_RATE_FILTER_SHIFT) - 1U) + rate) >> HALL_RATE_FILTER_SHIFT;
+  hall_rate_filtered[index] = filtered;
+  return filtered;
+}
+
 static uint8_t hall_velocity_from_rate(uint32_t rate) {
   if (rate <= HALL_VELOCITY_RATE_MIN) {
     return 1U;
@@ -170,6 +179,7 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
     prev_time = now;
   }
   uint32_t rate = hall_compute_rate(prev, adjusted, prev_time, now);
+  uint32_t filtered_rate = hall_filter_rate(index, rate);
   hall_prev_values[index] = adjusted;
   hall_prev_times[index] = now;
 
@@ -184,17 +194,16 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
 
-  if (adjusted <= retrigger_threshold) {
+  if (adjusted <= off_threshold || adjusted <= retrigger_threshold) {
     hall_armed[index] = true;
   }
 
   bool fast_rise = rate >= HALL_TRIGGER_RATE;
-  bool threshold_crossed = adjusted >= on_threshold;
 
-  if ((threshold_crossed || (fast_rise && adjusted >= retrigger_threshold)) && hall_armed[index]) {
+  if (fast_rise && hall_armed[index]) {
     hall_gate[index] = true;
     hall_note_on[index] = true;
-    hall_velocity[index] = hall_velocity_from_rate(rate);
+    hall_velocity[index] = hall_velocity_from_rate(filtered_rate);
     hall_armed[index] = false;
   }
 
@@ -238,6 +247,7 @@ void hall_init(void) {
     hall_velocity[i] = 0U;
     hall_pressure[i] = 0U;
     hall_midi_value[i] = 0U;
+    hall_rate_filtered[i] = 0U;
   }
 
   adcStart(&ADCD1, NULL);
@@ -254,7 +264,7 @@ void hall_update(void) {
 
   for (uint8_t mux_ch = 0; mux_ch < 8U; mux_ch++) {
     mux_select(mux_ch);
-    chThdSleepMilliseconds(2);
+    chThdSleepMicroseconds(20);
 
     uint16_t vA;
     uint16_t vB;
