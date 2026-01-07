@@ -113,6 +113,8 @@ CSRC = $(ALLCSRC) \
        $(wildcard usb/*.c)\
        $(wildcard ui/*.c)\
        $(wildcard sdram/*.c) \
+       $(wildcard drivers/HallEffect/*.c) \
+       
 
        
 CPPSRC = $(ALLCPPSRC)
@@ -130,6 +132,7 @@ INCDIR += sdram
 INCDIR += mpu
 INCDIR += usb
 INCDIR += ui
+INCDIR += drivers/HallEffect
 
 
 
