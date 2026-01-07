@@ -8,12 +8,13 @@
 #define ADC_NUM_CHANNELS        2
 #define ADC_DMA_DEPTH          16
 
-#define HALL_SENSOR_COUNT      16U
-#define HALL_RAW_REST          3600U
-#define HALL_RAW_PRESSED       6400U
-#define HALL_ON_THRESHOLD      4200U
-#define HALL_OFF_THRESHOLD     4000U
-#define HALL_VELOCITY_MAX_DELTA 2000U
+#define HALL_SENSOR_COUNT       16U
+/* Paramètres réglables (échelle ADC 16-bit). */
+#define HALL_RAW_REST           36000U
+#define HALL_RAW_PRESSED        64000U
+#define HALL_ON_THRESHOLD       40000U
+#define HALL_HYSTERESIS         1500U
+#define HALL_VELOCITY_MAX_DELTA 20000U
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -151,7 +152,7 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
   hall_prev_values[index] = adjusted;
 
   uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
-  uint16_t off_threshold = clamp_u16((int32_t)HALL_OFF_THRESHOLD + offset);
+  uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
   uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
   uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
   if (max_value <= min_value) {
