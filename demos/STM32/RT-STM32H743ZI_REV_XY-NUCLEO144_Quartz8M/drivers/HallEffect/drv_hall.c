@@ -47,26 +47,41 @@ static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
 static uint8_t hall_mux_index;
+static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
+static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
+static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
+static uint16_t hall_dbg_retrigger_threshold[HALL_SENSOR_COUNT];
+static uint32_t hall_dbg_rate[HALL_SENSOR_COUNT];
+static bool hall_dbg_armed[HALL_SENSOR_COUNT];
+static bool hall_dbg_gate[HALL_SENSOR_COUNT];
 
 static void mux_select(uint8_t ch);
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
 
-static void adc_cb(ADCDriver *adcp) {
-  size_t base_index = 0U;
-  if (adcIsBufferComplete(adcp)) {
-    base_index = (adcp->depth - 1U) * ADC_NUM_CHANNELS;
-  } else if (adcp->depth > 1U) {
-    size_t half_depth = adcp->depth / 2U;
-    base_index = (half_depth - 1U) * ADC_NUM_CHANNELS;
-  }
+/*
+ * "Timer clock in Hz." and "TIM CR2 register initialization data."
+ * (os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.h).
+ * "MMS = 010 = TRGO on Update Event." (testhal/STM32/multi/ADC/cfg/stm32h743zi_nucleo144/portab.c)
+ */
+static const GPTConfig hall_gptcfg = {
+  .frequency    = STM32_TIMCLK1,
+  .callback     = NULL,
+  .cr2          = TIM_CR2_MMS_1,
+  .dier         = 0U
+};
 
-  uint16_t vA = adc_buffer[base_index + 0U];
-  uint16_t vB = adc_buffer[base_index + 1U];
+static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 20000U);
+
+static void adc_cb(ADCDriver *adcp) {
+  (void)adcp;
+  uint16_t vA = adc_buffer[0U];
+  uint16_t vB = adc_buffer[1U];
   uint8_t mux_ch = hall_mux_index;
 
   hall_values[mux_ch + 0U] = vA;
   hall_values[mux_ch + 8U] = vB;
 
+  /* "This function can be called from any context" (os/rt/include/chvt.h). */
   systime_t now = chVTGetSystemTimeX();
   hall_process_channel(mux_ch + 0U, vA, now);
   hall_process_channel(mux_ch + 8U, vB, now);
@@ -81,7 +96,17 @@ static const ADCConversionGroup adcgrpcfg = {
   .end_cb       = adc_cb,
   .error_cb     = NULL,
 
-  .cfgr         = ADC_CFGR_CONT,
+  /*
+   * "Callback function associated to the group." (os/hal/include/hal_adc.h)
+   * "NOTE: The bits ADC_CFGR_CONT or ADC_CFGR_DISCEN must be specified
+   * in continuous mode or if the buffer depth is greater than one."
+   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h)
+   * "If circular buffer depth > 1, then the half transfer interrupt is
+   * enabled in order to allow streaming processing."
+   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.c)
+   */
+  .cfgr         = ADC_CFGR_EXTEN_RISING |
+                  ADC_CFGR_EXTSEL_SRC(12), /* "TIM4_TRGO" (testhal/.../portab.c) */
   .cfgr2        = 0,
 
   .ltr1         = 0,
@@ -202,12 +227,18 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
 
-  if (adjusted <= retrigger_threshold) {
+  hall_dbg_adjusted[index] = adjusted;
+  hall_dbg_on_threshold[index] = on_threshold;
+  hall_dbg_off_threshold[index] = off_threshold;
+  hall_dbg_retrigger_threshold[index] = retrigger_threshold;
+  hall_dbg_rate[index] = rate;
+
+  if ((prev > retrigger_threshold) && (adjusted <= retrigger_threshold)) {
     hall_armed[index] = true;
   }
 
   bool fast_rise = rate >= HALL_TRIGGER_RATE;
-  bool threshold_crossed = adjusted >= on_threshold;
+  bool threshold_crossed = (prev < on_threshold) && (adjusted >= on_threshold);
 
   if ((threshold_crossed || (fast_rise && adjusted >= retrigger_threshold)) && hall_armed[index]) {
     hall_gate[index] = true;
@@ -216,7 +247,7 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
     hall_armed[index] = false;
   }
 
-  if (hall_gate[index] && adjusted <= off_threshold) {
+  if (hall_gate[index] && (prev > off_threshold) && (adjusted <= off_threshold)) {
     hall_gate[index] = false;
     hall_note_off[index] = true;
     hall_armed[index] = true;
@@ -227,6 +258,9 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   } else {
     hall_pressure[index] = 0U;
   }
+
+  hall_dbg_armed[index] = hall_armed[index];
+  hall_dbg_gate[index] = hall_gate[index];
 }
 
 void hall_init(void) {
@@ -261,8 +295,12 @@ void hall_init(void) {
   hall_mux_index = 0U;
   mux_select(hall_mux_index);
 
+  gptStart(&GPTD4, &hall_gptcfg);
+
   adcStart(&ADCD1, NULL);
   adcStartConversion(&ADCD1, &adcgrpcfg, adc_buffer, ADC_DMA_DEPTH);
+
+  gptStartContinuous(&GPTD4, hall_gpt_interval);
 
   hall_initialized = true;
 }

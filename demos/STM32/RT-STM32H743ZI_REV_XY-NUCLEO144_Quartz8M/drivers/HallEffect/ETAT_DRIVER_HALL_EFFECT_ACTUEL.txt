@@ -14,7 +14,8 @@ Fonctions existantes (après modification)
 ----------------------------------------
 - drv_hall.c / drv_hall.h
   - hall_init(): initialise ADC, DMA, GPIO des multiplexeurs, sélectionne le
-    premier canal MUX et démarre la conversion continue.
+    premier canal MUX, démarre le timer matériel (20 kHz) et la conversion ADC
+    déclenchée par trigger externe.
   - hall_update(): ne scanne plus le MUX. Cette fonction ne fait que remettre à
     zéro les drapeaux NOTE ON/OFF consommés par l'application.
   - hall_get(i): renvoie la valeur brute d’un capteur.
@@ -41,25 +42,40 @@ Architecture précédente (polling)
 - Cette boucle était dépendante de la charge CPU et de la cadence d'appel de
   hall_update(), donc non déterministe et sensible au jitter.
 
-Nouvelle architecture (DMA + IRQ)
----------------------------------
-- Le callback ADC end_cb est l'unique moteur d'échantillonnage.
-- La conversion est en mode circulaire DMA, et end_cb est appelé par l'ISR DMA:
-  - demi-buffer (HT) et buffer complet (TC) dans hal_adc_lld.c.
-  - le macro adcIsBufferComplete() permet de savoir si le callback est déclenché
-    sur demi-buffer ou buffer complet (hal_adc.h).
-- Le driver utilise une profondeur DMA minimale (depth = 1):
-  - un buffer de 2 samples (MUXA/MUXB),
-  - un seul callback par groupe de conversion.
+Nouvelle architecture (Timer → ADC → DMA → IRQ)
+-----------------------------------------------
+- Un timer matériel déclenche l'ADC à 20 kHz:
+  - configuration GPT via hal_gpt_lld.h (GPTConfig.frequency/CR2).
+  - TRGO sur update event (TIM_CR2_MMS_1) conformément à l'exemple
+    STM32H743 dans testhal/STM32/multi/ADC/cfg/stm32h743zi_nucleo144/portab.c.
+- L'ADC est déclenché en externe via CFGR:
+  - ADC_CFGR_EXTEN_RISING + ADC_CFGR_EXTSEL_SRC(12) (TIM4_TRGO).
+  - Toujours en DMA circulaire (pipeline ADC + DMA intact).
+- Le callback ADC end_cb est l'unique moteur d'échantillonnage:
+  - LLD ADC: « If circular buffer depth > 1, then the half transfer interrupt
+    is enabled in order to allow streaming processing. » (hal_adc_lld.c)
+  - depth = 1 → un seul callback par conversion.
 - Dans end_cb:
-  - lecture du dernier échantillon DMA,
+  - lecture du buffer DMA (2 samples MUXA/MUXB),
   - traitement des deux Hall (mux_ch et mux_ch+8),
-  - incrément du MUX et sélection du canal suivant.
-- Aucun chThdSleepMicroseconds(), pas de polling: la boucle est non bloquante.
+  - avance du MUX et sélection du canal suivant.
+- Aucun chThdSleepMicroseconds(), pas de polling: la boucle est non bloquante
+  et déterministe.
+
+Mécanismes ChibiOS utilisés (références)
+----------------------------------------
+- ADCConversionGroup (hal_adc.h): structure "Conversion group configuration"
+  + callback end_cb pour le traitement en IRQ.
+- ADC LLD (hal_adc_lld.c/.h, ADCv4): configuration CFGR + DMA circulaire,
+  end_cb déclenché par l'ISR DMA sur transfert complet.
+- GPT LLD (hal_gpt_lld.h/.c, TIMv1): timer matériel et champ CR2 (TRGO).
+- ST driver (hal_st.h): API de timer système (stGetCounter/stStartAlarm),
+  non utilisée pour l'acquisition; l'horloge d'échantillonnage est fournie
+  par GPT.
 
 Logique présente
 ---------------
-- Acquisition ADC + DMA en mode continu.
+- Acquisition ADC + DMA avec trigger externe (timer 20 kHz).
 - Sélection de multiplexeur via GPIOA[4..6].
 - Lecture des deux ADC (MUXA/MUXB) pour obtenir 16 capteurs.
 - Stockage des valeurs brutes dans hall_values[].
@@ -79,7 +95,7 @@ Ce qui peut être supprimé
 
 Ce qui est conservé
 -------------------
-- L’architecture ADC/DMA (conversion continue) et la configuration analogique.
+- L’architecture ADC/DMA et la configuration analogique (canaux, SMPR, PCSEL).
 - mux_select() et le pinout MUX.
 - hall_init(), hall_update(), hall_get().
 - Les modules brick_asc.* et brick_cal.* tels quels.
@@ -106,17 +122,28 @@ Ce qui était incorrect
 
 Ce qui a été corrigé
 -------------------
-- Passage à une architecture IRQ-driven:
-  - end_cb appelé par l'ISR DMA sur transfert complet (et demi-buffer si depth > 1).
-  - lecture de l'échantillon dans le buffer DMA (index basé sur adcIsBufferComplete).
+- Passage à une architecture timer-driven et IRQ-driven:
+  - Timer (20 kHz) → ADC (trigger externe) → DMA → IRQ → Hall processing → MUX.
+  - end_cb appelé à chaque conversion DMA (depth = 1).
   - avance du MUX dans l'ISR, sans attente active.
-- Latence réduite et plus stable (toute la chaîne est déclenchée par le DMA).
+- Latence réduite et plus stable (toute la chaîne est déclenchée par le timer).
+- Correction de la logique NOTE ON/OFF:
+  - Avant: conditions basées uniquement sur la valeur instantanée (pas de
+    détection de franchissement), donc si le signal ne repassait pas sous
+    retrigger_threshold entre deux scans, hall_armed restait à false et
+    NOTE ON n'était jamais autorisé.
+  - Après: détection de franchissement (prev -> current) pour ON/OFF et
+    réarmement uniquement sur passage sous retrigger_threshold.
+  - Des variables de debug (adjusted / thresholds / rate / armed / gate)
+    sont stockées pour inspection au debugger et valider les seuils.
 
 Pourquoi
 --------
 - Réduire la latence et le jitter (traitement immédiat à chaque conversion).
-- Garantir une cadence déterministe, indépendante de la charge CPU.
-- Rendre l'acquisition compatible avec d'autres DMA haute priorité (audio).
+- Garantir une cadence déterministe (20 kHz fixe), indépendante de la charge CPU.
+- Assurer une charge CPU bornée et compatible avec les DMA haute priorité (audio).
+- Rendre les événements NOTE ON/OFF fiables même en cas de variations rapides
+  autour des seuils (détection de franchissement).
 
 Paramètres réglables (nouveaux ou clarifiés)
 --------------------------------------------
