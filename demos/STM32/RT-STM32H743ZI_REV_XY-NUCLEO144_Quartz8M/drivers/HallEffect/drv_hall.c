@@ -51,17 +51,24 @@ static uint8_t hall_mux_index;
 static void mux_select(uint8_t ch);
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
 
-static void adc_cb(ADCDriver *adcp) {
-  size_t base_index = 0U;
-  if (adcIsBufferComplete(adcp)) {
-    base_index = (adcp->depth - 1U) * ADC_NUM_CHANNELS;
-  } else if (adcp->depth > 1U) {
-    size_t half_depth = adcp->depth / 2U;
-    base_index = (half_depth - 1U) * ADC_NUM_CHANNELS;
-  }
+/*
+ * "Timer clock in Hz." and "TIM CR2 register initialization data."
+ * (os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.h).
+ * "MMS = 010 = TRGO on Update Event." (testhal/STM32/multi/ADC/cfg/stm32h743zi_nucleo144/portab.c)
+ */
+static const GPTConfig hall_gptcfg = {
+  .frequency    = STM32_TIMCLK1,
+  .callback     = NULL,
+  .cr2          = TIM_CR2_MMS_1,
+  .dier         = 0U
+};
 
-  uint16_t vA = adc_buffer[base_index + 0U];
-  uint16_t vB = adc_buffer[base_index + 1U];
+static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 20000U);
+
+static void adc_cb(ADCDriver *adcp) {
+  (void)adcp;
+  uint16_t vA = adc_buffer[0U];
+  uint16_t vB = adc_buffer[1U];
   uint8_t mux_ch = hall_mux_index;
 
   hall_values[mux_ch + 0U] = vA;
@@ -81,7 +88,17 @@ static const ADCConversionGroup adcgrpcfg = {
   .end_cb       = adc_cb,
   .error_cb     = NULL,
 
-  .cfgr         = ADC_CFGR_CONT,
+  /*
+   * "Callback function associated to the group." (os/hal/include/hal_adc.h)
+   * "NOTE: The bits ADC_CFGR_CONT or ADC_CFGR_DISCEN must be specified
+   * in continuous mode or if the buffer depth is greater than one."
+   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h)
+   * "If circular buffer depth > 1, then the half transfer interrupt is
+   * enabled in order to allow streaming processing."
+   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.c)
+   */
+  .cfgr         = ADC_CFGR_EXTEN_RISING |
+                  ADC_CFGR_EXTSEL_SRC(12), /* "TIM4_TRGO" (testhal/.../portab.c) */
   .cfgr2        = 0,
 
   .ltr1         = 0,
@@ -261,8 +278,12 @@ void hall_init(void) {
   hall_mux_index = 0U;
   mux_select(hall_mux_index);
 
+  gptStart(&GPTD4, &hall_gptcfg);
+
   adcStart(&ADCD1, NULL);
   adcStartConversion(&ADCD1, &adcgrpcfg, adc_buffer, ADC_DMA_DEPTH);
+
+  gptStartContinuous(&GPTD4, hall_gpt_interval);
 
   hall_initialized = true;
 }
