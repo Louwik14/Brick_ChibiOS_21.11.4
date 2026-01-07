@@ -6,7 +6,7 @@
 #include <limits.h>
 
 #define ADC_NUM_CHANNELS        2
-#define ADC_DMA_DEPTH          16
+#define ADC_DMA_DEPTH           1
 
 #define HALL_SENSOR_COUNT       16U
 /* Paramètres réglables (échelle ADC 16-bit). */
@@ -46,9 +46,33 @@ static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
+static uint8_t hall_mux_index;
+
+static void mux_select(uint8_t ch);
+static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
 
 static void adc_cb(ADCDriver *adcp) {
-  (void)adcp;
+  size_t base_index = 0U;
+  if (adcIsBufferComplete(adcp)) {
+    base_index = (adcp->depth - 1U) * ADC_NUM_CHANNELS;
+  } else if (adcp->depth > 1U) {
+    size_t half_depth = adcp->depth / 2U;
+    base_index = (half_depth - 1U) * ADC_NUM_CHANNELS;
+  }
+
+  uint16_t vA = adc_buffer[base_index + 0U];
+  uint16_t vB = adc_buffer[base_index + 1U];
+  uint8_t mux_ch = hall_mux_index;
+
+  hall_values[mux_ch + 0U] = vA;
+  hall_values[mux_ch + 8U] = vB;
+
+  systime_t now = chVTGetSystemTimeX();
+  hall_process_channel(mux_ch + 0U, vA, now);
+  hall_process_channel(mux_ch + 8U, vB, now);
+
+  hall_mux_index = (uint8_t)((mux_ch + 1U) & 0x7U);
+  mux_select(hall_mux_index);
 }
 
 static const ADCConversionGroup adcgrpcfg = {
@@ -91,12 +115,6 @@ static void mux_select(uint8_t ch) {
   palWritePad(MUX_S0_PORT, MUX_S0_PIN, (ch >> 0) & 1U);
   palWritePad(MUX_S1_PORT, MUX_S1_PIN, (ch >> 1) & 1U);
   palWritePad(MUX_S2_PORT, MUX_S2_PIN, (ch >> 2) & 1U);
-}
-
-static void get_last_samples(uint16_t *a, uint16_t *b) {
-  size_t idx = (ADC_DMA_DEPTH - 1U) * ADC_NUM_CHANNELS;
-  *a = adc_buffer[idx + 0U];
-  *b = adc_buffer[idx + 1U];
 }
 
 static uint16_t clamp_u16(int32_t value) {
@@ -240,6 +258,9 @@ void hall_init(void) {
     hall_midi_value[i] = 0U;
   }
 
+  hall_mux_index = 0U;
+  mux_select(hall_mux_index);
+
   adcStart(&ADCD1, NULL);
   adcStartConversion(&ADCD1, &adcgrpcfg, adc_buffer, ADC_DMA_DEPTH);
 
@@ -250,21 +271,6 @@ void hall_update(void) {
   for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
     hall_note_on[i] = false;
     hall_note_off[i] = false;
-  }
-
-  for (uint8_t mux_ch = 0; mux_ch < 8U; mux_ch++) {
-    mux_select(mux_ch);
-    chThdSleepMicroseconds(2);
-
-    uint16_t vA;
-    uint16_t vB;
-    get_last_samples(&vA, &vB);
-
-    hall_values[mux_ch + 0U] = vA;
-    hall_values[mux_ch + 8U] = vB;
-    systime_t now = chVTGetSystemTimeX();
-    hall_process_channel(mux_ch + 0U, vA, now);
-    hall_process_channel(mux_ch + 8U, vB, now);
   }
 }
 
