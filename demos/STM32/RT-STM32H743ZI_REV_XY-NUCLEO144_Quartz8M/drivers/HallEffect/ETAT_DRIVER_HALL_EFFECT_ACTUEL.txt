@@ -10,13 +10,15 @@ Fichiers audités
 - drivers/HallEffect/brick_cal.c
 - drivers/HallEffect/brick_cal.h
 
-Fonctions existantes (avant modification)
+Fonctions existantes (après modification)
 ----------------------------------------
 - drv_hall.c / drv_hall.h
-  - hall_init(): initialise ADC, DMA, GPIO des multiplexeurs et démarre la conversion.
-  - hall_update(): scanne les 8 positions des mux, remplit un tableau brut de 16 valeurs.
+  - hall_init(): initialise ADC, DMA, GPIO des multiplexeurs, sélectionne le
+    premier canal MUX et démarre la conversion continue.
+  - hall_update(): ne scanne plus le MUX. Cette fonction ne fait que remettre à
+    zéro les drapeaux NOTE ON/OFF consommés par l'application.
   - hall_get(i): renvoie la valeur brute d’un capteur.
-  - Logique uniquement ADC/DMA + scan mux (pas de logique musicale).
+  - Acquisition et logique musicale désormais pilotées par callback ADC (end_cb).
 
 - brick_asc.c / brick_asc.h
   - brick_asc_array_set_factors(): configure le lissage (moyenne mobile) par canal.
@@ -28,6 +30,33 @@ Fonctions existantes (avant modification)
   - brick_cal_state global disponible pour un usage optionnel.
   - Utilisation actuelle: aucune dans le driver Hall.
 
+Architecture précédente (polling)
+---------------------------------
+- ADC + DMA en mode continu, buffer circulaire.
+- hall_update() faisait le scan des 8 positions MUX:
+  - mux_select(),
+  - pause active (chThdSleepMicroseconds),
+  - lecture du dernier sample DMA,
+  - traitement des 16 capteurs.
+- Cette boucle était dépendante de la charge CPU et de la cadence d'appel de
+  hall_update(), donc non déterministe et sensible au jitter.
+
+Nouvelle architecture (DMA + IRQ)
+---------------------------------
+- Le callback ADC end_cb est l'unique moteur d'échantillonnage.
+- La conversion est en mode circulaire DMA, et end_cb est appelé par l'ISR DMA:
+  - demi-buffer (HT) et buffer complet (TC) dans hal_adc_lld.c.
+  - le macro adcIsBufferComplete() permet de savoir si le callback est déclenché
+    sur demi-buffer ou buffer complet (hal_adc.h).
+- Le driver utilise une profondeur DMA minimale (depth = 1):
+  - un buffer de 2 samples (MUXA/MUXB),
+  - un seul callback par groupe de conversion.
+- Dans end_cb:
+  - lecture du dernier échantillon DMA,
+  - traitement des deux Hall (mux_ch et mux_ch+8),
+  - incrément du MUX et sélection du canal suivant.
+- Aucun chThdSleepMicroseconds(), pas de polling: la boucle est non bloquante.
+
 Logique présente
 ---------------
 - Acquisition ADC + DMA en mode continu.
@@ -35,10 +64,11 @@ Logique présente
 - Lecture des deux ADC (MUXA/MUXB) pour obtenir 16 capteurs.
 - Stockage des valeurs brutes dans hall_values[].
 - Normalisation MIDI (0..127), états ON/OFF avec hystérésis, velocity/pressure.
+- Traitement exécuté en ISR DMA via end_cb (IRQ-safe, sans attente active).
 
 Ce qui est utilisé / obsolète
 -----------------------------
-- Utilisé: l’ensemble ADC/DMA, mux_select(), hall_init(), hall_update(), hall_get().
+- Utilisé: ADC/DMA, mux_select(), hall_init(), hall_update(), hall_get().
 - Obsolète dans l’état actuel: aucune suppression immédiate.
 - Non utilisé actuellement mais conservé: brick_asc.*, brick_cal.* (prévu pour futur filtrage/calibration).
 
@@ -49,60 +79,44 @@ Ce qui peut être supprimé
 
 Ce qui est conservé
 -------------------
-- L’architecture ADC/DMA + scan mux.
+- L’architecture ADC/DMA (conversion continue) et la configuration analogique.
+- mux_select() et le pinout MUX.
 - hall_init(), hall_update(), hall_get().
 - Les modules brick_asc.* et brick_cal.* tels quels.
 
 Ce qui est réécrit / modifié
 ----------------------------
-- drv_hall.c / drv_hall.h: logique musicale réécrite.
-  - Détection NOTE ON/OFF avec hystérésis et réarmement explicite.
-  - Calcul VELOCITY basé sur la dérivée temporelle (Δvaleur / Δtemps).
-  - Calcul PRESSURE (valeur continue normalisée 0..127).
-  - Calcul MIDI_VALUE (mapping brut temporaire).
-  - Ajout d’états par capteur (temps précédent, valeur précédente, armement).
+- drv_hall.c / drv_hall.h:
+  - hall_update() ne scanne plus le MUX.
+  - end_cb pilote la lecture DMA, le traitement Hall, et l'avance MUX.
+  - profondeur DMA réduite à 1 (buffer minimal).
+  - sélection du premier canal MUX avant démarrage ADC.
 
 Analyse des causes réelles (constaté dans le code)
 -------------------------------------------------
-- La boucle de scan imposait une attente de 2 ms par position de mux, ajoutant
-  une latence perceptible et ralentissant artificiellement la boucle.
-- La velocity était calculée sur une simple différence de deux samples consécutifs.
-  Cette approche dépendait directement du polling rate et du timing du scan mux,
-  rendant la vélocité instable et très agressive.
-- La logique NOTE ON/OFF attendait un seuil de position fixe à l’attaque; cela
-  retardait le déclenchement et manquait les attaques rapides.
-- Le réarmement n’autorisait pas de retrigger si la touche ne repassait pas sous
-  un seuil suffisamment bas.
+- Le scan MUX piloté par hall_update() dépendait du rythme du thread appelant,
+  donc la latence et le jitter variaient avec la charge CPU.
+- L'attente active (chThdSleepMicroseconds) ajoutait un délai fixe par position,
+  amplifiant la latence cumulée.
 
 Ce qui était incorrect
 ----------------------
-- Scan mux ralenti par un délai millisecondes (latence cumulée).
-- Calcul de velocity basé sur Δvaleur sans Δtemps (dépendant du polling).
-- NOTE ON basé sur un seuil de position au lieu de la pente d’attaque.
-- Réarmement implicite uniquement via franchissement du seuil OFF → retriggers ratés.
+- Boucle de scan MUX en polling, non déterministe et sensible au jitter.
+- Latence cumulée artificielle liée à l'attente active.
 
 Ce qui a été corrigé
 -------------------
-- Scan mux accéléré: remplacement du délai millisecondes par une pause microsecondes.
-- Temps d’échantillonnage ADC réduit pour diminuer la latence globale.
-- Ajout d’un état par capteur:
-  - valeur précédente + timestamp précédent.
-  - drapeau d’armement pour autoriser un retrigger.
-  - filtre simple sur la dérivée pour stabiliser la vélocité.
-- Calcul de velocity basé sur la dérivée temporelle (Δvaleur / Δtemps en microsecondes),
-  avec normalisation plus douce vers 1..127.
-- Seuils de position utilisés uniquement pour:
-  - OFF (hystérésis),
-  - réarmement (retrigger sans retour complet au repos),
-  - pression.
-- NOTE ON déclenché sur pente rapide (slope trigger) dès qu’un front montant est détecté,
-  sans attendre d’atteindre un seuil fixe.
+- Passage à une architecture IRQ-driven:
+  - end_cb appelé par l'ISR DMA sur transfert complet (et demi-buffer si depth > 1).
+  - lecture de l'échantillon dans le buffer DMA (index basé sur adcIsBufferComplete).
+  - avance du MUX dans l'ISR, sans attente active.
+- Latence réduite et plus stable (toute la chaîne est déclenchée par le DMA).
 
 Pourquoi
 --------
-- Stabiliser la vélocité (indépendante du polling).
-- Supprimer la latence perçue à l’attaque et accélérer la boucle de scan.
-- Autoriser les retriggers même sans retour complet à zéro.
+- Réduire la latence et le jitter (traitement immédiat à chaque conversion).
+- Garantir une cadence déterministe, indépendante de la charge CPU.
+- Rendre l'acquisition compatible avec d'autres DMA haute priorité (audio).
 
 Paramètres réglables (nouveaux ou clarifiés)
 --------------------------------------------
@@ -110,15 +124,12 @@ Paramètres réglables (nouveaux ou clarifiés)
   bornes de normalisation de la vélocité (adapter au capteur).
 - HALL_TRIGGER_RATE:
   seuil de pente minimale pour déclencher un NOTE ON.
-- HALL_RATE_FILTER_SHIFT:
-  force du lissage de la dérivée (2 = filtre simple 1/4).
 - HALL_RETRIGGER_DELTA / HALL_HYSTERESIS:
   seuils de réarmement et OFF indépendants.
 
 Clarification multi-capteurs (confusion B5)
 -------------------------------------------
-- Le driver Hall gère bien **16 capteurs** indépendants (boucle 0..15 dans
-  hall_update + états par canal).
+- Le driver Hall gère bien **16 capteurs** indépendants (boucle 0..15).
 - La confusion « seule B5 fonctionne » venait du **main**, qui n’envoyait des
   messages MIDI que pour l’index 4 (B5) tout en affichant B5 en debug.
 - Le correctif côté main envoie désormais les notes pour **tous les capteurs**,
