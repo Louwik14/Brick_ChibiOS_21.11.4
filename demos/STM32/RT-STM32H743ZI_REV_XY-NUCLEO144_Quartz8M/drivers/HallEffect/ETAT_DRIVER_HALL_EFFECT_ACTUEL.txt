@@ -127,12 +127,23 @@ Ce qui a été corrigé
   - end_cb appelé à chaque conversion DMA (depth = 1).
   - avance du MUX dans l'ISR, sans attente active.
 - Latence réduite et plus stable (toute la chaîne est déclenchée par le timer).
+- Correction de la logique NOTE ON/OFF:
+  - Avant: conditions basées uniquement sur la valeur instantanée (pas de
+    détection de franchissement), donc si le signal ne repassait pas sous
+    retrigger_threshold entre deux scans, hall_armed restait à false et
+    NOTE ON n'était jamais autorisé.
+  - Après: détection de franchissement (prev -> current) pour ON/OFF et
+    réarmement uniquement sur passage sous retrigger_threshold.
+  - Des variables de debug (adjusted / thresholds / rate / armed / gate)
+    sont stockées pour inspection au debugger et valider les seuils.
 
 Pourquoi
 --------
 - Réduire la latence et le jitter (traitement immédiat à chaque conversion).
 - Garantir une cadence déterministe (20 kHz fixe), indépendante de la charge CPU.
 - Assurer une charge CPU bornée et compatible avec les DMA haute priorité (audio).
+- Rendre les événements NOTE ON/OFF fiables même en cas de variations rapides
+  autour des seuils (détection de franchissement).
 
 Paramètres réglables (nouveaux ou clarifiés)
 --------------------------------------------
