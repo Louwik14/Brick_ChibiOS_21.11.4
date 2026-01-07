@@ -1,6 +1,5 @@
 build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  drivers/HallEffect/drv_hall.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_default_types.h \
@@ -8,14 +7,13 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_newlib_version.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h \
- drivers/brick_config.h drivers/HallEffect/brick_asc.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
- drivers/HallEffect/brick_cal.h ../../../os/rt/include/ch.h \
- ../../../os/license/chlicense.h ../../../os/license/chversion.h \
- ../../../os/license/chcustomer.h cfg/chconf.h \
- ../../../os/rt/include/chchecks.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h \
+ ../../../os/rt/include/ch.h ../../../os/license/chlicense.h \
+ ../../../os/license/chversion.h ../../../os/license/chcustomer.h \
+ cfg/chconf.h ../../../os/rt/include/chchecks.h \
  ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
  ../../../os/common/ports/ARM-common/chtypes.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
  ../../../os/common/portability/GCC/ccportab.h \
  ../../../os/rt/include/chrfcu.h ../../../os/rt/include/chdebug.h \
  ../../../os/rt/include/chtime.h ../../../os/rt/include/chlists.h \
@@ -123,23 +121,8 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include-fixed\limits.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include-fixed\limits.h
 drivers/HallEffect/drv_hall.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_default_types.h:
@@ -147,10 +130,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\inclu
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_newlib_version.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h:
-drivers/brick_config.h:
-drivers/HallEffect/brick_asc.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
-drivers/HallEffect/brick_cal.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h:
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -160,6 +140,7 @@ cfg/chconf.h:
 ../../../os/rt/include/chrestrictions.h:
 ../../../os/rt/include/chearly.h:
 ../../../os/common/ports/ARM-common/chtypes.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
 ../../../os/common/portability/GCC/ccportab.h:
 ../../../os/rt/include/chrfcu.h:
 ../../../os/rt/include/chdebug.h:
@@ -293,17 +274,3 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include-fixed\limits.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h:

@@ -121,7 +121,8 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  drivers/drivers.h drivers/brick_config.h drivers/drv_display.h ui/font.h \
- drivers/drv_display.h \
+ drivers/drv_display.h drivers/HallEffect/drv_hall.h midi/midi.h \
+ usb/usb_device.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdio.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h \
@@ -133,7 +134,11 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\stdio.h
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\stdio.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -289,6 +294,9 @@ drivers/brick_config.h:
 drivers/drv_display.h:
 ui/font.h:
 drivers/drv_display.h:
+drivers/HallEffect/drv_hall.h:
+midi/midi.h:
+usb/usb_device.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdio.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h:
@@ -301,3 +309,7 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\inclu
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\stdio.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h:
