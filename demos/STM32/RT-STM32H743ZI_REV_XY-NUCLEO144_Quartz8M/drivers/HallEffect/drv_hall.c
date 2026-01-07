@@ -14,7 +14,9 @@
 #define HALL_RAW_PRESSED        64000U
 #define HALL_ON_THRESHOLD       40000U
 #define HALL_HYSTERESIS         1500U
-#define HALL_VELOCITY_MAX_DELTA 20000U
+#define HALL_RETRIGGER_DELTA    900U
+#define HALL_VELOCITY_RATE_MIN  500U
+#define HALL_VELOCITY_RATE_MAX  20000U
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -33,7 +35,9 @@ static adcsample_t adc_buffer[ADC_DMA_DEPTH * ADC_NUM_CHANNELS];
 
 static uint16_t hall_values[HALL_SENSOR_COUNT];
 static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
+static systime_t hall_prev_times[HALL_SENSOR_COUNT];
 static bool hall_gate[HALL_SENSOR_COUNT];
+static bool hall_armed[HALL_SENSOR_COUNT];
 static bool hall_note_on[HALL_SENSOR_COUNT];
 static bool hall_note_off[HALL_SENSOR_COUNT];
 static uint8_t hall_velocity[HALL_SENSOR_COUNT];
@@ -133,26 +137,43 @@ static uint8_t hall_map_to_midi(uint16_t value, uint16_t min, uint16_t max) {
   return (uint8_t)(scaled / span);
 }
 
-static uint8_t hall_compute_velocity(uint16_t prev, uint16_t current) {
+static uint32_t hall_compute_rate(uint16_t prev, uint16_t current, systime_t prev_time, systime_t now) {
   uint16_t delta = (current > prev) ? (uint16_t)(current - prev) : 0U;
-  uint32_t scaled = (uint32_t)delta * 127U / HALL_VELOCITY_MAX_DELTA;
-  if (scaled == 0U) {
-    scaled = 1U;
+  systime_t diff = chTimeDiffX(prev_time, now);
+  uint32_t elapsed_ms = TIME_I2MS(diff);
+  if (elapsed_ms == 0U) {
+    elapsed_ms = 1U;
   }
-  if (scaled > 127U) {
-    scaled = 127U;
-  }
-  return (uint8_t)scaled;
+  return ((uint32_t)delta * 1000U) / elapsed_ms;
 }
 
-static void hall_process_channel(uint8_t index, uint16_t raw) {
+static uint8_t hall_velocity_from_rate(uint32_t rate) {
+  if (rate <= HALL_VELOCITY_RATE_MIN) {
+    return 1U;
+  }
+  if (rate >= HALL_VELOCITY_RATE_MAX) {
+    return 127U;
+  }
+  uint32_t span = HALL_VELOCITY_RATE_MAX - HALL_VELOCITY_RATE_MIN;
+  uint32_t scaled = (rate - HALL_VELOCITY_RATE_MIN) * 126U / span;
+  return (uint8_t)(scaled + 1U);
+}
+
+static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   int16_t offset = hall_offsets[index];
   uint16_t adjusted = hall_apply_offset(raw, offset);
   uint16_t prev = hall_prev_values[index];
+  systime_t prev_time = hall_prev_times[index];
+  if (prev_time == 0U) {
+    prev_time = now;
+  }
+  uint32_t rate = hall_compute_rate(prev, adjusted, prev_time, now);
   hall_prev_values[index] = adjusted;
+  hall_prev_times[index] = now;
 
   uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
   uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
+  uint16_t retrigger_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_RETRIGGER_DELTA + offset);
   uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
   uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
   if (max_value <= min_value) {
@@ -161,17 +182,21 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
 
-  if (!hall_gate[index]) {
-    if (adjusted >= on_threshold) {
-      hall_gate[index] = true;
-      hall_note_on[index] = true;
-      hall_velocity[index] = hall_compute_velocity(prev, adjusted);
-    }
-  } else {
-    if (adjusted <= off_threshold) {
-      hall_gate[index] = false;
-      hall_note_off[index] = true;
-    }
+  if (adjusted <= retrigger_threshold) {
+    hall_armed[index] = true;
+  }
+
+  if (adjusted >= on_threshold && hall_armed[index]) {
+    hall_gate[index] = true;
+    hall_note_on[index] = true;
+    hall_velocity[index] = hall_velocity_from_rate(rate);
+    hall_armed[index] = false;
+  }
+
+  if (hall_gate[index] && adjusted <= off_threshold) {
+    hall_gate[index] = false;
+    hall_note_off[index] = true;
+    hall_armed[index] = true;
   }
 
   if (hall_gate[index]) {
@@ -200,7 +225,9 @@ void hall_init(void) {
   for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
     hall_values[i] = 0U;
     hall_prev_values[i] = 0U;
+    hall_prev_times[i] = chVTGetSystemTimeX();
     hall_gate[i] = false;
+    hall_armed[i] = true;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
     hall_velocity[i] = 0U;
@@ -230,8 +257,9 @@ void hall_update(void) {
 
     hall_values[mux_ch + 0U] = vA;
     hall_values[mux_ch + 8U] = vB;
-    hall_process_channel(mux_ch + 0U, vA);
-    hall_process_channel(mux_ch + 8U, vB);
+    systime_t now = chVTGetSystemTimeX();
+    hall_process_channel(mux_ch + 0U, vA, now);
+    hall_process_channel(mux_ch + 8U, vB, now);
   }
 }
 
