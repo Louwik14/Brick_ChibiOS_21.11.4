@@ -29,7 +29,6 @@ int main(void) {
   memset(last_pressure, 0, sizeof(last_pressure));
 
   while (true) {
-    hall_update();
 
     drv_display_clear();
     drv_display_draw_text(0, 0, "HALL B5 DEBUG");
@@ -81,6 +80,9 @@ int main(void) {
 
     drv_display_update();
 
-    chThdSleepMilliseconds(100);
+    // ✅ TRÈS IMPORTANT : on efface les events APRÈS les avoir consommés
+    hall_clear_events();
+
+    chThdSleepMicroseconds(500);
   }
 }

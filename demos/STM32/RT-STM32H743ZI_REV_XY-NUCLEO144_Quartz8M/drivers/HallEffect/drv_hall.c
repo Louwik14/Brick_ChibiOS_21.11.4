@@ -11,8 +11,8 @@
 #define HALL_SENSOR_COUNT       16U
 /* Paramètres réglables (échelle ADC 16-bit). */
 #define HALL_RAW_REST           36000U
-#define HALL_RAW_PRESSED        64000U
-#define HALL_ON_THRESHOLD       40000U
+#define HALL_RAW_PRESSED        62000U
+#define HALL_ON_THRESHOLD       50000U
 #define HALL_HYSTERESIS         1500U
 #define HALL_RETRIGGER_DELTA    900U
 #define HALL_VELOCITY_RATE_MIN  500U
@@ -38,7 +38,6 @@ static uint16_t hall_values[HALL_SENSOR_COUNT];
 static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
 static systime_t hall_prev_times[HALL_SENSOR_COUNT];
 static bool hall_gate[HALL_SENSOR_COUNT];
-static bool hall_armed[HALL_SENSOR_COUNT];
 static bool hall_note_on[HALL_SENSOR_COUNT];
 static bool hall_note_off[HALL_SENSOR_COUNT];
 static uint8_t hall_velocity[HALL_SENSOR_COUNT];
@@ -47,14 +46,12 @@ static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
 static uint8_t hall_mux_current;
-static uint8_t hall_mux_pipeline;
 static bool hall_pipeline_valid;
 static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_retrigger_threshold[HALL_SENSOR_COUNT];
 static uint32_t hall_dbg_rate[HALL_SENSOR_COUNT];
-static bool hall_dbg_armed[HALL_SENSOR_COUNT];
 static bool hall_dbg_gate[HALL_SENSOR_COUNT];
 
 static void mux_select(uint8_t ch);
@@ -72,33 +69,29 @@ static const GPTConfig hall_gptcfg = {
   .dier         = 0U
 };
 
-static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 20000U);
+static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 5000U);
 
 static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
+
   uint16_t vA = adc_buffer[0U];
   uint16_t vB = adc_buffer[1U];
-  uint8_t mux_pipeline = hall_mux_pipeline;
 
-  /*
-   * Pipeline explicite:
-   * - Le sample courant correspond toujours au MUX sélectionné au cycle précédent.
-   * - Après traitement, on avance le MUX "courant" pour le prochain sample.
-   */
+  uint8_t sampled_mux = hall_mux_current;  // <-- C'EST CE MUX QUI A ÉTÉ ÉCHANTILLONNÉ
+
   if (hall_pipeline_valid) {
-    hall_values[mux_pipeline + 0U] = vA;
-    hall_values[mux_pipeline + 8U] = vB;
+    hall_values[sampled_mux + 0U] = vA;
+    hall_values[sampled_mux + 8U] = vB;
 
-    /* "This function can be called from any context" (os/rt/include/chvt.h). */
     systime_t now = chVTGetSystemTimeX();
-    hall_process_channel(mux_pipeline + 0U, vA, now);
-    hall_process_channel(mux_pipeline + 8U, vB, now);
+    hall_process_channel(sampled_mux + 0U, vA, now);
+    hall_process_channel(sampled_mux + 8U, vB, now);
   }
 
-  hall_mux_pipeline = hall_mux_current;
+  /* Préparer le prochain cycle */
+  hall_pipeline_valid = true;
   hall_mux_current = (uint8_t)((hall_mux_current + 1U) & 0x7U);
   mux_select(hall_mux_current);
-  hall_pipeline_valid = true;
 }
 
 static const ADCConversionGroup adcgrpcfg = {
@@ -163,15 +156,6 @@ static uint16_t clamp_u16(int32_t value) {
   return (uint16_t)value;
 }
 
-static uint8_t clamp_u8(int32_t value) {
-  if (value < 0) {
-    return 0U;
-  }
-  if (value > UINT8_MAX) {
-    return UINT8_MAX;
-  }
-  return (uint8_t)value;
-}
 
 static uint16_t hall_apply_offset(uint16_t raw, int16_t offset) {
   return clamp_u16((int32_t)raw + offset);
@@ -216,8 +200,18 @@ static uint8_t hall_velocity_from_rate(uint32_t rate) {
 }
 
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
+
   int16_t offset = hall_offsets[index];
   uint16_t adjusted = hall_apply_offset(raw, offset);
+  hall_note_on[index] = true;
+
+  /* TEST DEBUG TEMPORAIRE */
+  if (adjusted > 40000) {
+    hall_note_on[index] = true;
+  }
+  if (adjusted < 38000) {
+    hall_note_off[index] = true;
+  }
   uint16_t prev = hall_prev_values[index];
   systime_t prev_time = hall_prev_times[index];
   if (prev_time == 0U) {
@@ -261,23 +255,27 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   hall_dbg_retrigger_threshold[index] = retrigger_threshold;
   hall_dbg_rate[index] = rate;
 
-  bool fast_rise = rate >= HALL_TRIGGER_RATE;
-  if (!hall_gate[index] && (adjusted <= retrigger_threshold)) {
-    hall_armed[index] = true;
+  bool gate = hall_gate[index];
+
+  if (!gate) {
+    // État relâché → on attend un appui
+    if (adjusted >= on_threshold) {
+      hall_gate[index] = true;
+      hall_note_on[index] = true;
+      hall_velocity[index] = hall_velocity_from_rate(rate);
+    }
+  } else {
+    // État enfoncé
+    if (adjusted <= off_threshold) {
+      // Vrai relâchement
+      hall_gate[index] = false;
+      hall_note_off[index] = true;
+    } else if (adjusted <= retrigger_threshold) {
+      // Armement retrigger sans NOTE OFF
+      hall_gate[index] = false;
+    }
   }
 
-  if (!hall_gate[index] && hall_armed[index] &&
-      (adjusted >= on_threshold || (fast_rise && adjusted >= retrigger_threshold))) {
-    hall_gate[index] = true;
-    hall_note_on[index] = true;
-    hall_velocity[index] = hall_velocity_from_rate(rate);
-    hall_armed[index] = false;
-  }
-
-  if (hall_gate[index] && (adjusted <= off_threshold)) {
-    hall_gate[index] = false;
-    hall_note_off[index] = true;
-  }
 
   if (hall_gate[index]) {
     hall_pressure[index] = hall_map_to_midi(adjusted, min_value, max_value);
@@ -285,7 +283,6 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
     hall_pressure[index] = 0U;
   }
 
-  hall_dbg_armed[index] = hall_armed[index];
   hall_dbg_gate[index] = hall_gate[index];
 }
 
@@ -310,7 +307,6 @@ void hall_init(void) {
     hall_prev_values[i] = 0U;
     hall_prev_times[i] = chVTGetSystemTimeX();
     hall_gate[i] = false;
-    hall_armed[i] = true;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
     hall_velocity[i] = 0U;
@@ -319,7 +315,6 @@ void hall_init(void) {
   }
 
   hall_mux_current = 0U;
-  hall_mux_pipeline = 0U;
   hall_pipeline_valid = false;
   mux_select(hall_mux_current);
 
@@ -334,6 +329,8 @@ void hall_init(void) {
 }
 
 void hall_update(void) {
+}
+void hall_clear_events(void) {
   for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
     hall_note_on[i] = false;
     hall_note_off[i] = false;
