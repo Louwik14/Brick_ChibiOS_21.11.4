@@ -51,8 +51,7 @@ static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
-static uint8_t hall_mux_current;
-static bool hall_pipeline_valid;
+static uint8_t hall_current_mux;
 static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
@@ -85,22 +84,16 @@ static void adc_cb(ADCDriver *adcp) {
 
   uint8_t sampled_mux = hall_sampled_mux;  // <-- MUX réellement échantillonné
 
-  if (hall_pipeline_valid) {
-    hall_values[sampled_mux + 0U] = vA;
-    hall_values[sampled_mux + 8U] = vB;
+  hall_values[sampled_mux + 0U] = vA;
+  hall_values[sampled_mux + 8U] = vB;
 
-    systime_t now = chVTGetSystemTimeX();
-    hall_process_channel(sampled_mux + 0U, vA, now);
-    hall_process_channel(sampled_mux + 8U, vB, now);
-  }
+  systime_t now = chVTGetSystemTimeX();
+  hall_process_channel(sampled_mux + 0U, vA, now);
+  hall_process_channel(sampled_mux + 8U, vB, now);
 
-  /* Préparer le prochain cycle */
-  hall_pipeline_valid = true;
-
-  hall_sampled_mux = hall_mux_current;   // <-- on mémorise le mux QUI VA être échantillonné
-
-  hall_mux_current = (uint8_t)((hall_mux_current + 1U) & 0x7U);
-  mux_select(hall_mux_current);
+  hall_sampled_mux = hall_current_mux;
+  hall_current_mux = (uint8_t)((hall_current_mux + 1U) & 0x7U);
+  mux_select(hall_current_mux);
 }
 
 static const ADCConversionGroup adcgrpcfg = {
@@ -285,10 +278,9 @@ void hall_init(void) {
     hall_midi_value[i] = 0U;
   }
 
-  hall_mux_current = 0U;
+  hall_current_mux = 0U;
   hall_sampled_mux = 0U;
-  hall_pipeline_valid = false;
-  mux_select(hall_mux_current);
+  mux_select(hall_current_mux);
 
   gptStart(&GPTD4, &hall_gptcfg);
 
