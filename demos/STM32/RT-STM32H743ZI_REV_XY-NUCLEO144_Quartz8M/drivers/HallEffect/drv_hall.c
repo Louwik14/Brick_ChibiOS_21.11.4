@@ -11,7 +11,7 @@
 #define HALL_SENSOR_COUNT       16U
 /* Paramètres réglables (échelle ADC 16-bit). */
 #define HALL_RAW_REST           36000U
-#define HALL_RAW_PRESSED        64000U
+#define HALL_RAW_PRESSED        46000U
 #define HALL_ON_THRESHOLD       40000U
 #define HALL_HYSTERESIS         1500U
 #define HALL_RETRIGGER_DELTA    900U
@@ -216,13 +216,30 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   hall_prev_values[index] = adjusted;
   hall_prev_times[index] = now;
 
-  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
-  uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
-  uint16_t retrigger_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_RETRIGGER_DELTA + offset);
   uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
   uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
   if (max_value <= min_value) {
     max_value = (uint16_t)(min_value + 1U);
+  }
+  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
+  if (on_threshold <= min_value) {
+    on_threshold = (uint16_t)(min_value + 1U);
+  } else if (on_threshold >= max_value) {
+    on_threshold = (uint16_t)(max_value - 1U);
+  }
+
+  uint16_t off_threshold = on_threshold;
+  if (off_threshold > min_value + HALL_HYSTERESIS) {
+    off_threshold = (uint16_t)(off_threshold - HALL_HYSTERESIS);
+  } else {
+    off_threshold = min_value;
+  }
+
+  uint16_t retrigger_threshold = on_threshold;
+  if (retrigger_threshold > min_value + HALL_RETRIGGER_DELTA) {
+    retrigger_threshold = (uint16_t)(retrigger_threshold - HALL_RETRIGGER_DELTA);
+  } else {
+    retrigger_threshold = min_value;
   }
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
@@ -233,24 +250,22 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   hall_dbg_retrigger_threshold[index] = retrigger_threshold;
   hall_dbg_rate[index] = rate;
 
-  if ((prev > retrigger_threshold) && (adjusted <= retrigger_threshold)) {
+  bool fast_rise = rate >= HALL_TRIGGER_RATE;
+  if (!hall_gate[index] && (adjusted <= retrigger_threshold)) {
     hall_armed[index] = true;
   }
 
-  bool fast_rise = rate >= HALL_TRIGGER_RATE;
-  bool threshold_crossed = (prev < on_threshold) && (adjusted >= on_threshold);
-
-  if ((threshold_crossed || (fast_rise && adjusted >= retrigger_threshold)) && hall_armed[index]) {
+  if (!hall_gate[index] && hall_armed[index] &&
+      (adjusted >= on_threshold || (fast_rise && adjusted >= retrigger_threshold))) {
     hall_gate[index] = true;
     hall_note_on[index] = true;
     hall_velocity[index] = hall_velocity_from_rate(rate);
     hall_armed[index] = false;
   }
 
-  if (hall_gate[index] && (prev > off_threshold) && (adjusted <= off_threshold)) {
+  if (hall_gate[index] && (adjusted <= off_threshold)) {
     hall_gate[index] = false;
     hall_note_off[index] = true;
-    hall_armed[index] = true;
   }
 
   if (hall_gate[index]) {
