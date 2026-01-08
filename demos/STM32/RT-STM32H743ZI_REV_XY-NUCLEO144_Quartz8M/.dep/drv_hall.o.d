@@ -1,5 +1,8 @@
 build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
- drivers/HallEffect/drv_hall.h \
+ ../../../os/hal/include/hal.h \
+ ../../../os/common/portability/GCC/ccportab.h \
+ ../../../os/hal/osal/rt-nil/osal.h \
+ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_default_types.h \
@@ -13,8 +16,6 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  cfg/chconf.h ../../../os/rt/include/chchecks.h \
  ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
  ../../../os/common/ports/ARM-common/chtypes.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
- ../../../os/common/portability/GCC/ccportab.h \
  ../../../os/rt/include/chrfcu.h ../../../os/rt/include/chdebug.h \
  ../../../os/rt/include/chtime.h ../../../os/rt/include/chlists.h \
  ../../../os/rt/include/chalign.h ../../../os/rt/include/chtrace.h \
@@ -48,8 +49,7 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  ../../../os/oslib/include/chdelegates.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdarg.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
- ../../../os/rt/include/chdynamic.h ../../../os/hal/include/hal.h \
- ../../../os/hal/osal/rt-nil/osal.h \
+ ../../../os/rt/include/chdynamic.h \
  ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h \
  cfg/halconf.h cfg/mcuconf.h \
  ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
@@ -84,7 +84,10 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  ../../../os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h \
  ../../../os/hal/include/hal_can.h ../../../os/hal/include/hal_crypto.h \
  ../../../os/hal/include/hal_dac.h ../../../os/hal/include/hal_efl.h \
- ../../../os/hal/include/hal_gpt.h ../../../os/hal/include/hal_i2c.h \
+ ../../../os/hal/include/hal_gpt.h \
+ ../../../os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.h \
+ ../../../os/hal/ports/STM32/LLD/TIMv1/stm32_tim.h \
+ ../../../os/hal/include/hal_i2c.h \
  ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
@@ -122,7 +125,10 @@ build/obj/drv_hall.o: drivers/HallEffect/drv_hall.c \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include-fixed\limits.h
-drivers/HallEffect/drv_hall.h:
+../../../os/hal/include/hal.h:
+../../../os/common/portability/GCC/ccportab.h:
+../../../os/hal/osal/rt-nil/osal.h:
+c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_default_types.h:
@@ -140,8 +146,6 @@ cfg/chconf.h:
 ../../../os/rt/include/chrestrictions.h:
 ../../../os/rt/include/chearly.h:
 ../../../os/common/ports/ARM-common/chtypes.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
-../../../os/common/portability/GCC/ccportab.h:
 ../../../os/rt/include/chrfcu.h:
 ../../../os/rt/include/chdebug.h:
 ../../../os/rt/include/chtime.h:
@@ -189,8 +193,6 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/oslib/include/chjobs.h:
 ../../../os/oslib/include/chfactory.h:
 ../../../os/rt/include/chdynamic.h:
-../../../os/hal/include/hal.h:
-../../../os/hal/osal/rt-nil/osal.h:
 ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
@@ -229,6 +231,8 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_dac.h:
 ../../../os/hal/include/hal_efl.h:
 ../../../os/hal/include/hal_gpt.h:
+../../../os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.h:
+../../../os/hal/ports/STM32/LLD/TIMv1/stm32_tim.h:
 ../../../os/hal/include/hal_i2c.h:
 ../../../os/hal/ports/STM32/LLD/I2Cv3/hal_i2c_lld.h:
 ../../../os/hal/include/hal_i2s.h:

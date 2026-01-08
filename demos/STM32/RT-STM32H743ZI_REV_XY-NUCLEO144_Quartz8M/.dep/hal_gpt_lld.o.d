@@ -1,9 +1,8 @@
-build/obj/main.o: main.c ../../../os/rt/include/ch.h \
- ../../../os/license/chlicense.h ../../../os/license/chversion.h \
- ../../../os/license/chcustomer.h cfg/chconf.h \
- ../../../os/rt/include/chchecks.h \
- ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
- ../../../os/common/ports/ARM-common/chtypes.h \
+build/obj/hal_gpt_lld.o: \
+ ../../../os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.c \
+ ../../../os/hal/include/hal.h \
+ ../../../os/common/portability/GCC/ccportab.h \
+ ../../../os/hal/osal/rt-nil/osal.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h \
@@ -13,7 +12,11 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h \
- ../../../os/common/portability/GCC/ccportab.h \
+ ../../../os/rt/include/ch.h ../../../os/license/chlicense.h \
+ ../../../os/license/chversion.h ../../../os/license/chcustomer.h \
+ cfg/chconf.h ../../../os/rt/include/chchecks.h \
+ ../../../os/rt/include/chrestrictions.h ../../../os/rt/include/chearly.h \
+ ../../../os/common/ports/ARM-common/chtypes.h \
  ../../../os/rt/include/chrfcu.h ../../../os/rt/include/chdebug.h \
  ../../../os/rt/include/chtime.h ../../../os/rt/include/chlists.h \
  ../../../os/rt/include/chalign.h ../../../os/rt/include/chtrace.h \
@@ -47,8 +50,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/oslib/include/chdelegates.h \
  c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdarg.h \
  ../../../os/oslib/include/chjobs.h ../../../os/oslib/include/chfactory.h \
- ../../../os/rt/include/chdynamic.h ../../../os/hal/include/hal.h \
- ../../../os/hal/osal/rt-nil/osal.h \
+ ../../../os/rt/include/chdynamic.h \
  ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h \
  cfg/halconf.h cfg/mcuconf.h \
  ../../../os/hal/ports/STM32/STM32H7xx/hal_lld.h \
@@ -122,35 +124,10 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
- ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- drivers/drivers.h drivers/brick_config.h drivers/drv_display.h ui/font.h \
- drivers/drv_display.h drivers/HallEffect/drv_hall.h midi/midi.h \
- usb/usb_device.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdio.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\stdio.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h \
- c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h
-../../../os/rt/include/ch.h:
-../../../os/license/chlicense.h:
-../../../os/license/chversion.h:
-../../../os/license/chcustomer.h:
-cfg/chconf.h:
-../../../os/rt/include/chchecks.h:
-../../../os/rt/include/chrestrictions.h:
-../../../os/rt/include/chearly.h:
-../../../os/common/ports/ARM-common/chtypes.h:
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h
+../../../os/hal/include/hal.h:
+../../../os/common/portability/GCC/ccportab.h:
+../../../os/hal/osal/rt-nil/osal.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stddef.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdint.h:
@@ -160,7 +137,15 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\inclu
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_intsup.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_stdint.h:
 c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-eabi\11.3.1\include\stdbool.h:
-../../../os/common/portability/GCC/ccportab.h:
+../../../os/rt/include/ch.h:
+../../../os/license/chlicense.h:
+../../../os/license/chversion.h:
+../../../os/license/chcustomer.h:
+cfg/chconf.h:
+../../../os/rt/include/chchecks.h:
+../../../os/rt/include/chrestrictions.h:
+../../../os/rt/include/chearly.h:
+../../../os/common/ports/ARM-common/chtypes.h:
 ../../../os/rt/include/chrfcu.h:
 ../../../os/rt/include/chdebug.h:
 ../../../os/rt/include/chtime.h:
@@ -208,8 +193,6 @@ c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\lib\gcc\arm-none-ea
 ../../../os/oslib/include/chjobs.h:
 ../../../os/oslib/include/chfactory.h:
 ../../../os/rt/include/chdynamic.h:
-../../../os/hal/include/hal.h:
-../../../os/hal/osal/rt-nil/osal.h:
 ../../../os/hal/boards/STM32H743_LQFP176_CUSTOM_Q_8M/board.h:
 cfg/halconf.h:
 cfg/mcuconf.h:
@@ -294,27 +277,3 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
-drivers/drivers.h:
-drivers/brick_config.h:
-drivers/drv_display.h:
-ui/font.h:
-drivers/drv_display.h:
-drivers/HallEffect/drv_hall.h:
-midi/midi.h:
-usb/usb_device.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\stdio.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\newlib.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\config.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\ieeefp.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\cdefs.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\reent.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\_ansi.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_types.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\machine\_types.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\lock.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\stdio.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\string.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\_locale.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\strings.h:
-c:\chibistudio\tools\gnu\ tools\ arm\ embedded\11.3\ 2022.08\arm-none-eabi\include\sys\string.h:

@@ -1,6 +1,3 @@
-#include "drv_hall.h"
-
-#include "ch.h"
 #include "hal.h"
 
 #include <limits.h>
@@ -12,7 +9,7 @@
 /* Paramètres réglables (échelle ADC 16-bit). */
 #define HALL_RAW_REST           36000U
 #define HALL_RAW_PRESSED        64000U
-#define HALL_ON_THRESHOLD       40000U
+#define HALL_ON_THRESHOLD       20000U
 #define HALL_HYSTERESIS         1500U
 #define HALL_RETRIGGER_DELTA    900U
 #define HALL_VELOCITY_RATE_MIN  500U
@@ -352,8 +349,4 @@ uint8_t hall_get_midi_value(uint8_t index) {
     return 0U;
   }
   return hall_midi_value[index];
-}
-
-uint8_t hall_debug_get_mux_index(void) {
-  return hall_mux_index;
 }

@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <string.h>
 
+/* Polices déclarées dans le driver display */
+extern const font_t FONT_4X6;
+extern const font_t FONT_5X7;
+
 int main(void) {
 
   halInit();
@@ -35,6 +39,9 @@ int main(void) {
     hall_update();
 
     drv_display_clear();
+
+    /* Police normale */
+    drv_display_set_font(&FONT_5X7);
     drv_display_draw_text(0, 0, "HALL B5 DEBUG");
 
     for (uint8_t i = 0U; i < 16U; i++) {
@@ -82,20 +89,26 @@ int main(void) {
     snprintf(line, sizeof(line), "PRES = %3u", pressure);
     drv_display_draw_text(0, 44, line);
 
-    snprintf(line, sizeof(line), "MUX: %u", hall_debug_get_mux_index());
-    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y, line);
+    /* --- Colonne debug droite en petite police --- */
+    drv_display_set_font(&FONT_4X6);
 
-    snprintf(line, sizeof(line), "H0: %5u", hall_get(0));
-    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + debug_line_height, line);
+    snprintf(line, sizeof(line), "MUX:%u", hall_debug_get_mux_index());
+    drv_display_draw_text(debug_x, debug_y, line);
 
-    snprintf(line, sizeof(line), "H1: %5u", hall_get(1));
-    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(2U * debug_line_height), line);
+    snprintf(line, sizeof(line), "H0:%5u", hall_get(0));
+    drv_display_draw_text(debug_x, debug_y + debug_line_height, line);
 
-    snprintf(line, sizeof(line), "H8: %5u", hall_get(8));
-    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(3U * debug_line_height), line);
+    snprintf(line, sizeof(line), "H1:%5u", hall_get(1));
+    drv_display_draw_text(debug_x, debug_y + 2 * debug_line_height, line);
 
-    snprintf(line, sizeof(line), "H9: %5u", hall_get(9));
-    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(4U * debug_line_height), line);
+    snprintf(line, sizeof(line), "H8:%5u", hall_get(8));
+    drv_display_draw_text(debug_x, debug_y + 3 * debug_line_height, line);
+
+    snprintf(line, sizeof(line), "H9:%5u", hall_get(9));
+    drv_display_draw_text(debug_x, debug_y + 4 * debug_line_height, line);
+
+    /* Retour police normale */
+    drv_display_set_font(&FONT_5X7);
 
     drv_display_update();
 
