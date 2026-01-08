@@ -12,5 +12,8 @@ bool hall_get_note_off(uint8_t index);
 uint8_t hall_get_velocity(uint8_t index);
 uint8_t hall_get_pressure(uint8_t index);
 uint8_t hall_get_midi_value(uint8_t index);
+uint32_t hall_debug_get_adc_cb_count(void);
+uint32_t hall_debug_get_gpt_cb_count(void);
+uint8_t hall_debug_get_mux_index(void);
 
 #endif /* DRV_HALL_H */
