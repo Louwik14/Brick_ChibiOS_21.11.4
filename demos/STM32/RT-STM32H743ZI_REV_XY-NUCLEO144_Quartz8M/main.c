@@ -22,6 +22,9 @@ int main(void) {
   char line[32];
   const uint8_t sensor_index = 4U;
   const uint8_t base_note = 60U;
+  const uint8_t debug_x = 86U;
+  const uint8_t debug_y = 0U;
+  const uint8_t debug_line_height = 8U;
   bool note_active[16];
   uint8_t last_pressure[16];
 
@@ -78,6 +81,21 @@ int main(void) {
 
     snprintf(line, sizeof(line), "PRES = %3u", pressure);
     drv_display_draw_text(0, 44, line);
+
+    snprintf(line, sizeof(line), "MUX: %u", hall_debug_get_mux_index());
+    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y, line);
+
+    snprintf(line, sizeof(line), "H0: %5u", hall_get(0));
+    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + debug_line_height, line);
+
+    snprintf(line, sizeof(line), "H1: %5u", hall_get(1));
+    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(2U * debug_line_height), line);
+
+    snprintf(line, sizeof(line), "H8: %5u", hall_get(8));
+    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(3U * debug_line_height), line);
+
+    snprintf(line, sizeof(line), "H9: %5u", hall_get(9));
+    drv_display_draw_text_with_font(&FONT_4X6, debug_x, debug_y + (uint8_t)(4U * debug_line_height), line);
 
     drv_display_update();
 
