@@ -353,3 +353,7 @@ uint8_t hall_get_midi_value(uint8_t index) {
   }
   return hall_midi_value[index];
 }
+
+uint8_t hall_debug_get_mux_index(void) {
+  return hall_mux_index;
+}
