@@ -122,8 +122,8 @@ static const ADCConversionGroup adcgrpcfg = {
   .pcsel        = ADC_PCSEL,
 
   .smpr         = {
-    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_2P5) |
-    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_2P5),
+    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_64P5) |
+    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_64P5),
     0
   },
 
