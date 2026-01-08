@@ -18,6 +18,7 @@
 #define HALL_VELOCITY_RATE_MIN  500U
 #define HALL_VELOCITY_RATE_MAX  200000U
 #define HALL_TRIGGER_RATE       2500U
+#define HALL_RATE_FILTER_SHIFT  2U
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -44,15 +45,17 @@ static uint16_t hall_values[HALL_SENSOR_COUNT];
 static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
 static systime_t hall_prev_times[HALL_SENSOR_COUNT];
 static hall_state_t hall_state[HALL_SENSOR_COUNT];
+static bool hall_gate[HALL_SENSOR_COUNT];
+static bool hall_armed[HALL_SENSOR_COUNT];
 static bool hall_note_on[HALL_SENSOR_COUNT];
 static bool hall_note_off[HALL_SENSOR_COUNT];
 static uint8_t hall_velocity[HALL_SENSOR_COUNT];
 static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
+static uint32_t hall_rate_filtered[HALL_SENSOR_COUNT];
 static bool hall_initialized;
-static uint8_t hall_mux_current;
-static bool hall_pipeline_valid;
+static uint8_t hall_current_mux;
 static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
@@ -85,22 +88,16 @@ static void adc_cb(ADCDriver *adcp) {
 
   uint8_t sampled_mux = hall_sampled_mux;  // <-- MUX réellement échantillonné
 
-  if (hall_pipeline_valid) {
-    hall_values[sampled_mux + 0U] = vA;
-    hall_values[sampled_mux + 8U] = vB;
+  hall_values[sampled_mux + 0U] = vA;
+  hall_values[sampled_mux + 8U] = vB;
 
-    systime_t now = chVTGetSystemTimeX();
-    hall_process_channel(sampled_mux + 0U, vA, now);
-    hall_process_channel(sampled_mux + 8U, vB, now);
-  }
+  systime_t now = chVTGetSystemTimeX();
+  hall_process_channel(sampled_mux + 0U, vA, now);
+  hall_process_channel(sampled_mux + 8U, vB, now);
 
-  /* Préparer le prochain cycle */
-  hall_pipeline_valid = true;
-
-  hall_sampled_mux = hall_mux_current;   // <-- on mémorise le mux QUI VA être échantillonné
-
-  hall_mux_current = (uint8_t)((hall_mux_current + 1U) & 0x7U);
-  mux_select(hall_mux_current);
+  hall_sampled_mux = hall_current_mux;
+  hall_current_mux = (uint8_t)((hall_current_mux + 1U) & 0x7U);
+  mux_select(hall_current_mux);
 }
 
 static const ADCConversionGroup adcgrpcfg = {
@@ -196,6 +193,13 @@ static uint32_t hall_compute_rate(uint16_t prev, uint16_t current, systime_t pre
   return (uint32_t)(scaled / elapsed_us);
 }
 
+static uint32_t hall_filter_rate(uint8_t index, uint32_t rate) {
+  uint32_t prev = hall_rate_filtered[index];
+  uint32_t filtered = (prev * ((1U << HALL_RATE_FILTER_SHIFT) - 1U) + rate) >> HALL_RATE_FILTER_SHIFT;
+  hall_rate_filtered[index] = filtered;
+  return filtered;
+}
+
 static uint8_t hall_velocity_from_rate(uint32_t rate) {
   if (rate <= HALL_VELOCITY_RATE_MIN) {
     return 1U;
@@ -278,17 +282,19 @@ void hall_init(void) {
     hall_prev_values[i] = 0U;
     hall_prev_times[i] = chVTGetSystemTimeX();
     hall_state[i] = HALL_STATE_UP;
+    hall_gate[i] = false;
+    hall_armed[i] = true;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
     hall_velocity[i] = 0U;
     hall_pressure[i] = 0U;
     hall_midi_value[i] = 0U;
+    hall_rate_filtered[i] = 0U;
   }
 
-  hall_mux_current = 0U;
+  hall_current_mux = 0U;
   hall_sampled_mux = 0U;
-  hall_pipeline_valid = false;
-  mux_select(hall_mux_current);
+  mux_select(hall_current_mux);
 
   gptStart(&GPTD4, &hall_gptcfg);
 
