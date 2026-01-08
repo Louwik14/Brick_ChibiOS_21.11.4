@@ -46,7 +46,9 @@ static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
-static uint8_t hall_mux_index;
+static uint8_t hall_mux_current;
+static uint8_t hall_mux_pipeline;
+static bool hall_pipeline_valid;
 static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
@@ -76,18 +78,27 @@ static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
   uint16_t vA = adc_buffer[0U];
   uint16_t vB = adc_buffer[1U];
-  uint8_t mux_ch = hall_mux_index;
+  uint8_t mux_pipeline = hall_mux_pipeline;
 
-  hall_values[mux_ch + 0U] = vA;
-  hall_values[mux_ch + 8U] = vB;
+  /*
+   * Pipeline explicite:
+   * - Le sample courant correspond toujours au MUX sélectionné au cycle précédent.
+   * - Après traitement, on avance le MUX "courant" pour le prochain sample.
+   */
+  if (hall_pipeline_valid) {
+    hall_values[mux_pipeline + 0U] = vA;
+    hall_values[mux_pipeline + 8U] = vB;
 
-  /* "This function can be called from any context" (os/rt/include/chvt.h). */
-  systime_t now = chVTGetSystemTimeX();
-  hall_process_channel(mux_ch + 0U, vA, now);
-  hall_process_channel(mux_ch + 8U, vB, now);
+    /* "This function can be called from any context" (os/rt/include/chvt.h). */
+    systime_t now = chVTGetSystemTimeX();
+    hall_process_channel(mux_pipeline + 0U, vA, now);
+    hall_process_channel(mux_pipeline + 8U, vB, now);
+  }
 
-  hall_mux_index = (uint8_t)((mux_ch + 1U) & 0x7U);
-  mux_select(hall_mux_index);
+  hall_mux_pipeline = hall_mux_current;
+  hall_mux_current = (uint8_t)((hall_mux_current + 1U) & 0x7U);
+  mux_select(hall_mux_current);
+  hall_pipeline_valid = true;
 }
 
 static const ADCConversionGroup adcgrpcfg = {
@@ -307,8 +318,10 @@ void hall_init(void) {
     hall_midi_value[i] = 0U;
   }
 
-  hall_mux_index = 0U;
-  mux_select(hall_mux_index);
+  hall_mux_current = 0U;
+  hall_mux_pipeline = 0U;
+  hall_pipeline_valid = false;
+  mux_select(hall_mux_current);
 
   gptStart(&GPTD4, &hall_gptcfg);
 
