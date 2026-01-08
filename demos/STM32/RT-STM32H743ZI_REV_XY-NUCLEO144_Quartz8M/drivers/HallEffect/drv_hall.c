@@ -59,7 +59,7 @@ static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
 static uint16_t hall_dbg_retrigger_threshold[HALL_SENSOR_COUNT];
 static uint32_t hall_dbg_rate[HALL_SENSOR_COUNT];
 static bool hall_dbg_gate[HALL_SENSOR_COUNT];
-
+static uint8_t hall_sampled_mux;
 static void mux_select(uint8_t ch);
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
 
@@ -83,7 +83,7 @@ static void adc_cb(ADCDriver *adcp) {
   uint16_t vA = adc_buffer[0U];
   uint16_t vB = adc_buffer[1U];
 
-  uint8_t sampled_mux = hall_mux_current;  // <-- C'EST CE MUX QUI A ÉTÉ ÉCHANTILLONNÉ
+  uint8_t sampled_mux = hall_sampled_mux;  // <-- MUX réellement échantillonné
 
   if (hall_pipeline_valid) {
     hall_values[sampled_mux + 0U] = vA;
@@ -96,6 +96,9 @@ static void adc_cb(ADCDriver *adcp) {
 
   /* Préparer le prochain cycle */
   hall_pipeline_valid = true;
+
+  hall_sampled_mux = hall_mux_current;   // <-- on mémorise le mux QUI VA être échantillonné
+
   hall_mux_current = (uint8_t)((hall_mux_current + 1U) & 0x7U);
   mux_select(hall_mux_current);
 }
@@ -206,7 +209,6 @@ static uint8_t hall_velocity_from_rate(uint32_t rate) {
 }
 
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
-
   int16_t offset = hall_offsets[index];
   uint16_t adjusted = hall_apply_offset(raw, offset);
   uint16_t prev = hall_prev_values[index];
@@ -215,82 +217,46 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
     prev_time = now;
   }
   uint32_t rate = hall_compute_rate(prev, adjusted, prev_time, now);
+  uint32_t filtered_rate = hall_filter_rate(index, rate);
   hall_prev_values[index] = adjusted;
   hall_prev_times[index] = now;
 
+  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
+  uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
+  uint16_t retrigger_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_RETRIGGER_DELTA + offset);
   uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
   uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
   if (max_value <= min_value) {
     max_value = (uint16_t)(min_value + 1U);
   }
-  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
-  if (on_threshold <= min_value) {
-    on_threshold = (uint16_t)(min_value + 1U);
-  } else if (on_threshold >= max_value) {
-    on_threshold = (uint16_t)(max_value - 1U);
-  }
-
-  uint16_t off_threshold = on_threshold;
-  if (off_threshold > min_value + HALL_HYSTERESIS) {
-    off_threshold = (uint16_t)(off_threshold - HALL_HYSTERESIS);
-  } else {
-    off_threshold = min_value;
-  }
-
-  uint16_t retrigger_threshold = on_threshold;
-  if (retrigger_threshold > min_value + HALL_RETRIGGER_DELTA) {
-    retrigger_threshold = (uint16_t)(retrigger_threshold - HALL_RETRIGGER_DELTA);
-  } else {
-    retrigger_threshold = min_value;
-  }
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
 
-  hall_dbg_adjusted[index] = adjusted;
-  hall_dbg_on_threshold[index] = on_threshold;
-  hall_dbg_off_threshold[index] = off_threshold;
-  hall_dbg_retrigger_threshold[index] = retrigger_threshold;
-  hall_dbg_rate[index] = rate;
-
-  hall_note_on[index] = false;
-  hall_note_off[index] = false;
-
-  switch (hall_state[index]) {
-    case HALL_STATE_UP:
-      if (adjusted >= on_threshold) {
-        hall_state[index] = HALL_STATE_DOWN;
-        hall_note_on[index] = true;
-        hall_velocity[index] = hall_velocity_from_rate(rate);
-      }
-      break;
-
-    case HALL_STATE_DOWN:
-      if (adjusted <= off_threshold) {
-        hall_state[index] = HALL_STATE_REARMED;
-        hall_note_off[index] = true;
-      }
-      break;
-
-    case HALL_STATE_REARMED:
-      if (adjusted >= retrigger_threshold) {
-        hall_state[index] = HALL_STATE_DOWN;
-        hall_note_on[index] = true;
-        hall_velocity[index] = hall_velocity_from_rate(rate);
-      } else if (adjusted <= off_threshold) {
-        hall_state[index] = HALL_STATE_UP;
-      }
-      break;
+  if (adjusted <= off_threshold || adjusted <= retrigger_threshold) {
+    hall_armed[index] = true;
   }
 
-  if (hall_state[index] == HALL_STATE_DOWN) {
+  bool fast_rise = rate >= HALL_TRIGGER_RATE;
+
+  if (fast_rise && hall_armed[index]) {
+    hall_gate[index] = true;
+    hall_note_on[index] = true;
+    hall_velocity[index] = hall_velocity_from_rate(filtered_rate);
+    hall_armed[index] = false;
+  }
+
+  if (hall_gate[index] && adjusted <= off_threshold) {
+    hall_gate[index] = false;
+    hall_note_off[index] = true;
+    hall_armed[index] = true;
+  }
+
+  if (hall_gate[index]) {
     hall_pressure[index] = hall_map_to_midi(adjusted, min_value, max_value);
   } else {
     hall_pressure[index] = 0U;
   }
-
-  hall_dbg_gate[index] = (hall_state[index] == HALL_STATE_DOWN);
 }
-
 void hall_init(void) {
   if (hall_initialized) {
     return;
@@ -320,6 +286,7 @@ void hall_init(void) {
   }
 
   hall_mux_current = 0U;
+  hall_sampled_mux = 0U;
   hall_pipeline_valid = false;
   mux_select(hall_mux_current);
 
