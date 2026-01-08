@@ -14,7 +14,18 @@
 #define HALL_RAW_PRESSED        64000U
 #define HALL_ON_THRESHOLD       40000U
 #define HALL_HYSTERESIS         1500U
-#define HALL_VELOCITY_MAX_DELTA 20000U
+
+/*
+ * Vélocité par dérivée :
+ *   deriv = d(value)/dt, exprimée en "counts par milliseconde".
+ *   velocity = map(deriv, 0..HALL_DERIV_MAX_COUNTS_PER_MS) -> 1..127
+ *
+ * Ajuste HALL_DERIV_MAX_COUNTS_PER_MS après observation (logs) :
+ * - frappe la plus rapide -> deriv_max_typique -> mets cette valeur ici.
+ */
+#define HALL_DERIV_MAX_COUNTS_PER_MS  1000U  /* à régler */
+#define HALL_DERIV_DV_DEAD_COUNTS     4U      /* ignore micro-variations */
+#define HALL_DERIV_DT_MAX_US          100000U  /* au-delà: on considère "trop lent" */
 
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
@@ -32,7 +43,6 @@ __attribute__((section(".ramd2")))
 static adcsample_t adc_buffer[ADC_DMA_DEPTH * ADC_NUM_CHANNELS];
 
 static uint16_t hall_values[HALL_SENSOR_COUNT];
-static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
 static bool hall_gate[HALL_SENSOR_COUNT];
 static bool hall_note_on[HALL_SENSOR_COUNT];
 static bool hall_note_off[HALL_SENSOR_COUNT];
@@ -41,6 +51,10 @@ static uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
 static bool hall_initialized;
+
+/* Historique pour dérivée (par capteur). */
+static uint16_t hall_prev_value[HALL_SENSOR_COUNT];
+static systime_t hall_prev_time[HALL_SENSOR_COUNT];
 
 static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
@@ -104,16 +118,6 @@ static uint16_t clamp_u16(int32_t value) {
   return (uint16_t)value;
 }
 
-static uint8_t clamp_u8(int32_t value) {
-  if (value < 0) {
-    return 0U;
-  }
-  if (value > UINT8_MAX) {
-    return UINT8_MAX;
-  }
-  return (uint8_t)value;
-}
-
 static uint16_t hall_apply_offset(uint16_t raw, int16_t offset) {
   return clamp_u16((int32_t)raw + offset);
 }
@@ -133,25 +137,22 @@ static uint8_t hall_map_to_midi(uint16_t value, uint16_t min, uint16_t max) {
   return (uint8_t)(scaled / span);
 }
 
-static uint8_t hall_compute_velocity(uint16_t prev, uint16_t current) {
-  uint16_t delta = (current > prev) ? (uint16_t)(current - prev) : 0U;
-  uint32_t scaled = (uint32_t)delta * 127U / HALL_VELOCITY_MAX_DELTA;
-  if (scaled == 0U) {
-    scaled = 1U;
+static uint8_t hall_velocity_from_derivate(uint32_t deriv_counts_per_ms) {
+  if (HALL_DERIV_MAX_COUNTS_PER_MS == 0U) {
+    return 1U;
   }
-  if (scaled > 127U) {
-    scaled = 127U;
-  }
-  return (uint8_t)scaled;
+
+  uint32_t v = (deriv_counts_per_ms * 127U) / HALL_DERIV_MAX_COUNTS_PER_MS;
+  if (v > 127U) v = 127U;
+  if (v < 1U) v = 1U;
+  return (uint8_t)v;
 }
 
-static void hall_process_channel(uint8_t index, uint16_t raw) {
+static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   int16_t offset = hall_offsets[index];
   uint16_t adjusted = hall_apply_offset(raw, offset);
-  uint16_t prev = hall_prev_values[index];
-  hall_prev_values[index] = adjusted;
 
-  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
+  uint16_t on_threshold  = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
   uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
   uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
   uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
@@ -161,11 +162,34 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
 
   hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
 
+  /* --- Vélocité par dérivée (signal monte quand on appuie) --- */
+  uint16_t prev = hall_prev_value[index];
+  systime_t tprev = hall_prev_time[index];
+
+  uint32_t dt_us = TIME_I2US(chTimeDiffX(tprev, now));
+  if (dt_us == 0U) {
+    dt_us = 1U;
+  }
+
+  int32_t dv_signed = (int32_t)adjusted - (int32_t)prev;
+  uint32_t dv = (dv_signed > 0) ? (uint32_t)dv_signed : 0U;
+
+  uint32_t deriv_counts_per_ms = 0U;
+  if (dt_us <= HALL_DERIV_DT_MAX_US && dv >= HALL_DERIV_DV_DEAD_COUNTS) {
+    /* counts/ms = counts * 1000 / us */
+    deriv_counts_per_ms = (dv * 1000U) / dt_us;
+  }
+
+  uint8_t computed_velocity = hall_velocity_from_derivate(deriv_counts_per_ms);
+
+  /* --- NOTE ON / NOTE OFF avec hystérésis --- */
   if (!hall_gate[index]) {
     if (adjusted >= on_threshold) {
       hall_gate[index] = true;
       hall_note_on[index] = true;
-      hall_velocity[index] = hall_compute_velocity(prev, adjusted);
+
+      /* fige la vélocité au NOTE ON */
+      hall_velocity[index] = computed_velocity;
     }
   } else {
     if (adjusted <= off_threshold) {
@@ -174,11 +198,16 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
     }
   }
 
+  /* --- Pressure (aftertouch) --- */
   if (hall_gate[index]) {
     hall_pressure[index] = hall_map_to_midi(adjusted, min_value, max_value);
   } else {
     hall_pressure[index] = 0U;
   }
+
+  /* --- MàJ historique dérivée --- */
+  hall_prev_value[index] = adjusted;
+  hall_prev_time[index] = now;
 }
 
 void hall_init(void) {
@@ -197,15 +226,20 @@ void hall_init(void) {
     adc_buffer[i] = 0x1234;
   }
 
+  systime_t now = chVTGetSystemTimeX();
+
   for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
     hall_values[i] = 0U;
-    hall_prev_values[i] = 0U;
     hall_gate[i] = false;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
     hall_velocity[i] = 0U;
     hall_pressure[i] = 0U;
     hall_midi_value[i] = 0U;
+
+    /* init historique dérivée: évite un gros dv au premier passage */
+    hall_prev_value[i] = (uint16_t)HALL_RAW_REST;
+    hall_prev_time[i] = now;
   }
 
   adcStart(&ADCD1, NULL);
@@ -230,8 +264,9 @@ void hall_update(void) {
 
     hall_values[mux_ch + 0U] = vA;
     hall_values[mux_ch + 8U] = vB;
-    hall_process_channel(mux_ch + 0U, vA);
-    hall_process_channel(mux_ch + 8U, vB);
+    systime_t now = chVTGetSystemTimeX();
+    hall_process_channel(mux_ch + 0U, vA, now);
+    hall_process_channel(mux_ch + 8U, vB, now);
   }
 }
 

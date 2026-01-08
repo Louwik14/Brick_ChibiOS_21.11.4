@@ -49,14 +49,7 @@ int main(void) {
         note_active[i] = false;
         midi_note_off(MIDI_DEST_BOTH, 0U, note_number, 0U);
       }
-      if (note_active[i]) {
-        if (pressure != last_pressure[i]) {
-          midi_poly_aftertouch(MIDI_DEST_BOTH, 0U, note_number, pressure);
-          last_pressure[i] = pressure;
-        }
-      } else {
-        last_pressure[i] = 0U;
-      }
+
     }
 
     uint16_t raw = hall_get(sensor_index);
@@ -81,6 +74,6 @@ int main(void) {
 
     drv_display_update();
 
-    chThdSleepMilliseconds(100);
+    chThdSleepMilliseconds(1);
   }
 }
