@@ -34,10 +34,16 @@
 __attribute__((section(".ramd2")))
 static adcsample_t adc_buffer[ADC_DMA_DEPTH * ADC_NUM_CHANNELS];
 
+typedef enum {
+  HALL_STATE_UP = 0,
+  HALL_STATE_DOWN,
+  HALL_STATE_REARMED
+} hall_state_t;
+
 static uint16_t hall_values[HALL_SENSOR_COUNT];
 static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
 static systime_t hall_prev_times[HALL_SENSOR_COUNT];
-static bool hall_gate[HALL_SENSOR_COUNT];
+static hall_state_t hall_state[HALL_SENSOR_COUNT];
 static bool hall_note_on[HALL_SENSOR_COUNT];
 static bool hall_note_off[HALL_SENSOR_COUNT];
 static uint8_t hall_velocity[HALL_SENSOR_COUNT];
@@ -203,15 +209,6 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
 
   int16_t offset = hall_offsets[index];
   uint16_t adjusted = hall_apply_offset(raw, offset);
-  hall_note_on[index] = true;
-
-  /* TEST DEBUG TEMPORAIRE */
-  if (adjusted > 40000) {
-    hall_note_on[index] = true;
-  }
-  if (adjusted < 38000) {
-    hall_note_off[index] = true;
-  }
   uint16_t prev = hall_prev_values[index];
   systime_t prev_time = hall_prev_times[index];
   if (prev_time == 0U) {
@@ -255,35 +252,43 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
   hall_dbg_retrigger_threshold[index] = retrigger_threshold;
   hall_dbg_rate[index] = rate;
 
-  bool gate = hall_gate[index];
+  hall_note_on[index] = false;
+  hall_note_off[index] = false;
 
-  if (!gate) {
-    // État relâché → on attend un appui
-    if (adjusted >= on_threshold) {
-      hall_gate[index] = true;
-      hall_note_on[index] = true;
-      hall_velocity[index] = hall_velocity_from_rate(rate);
-    }
-  } else {
-    // État enfoncé
-    if (adjusted <= off_threshold) {
-      // Vrai relâchement
-      hall_gate[index] = false;
-      hall_note_off[index] = true;
-    } else if (adjusted <= retrigger_threshold) {
-      // Armement retrigger sans NOTE OFF
-      hall_gate[index] = false;
-    }
+  switch (hall_state[index]) {
+    case HALL_STATE_UP:
+      if (adjusted >= on_threshold) {
+        hall_state[index] = HALL_STATE_DOWN;
+        hall_note_on[index] = true;
+        hall_velocity[index] = hall_velocity_from_rate(rate);
+      }
+      break;
+
+    case HALL_STATE_DOWN:
+      if (adjusted <= off_threshold) {
+        hall_state[index] = HALL_STATE_REARMED;
+        hall_note_off[index] = true;
+      }
+      break;
+
+    case HALL_STATE_REARMED:
+      if (adjusted >= retrigger_threshold) {
+        hall_state[index] = HALL_STATE_DOWN;
+        hall_note_on[index] = true;
+        hall_velocity[index] = hall_velocity_from_rate(rate);
+      } else if (adjusted <= off_threshold) {
+        hall_state[index] = HALL_STATE_UP;
+      }
+      break;
   }
 
-
-  if (hall_gate[index]) {
+  if (hall_state[index] == HALL_STATE_DOWN) {
     hall_pressure[index] = hall_map_to_midi(adjusted, min_value, max_value);
   } else {
     hall_pressure[index] = 0U;
   }
 
-  hall_dbg_gate[index] = hall_gate[index];
+  hall_dbg_gate[index] = (hall_state[index] == HALL_STATE_DOWN);
 }
 
 void hall_init(void) {
@@ -306,7 +311,7 @@ void hall_init(void) {
     hall_values[i] = 0U;
     hall_prev_values[i] = 0U;
     hall_prev_times[i] = chVTGetSystemTimeX();
-    hall_gate[i] = false;
+    hall_state[i] = HALL_STATE_UP;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
     hall_velocity[i] = 0U;
