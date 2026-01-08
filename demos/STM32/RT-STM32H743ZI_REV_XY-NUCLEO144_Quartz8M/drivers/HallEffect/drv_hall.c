@@ -11,7 +11,7 @@
 #define HALL_SENSOR_COUNT       16U
 /* Paramètres réglables (échelle ADC 16-bit). */
 #define HALL_RAW_REST           36000U
-#define HALL_RAW_PRESSED        46000U
+#define HALL_RAW_PRESSED        64000U
 #define HALL_ON_THRESHOLD       40000U
 #define HALL_HYSTERESIS         1500U
 #define HALL_RETRIGGER_DELTA    900U
