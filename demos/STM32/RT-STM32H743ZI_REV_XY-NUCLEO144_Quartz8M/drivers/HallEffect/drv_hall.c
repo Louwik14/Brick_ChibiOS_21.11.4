@@ -54,9 +54,12 @@ static uint16_t hall_dbg_retrigger_threshold[HALL_SENSOR_COUNT];
 static uint32_t hall_dbg_rate[HALL_SENSOR_COUNT];
 static bool hall_dbg_armed[HALL_SENSOR_COUNT];
 static bool hall_dbg_gate[HALL_SENSOR_COUNT];
+static volatile uint32_t hall_adc_cb_count;
+static volatile uint32_t hall_gpt_cb_count;
 
 static void mux_select(uint8_t ch);
 static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
+static void hall_gpt_cb(GPTDriver *gptp);
 
 /*
  * "Timer clock in Hz." and "TIM CR2 register initialization data."
@@ -65,7 +68,7 @@ static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
  */
 static const GPTConfig hall_gptcfg = {
   .frequency    = STM32_TIMCLK1,
-  .callback     = NULL,
+  .callback     = hall_gpt_cb,
   .cr2          = TIM_CR2_MMS_1,
   .dier         = 0U
 };
@@ -74,6 +77,7 @@ static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 20000U);
 
 static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
+  hall_adc_cb_count++;
   uint16_t vA = adc_buffer[0U];
   uint16_t vB = adc_buffer[1U];
   uint8_t mux_ch = hall_mux_index;
@@ -106,7 +110,7 @@ static const ADCConversionGroup adcgrpcfg = {
    * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.c)
    */
   .cfgr         = ADC_CFGR_EXTEN_RISING |
-                  ADC_CFGR_EXTSEL_SRC(12), /* "TIM4_TRGO" (testhal/.../portab.c) */
+                  ADC_CFGR_EXTSEL_SRC(12), /* TIM4_TRGO on STM32H743 */
   .cfgr2        = 0,
 
   .ltr1         = 0,
@@ -140,6 +144,11 @@ static void mux_select(uint8_t ch) {
   palWritePad(MUX_S0_PORT, MUX_S0_PIN, (ch >> 0) & 1U);
   palWritePad(MUX_S1_PORT, MUX_S1_PIN, (ch >> 1) & 1U);
   palWritePad(MUX_S2_PORT, MUX_S2_PIN, (ch >> 2) & 1U);
+}
+
+static void hall_gpt_cb(GPTDriver *gptp) {
+  (void)gptp;
+  hall_gpt_cb_count++;
 }
 
 static uint16_t clamp_u16(int32_t value) {
@@ -294,6 +303,8 @@ void hall_init(void) {
 
   hall_mux_index = 0U;
   mux_select(hall_mux_index);
+  hall_adc_cb_count = 0U;
+  hall_gpt_cb_count = 0U;
 
   gptStart(&GPTD4, &hall_gptcfg);
 
@@ -352,4 +363,16 @@ uint8_t hall_get_midi_value(uint8_t index) {
     return 0U;
   }
   return hall_midi_value[index];
+}
+
+uint32_t hall_debug_get_adc_cb_count(void) {
+  return hall_adc_cb_count;
+}
+
+uint32_t hall_debug_get_gpt_cb_count(void) {
+  return hall_gpt_cb_count;
+}
+
+uint8_t hall_debug_get_mux_index(void) {
+  return hall_mux_index;
 }
