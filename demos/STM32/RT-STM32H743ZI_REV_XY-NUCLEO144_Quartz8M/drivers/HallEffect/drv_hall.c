@@ -4,21 +4,50 @@
 #include "hal.h"
 
 #include <limits.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-#define ADC_NUM_CHANNELS        2
-#define ADC_DMA_DEPTH           1
+/*
+ * drv_hall.c — STM32H743 + ChibiOS
+ *
+ * Acquisition:
+ *   GPT (TIM4_TRGO) -> ADC (ext trigger) -> DMA circulaire -> adc_cb() IRQ
+ *   adc_cb(): lit A/B, map index capteur, avance MUX, appelle hall_process_channel()
+ *
+ * Logique "Grid-like" (bouton auto-calibrant):
+ *   - Min/Max auto-observés par capteur
+ *   - Seuils Schmitt dynamiques exprimés en % de la plage [min..max]
+ *   - NOTE ON à la montée (raw monte quand on appuie)
+ *   - NOTE OFF à la descente
+ *
+ * Thread-safety:
+ *   - Les flags note_on/off sont écrits en IRQ.
+ *   - Le main les consomme via getters read+clear atomiques (chSysLock()).
+ *   - hall_update() est un no-op pour éviter d'effacer des événements en course.
+ */
 
-#define HALL_SENSOR_COUNT       16U
-/* Paramètres réglables (échelle ADC 16-bit). */
-#define HALL_RAW_REST           36000U
-#define HALL_RAW_PRESSED        64000U
-#define HALL_ON_THRESHOLD       40000U
-#define HALL_HYSTERESIS         1500U
-#define HALL_RETRIGGER_DELTA    900U
-#define HALL_VELOCITY_RATE_MIN  500U
-#define HALL_VELOCITY_RATE_MAX  200000U
-#define HALL_TRIGGER_RATE       2500U
+/* -------------------- Paramètres -------------------- */
 
+#define ADC_NUM_CHANNELS     2
+#define ADC_DMA_DEPTH        1
+
+#define HALL_SENSOR_COUNT    16U
+
+/* Fréquence globale de déclenchement ADC. Chaque capteur est vu à F/8. */
+#define HALL_ADC_TRIGGER_HZ  5000U
+
+/* -------------------- Grid-like engine params (RAW 16-bit) --------------------
+ *
+ * threshold/hysteresis exprimés en millièmes de la plage [min..max].
+ * Exemple: TH=700, HYST=120 -> ON à 76%, OFF à 64% (car hyst/2 = 60)
+ *
+ * Ajuste ces valeurs en fonction de ta mécanique (course utile, feel, etc).
+ */
+#define HALL_THRESHOLD_PPM    700U   /* 0..1000 */
+#define HALL_HYST_PPM         120U   /* 0..1000 */
+#define HALL_MIN_RANGE        500U   /* plage minimale requise avant de considérer la calibration "valide" */
+
+/* MUX pins */
 #define MUX_S0_PORT GPIOA
 #define MUX_S0_PIN  5
 #define MUX_S1_PORT GPIOA
@@ -26,69 +55,98 @@
 #define MUX_S2_PORT GPIOA
 #define MUX_S2_PIN  6
 
+/* ADC channels */
 #define ADC_CH_MUXA   ADC_CHANNEL_IN4
 #define ADC_CH_MUXB   ADC_CHANNEL_IN7
-
 #define ADC_PCSEL     (ADC_SELMASK_IN4 | ADC_SELMASK_IN7)
+
+/* -------------------- DMA buffer -------------------- */
 
 __attribute__((section(".ramd2")))
 static adcsample_t adc_buffer[ADC_DMA_DEPTH * ADC_NUM_CHANNELS];
 
-static uint16_t hall_values[HALL_SENSOR_COUNT];
-static uint16_t hall_prev_values[HALL_SENSOR_COUNT];
-static systime_t hall_prev_times[HALL_SENSOR_COUNT];
-static bool hall_gate[HALL_SENSOR_COUNT];
-static bool hall_armed[HALL_SENSOR_COUNT];
-static bool hall_note_on[HALL_SENSOR_COUNT];
-static bool hall_note_off[HALL_SENSOR_COUNT];
-static uint8_t hall_velocity[HALL_SENSOR_COUNT];
-static uint8_t hall_pressure[HALL_SENSOR_COUNT];
-static uint8_t hall_midi_value[HALL_SENSOR_COUNT];
-static int16_t hall_offsets[HALL_SENSOR_COUNT] = {0};
+/* -------------------- État capteurs -------------------- */
+
+/* Valeur brute par capteur (RAW 16-bit) */
+static volatile uint16_t hall_values[HALL_SENSOR_COUNT];
+
+/* Flags impulsionnels écrits en IRQ, consommés par le main */
+static volatile bool hall_note_on[HALL_SENSOR_COUNT];
+static volatile bool hall_note_off[HALL_SENSOR_COUNT];
+
+/* Stubs API (à implémenter plus tard) */
+static volatile uint8_t hall_velocity[HALL_SENSOR_COUNT];
+static volatile uint8_t hall_pressure[HALL_SENSOR_COUNT];
+static volatile uint8_t hall_midi_value[HALL_SENSOR_COUNT];
+
 static bool hall_initialized;
 static uint8_t hall_mux_index;
-static uint16_t hall_dbg_adjusted[HALL_SENSOR_COUNT];
-static uint16_t hall_dbg_on_threshold[HALL_SENSOR_COUNT];
-static uint16_t hall_dbg_off_threshold[HALL_SENSOR_COUNT];
-static uint16_t hall_dbg_retrigger_threshold[HALL_SENSOR_COUNT];
-static uint32_t hall_dbg_rate[HALL_SENSOR_COUNT];
-static bool hall_dbg_armed[HALL_SENSOR_COUNT];
-static bool hall_dbg_gate[HALL_SENSOR_COUNT];
+
+/* -------------------- Grid-like button state (par capteur) -------------------- */
+
+typedef struct {
+  uint16_t min;
+  uint16_t max;
+  uint16_t trig_lo;
+  uint16_t trig_hi;
+
+  uint16_t prev_in;
+  uint16_t curr_in;
+
+  uint8_t  prev_out; /* 0=OFF, 1=ON */
+  uint8_t  curr_out; /* 0=OFF, 1=ON */
+  uint8_t locked;   // 0 = apprend, 1 = figé pendant appui
+} hall_button_t;
+
+static hall_button_t hall_btn[HALL_SENSOR_COUNT];
+
+/* -------------------- Forward decl -------------------- */
 
 static void mux_select(uint8_t ch);
-static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now);
+static void hall_process_channel(uint8_t index, uint16_t raw);
+static void hall_update_triggers(hall_button_t *b);
+static bool hall_range_valid(const hall_button_t *b);
+
+/* -------------------- GPT (TIM4_TRGO) -------------------- */
 
 /*
- * "Timer clock in Hz." and "TIM CR2 register initialization data."
- * (os/hal/ports/STM32/LLD/TIMv1/hal_gpt_lld.h).
- * "MMS = 010 = TRGO on Update Event." (testhal/STM32/multi/ADC/cfg/stm32h743zi_nucleo144/portab.c)
+ * TIM4 est utilisé comme source de trigger ADC (TRGO sur Update Event).
+ * EXTSEL_SRC(12) correspond à TIM4_TRGO dans les configs STM32H7 ChibiOS.
  */
 static const GPTConfig hall_gptcfg = {
-  .frequency    = STM32_TIMCLK1,
-  .callback     = NULL,
-  .cr2          = TIM_CR2_MMS_1,
-  .dier         = 0U
+  .frequency = STM32_TIMCLK1,
+  .callback  = NULL,
+  .cr2       = TIM_CR2_MMS_1, /* MMS=010: TRGO on Update */
+  .dier      = 0U
 };
 
-static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / 20000U);
+static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / HALL_ADC_TRIGGER_HZ);
+
+/* -------------------- ADC callback (IRQ context) -------------------- */
 
 static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
-  uint16_t vA = adc_buffer[0U];
-  uint16_t vB = adc_buffer[1U];
-  uint8_t mux_ch = hall_mux_index;
 
-  hall_values[mux_ch + 0U] = vA;
-  hall_values[mux_ch + 8U] = vB;
+  /* Buffer depth = 1 => 2 samples: A puis B. */
+  uint16_t vA = (uint16_t)adc_buffer[0U];
+  uint16_t vB = (uint16_t)adc_buffer[1U];
 
-  /* "This function can be called from any context" (os/rt/include/chvt.h). */
-  systime_t now = chVTGetSystemTimeX();
-  hall_process_channel(mux_ch + 0U, vA, now);
-  hall_process_channel(mux_ch + 8U, vB, now);
+  uint8_t mux = hall_mux_index;
 
-  hall_mux_index = (uint8_t)((mux_ch + 1U) & 0x7U);
+  /* Stocke brut (debug/telemetry) */
+  hall_values[mux + 0U] = vA;
+  hall_values[mux + 8U] = vB;
+
+  /* Moteur Grid-like par capteur */
+  hall_process_channel((uint8_t)(mux + 0U), vA);
+  hall_process_channel((uint8_t)(mux + 8U), vB);
+
+  /* Next mux channel (0..7) */
+  hall_mux_index = (uint8_t)((hall_mux_index + 1U) & 7U);
   mux_select(hall_mux_index);
 }
+
+/* -------------------- ADC config -------------------- */
 
 static const ADCConversionGroup adcgrpcfg = {
   .circular     = true,
@@ -96,45 +154,33 @@ static const ADCConversionGroup adcgrpcfg = {
   .end_cb       = adc_cb,
   .error_cb     = NULL,
 
-  /*
-   * "Callback function associated to the group." (os/hal/include/hal_adc.h)
-   * "NOTE: The bits ADC_CFGR_CONT or ADC_CFGR_DISCEN must be specified
-   * in continuous mode or if the buffer depth is greater than one."
-   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.h)
-   * "If circular buffer depth > 1, then the half transfer interrupt is
-   * enabled in order to allow streaming processing."
-   * (os/hal/ports/STM32/LLD/ADCv4/hal_adc_lld.c)
-   */
-  .cfgr         = ADC_CFGR_EXTEN_RISING |
-                  ADC_CFGR_EXTSEL_SRC(12), /* "TIM4_TRGO" (testhal/.../portab.c) */
-  .cfgr2        = 0,
+  /* External trigger on rising edge: TIM4_TRGO */
+  .cfgr  = ADC_CFGR_EXTEN_RISING | ADC_CFGR_EXTSEL_SRC(12),
+  .cfgr2 = 0,
 
-  .ltr1         = 0,
-  .htr1         = 0,
-  .ltr2         = 0,
-  .htr2         = 0,
-  .ltr3         = 0,
-  .htr3         = 0,
+  .ltr1 = 0, .htr1 = 0,
+  .ltr2 = 0, .htr2 = 0,
+  .ltr3 = 0, .htr3 = 0,
 
-  .awd2cr       = 0,
-  .awd3cr       = 0,
+  .awd2cr = 0,
+  .awd3cr = 0,
 
-  .pcsel        = ADC_PCSEL,
+  .pcsel = ADC_PCSEL,
 
-  .smpr         = {
-    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_2P5) |
-    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_2P5),
+  .smpr = {
+    ADC_SMPR1_SMP_AN4(ADC_SMPR_SMP_64P5) |
+    ADC_SMPR1_SMP_AN7(ADC_SMPR_SMP_64P5),
     0
   },
 
-  .sqr          = {
+  .sqr = {
     ADC_SQR1_SQ1_N(ADC_CH_MUXA) |
     ADC_SQR1_SQ2_N(ADC_CH_MUXB),
-    0,
-    0,
-    0
+    0, 0, 0
   }
 };
+
+/* -------------------- MUX -------------------- */
 
 static void mux_select(uint8_t ch) {
   palWritePad(MUX_S0_PORT, MUX_S0_PIN, (ch >> 0) & 1U);
@@ -142,158 +188,150 @@ static void mux_select(uint8_t ch) {
   palWritePad(MUX_S2_PORT, MUX_S2_PIN, (ch >> 2) & 1U);
 }
 
-static uint16_t clamp_u16(int32_t value) {
-  if (value < 0) {
-    return 0U;
+/* -------------------- Grid-like helpers -------------------- */
+
+static bool hall_range_valid(const hall_button_t *b) {
+  if (b->max <= b->min) {
+    return false;
   }
-  if (value > UINT16_MAX) {
-    return UINT16_MAX;
-  }
-  return (uint16_t)value;
+  uint16_t range = (uint16_t)(b->max - b->min);
+  return range >= (uint16_t)HALL_MIN_RANGE;
 }
 
-static uint8_t clamp_u8(int32_t value) {
-  if (value < 0) {
-    return 0U;
-  }
-  if (value > UINT8_MAX) {
-    return UINT8_MAX;
-  }
-  return (uint8_t)value;
-}
-
-static uint16_t hall_apply_offset(uint16_t raw, int16_t offset) {
-  return clamp_u16((int32_t)raw + offset);
-}
-
-static uint8_t hall_map_to_midi(uint16_t value, uint16_t min, uint16_t max) {
-  if (max <= min) {
-    return 0U;
-  }
-  if (value <= min) {
-    return 0U;
-  }
-  if (value >= max) {
-    return 127U;
-  }
-  uint32_t span = (uint32_t)(max - min);
-  uint32_t scaled = (uint32_t)(value - min) * 127U;
-  return (uint8_t)(scaled / span);
-}
-
-static uint32_t hall_compute_rate(uint16_t prev, uint16_t current, systime_t prev_time, systime_t now) {
-  uint16_t delta = (current > prev) ? (uint16_t)(current - prev) : 0U;
-  systime_t diff = chTimeDiffX(prev_time, now);
-  uint32_t elapsed_us = TIME_I2US(diff);
-  if (elapsed_us == 0U) {
-    elapsed_us = 1U;
-  }
-  uint64_t scaled = (uint64_t)delta * 1000000ULL;
-  return (uint32_t)(scaled / elapsed_us);
-}
-
-static uint8_t hall_velocity_from_rate(uint32_t rate) {
-  if (rate <= HALL_VELOCITY_RATE_MIN) {
-    return 1U;
-  }
-  if (rate >= HALL_VELOCITY_RATE_MAX) {
-    return 127U;
-  }
-  uint32_t span = HALL_VELOCITY_RATE_MAX - HALL_VELOCITY_RATE_MIN;
-  uint32_t scaled = (rate - HALL_VELOCITY_RATE_MIN) * 126U / span;
-  return (uint8_t)(scaled + 1U);
-}
-
-static void hall_process_channel(uint8_t index, uint16_t raw, systime_t now) {
-  int16_t offset = hall_offsets[index];
-  uint16_t adjusted = hall_apply_offset(raw, offset);
-  uint16_t prev = hall_prev_values[index];
-  systime_t prev_time = hall_prev_times[index];
-  if (prev_time == 0U) {
-    prev_time = now;
-  }
-  uint32_t rate = hall_compute_rate(prev, adjusted, prev_time, now);
-  hall_prev_values[index] = adjusted;
-  hall_prev_times[index] = now;
-
-  uint16_t on_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD + offset);
-  uint16_t off_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_HYSTERESIS + offset);
-  uint16_t retrigger_threshold = clamp_u16((int32_t)HALL_ON_THRESHOLD - (int32_t)HALL_RETRIGGER_DELTA + offset);
-  uint16_t min_value = clamp_u16((int32_t)HALL_RAW_REST + offset);
-  uint16_t max_value = clamp_u16((int32_t)HALL_RAW_PRESSED + offset);
-  if (max_value <= min_value) {
-    max_value = (uint16_t)(min_value + 1U);
+static void hall_update_triggers(hall_button_t *b) {
+  /* Si plage invalide, on met des triggers "neutres" */
+  if (!hall_range_valid(b)) {
+    b->trig_lo = b->min;
+    b->trig_hi = b->max;
+    return;
   }
 
-  hall_midi_value[index] = hall_map_to_midi(adjusted, min_value, max_value);
+  uint32_t range = (uint32_t)(b->max - b->min);
 
-  hall_dbg_adjusted[index] = adjusted;
-  hall_dbg_on_threshold[index] = on_threshold;
-  hall_dbg_off_threshold[index] = off_threshold;
-  hall_dbg_retrigger_threshold[index] = retrigger_threshold;
-  hall_dbg_rate[index] = rate;
+  uint32_t half_hyst = (uint32_t)HALL_HYST_PPM / 2U;
+  uint32_t lo_ppm = (uint32_t)HALL_THRESHOLD_PPM;
+  uint32_t hi_ppm = (uint32_t)HALL_THRESHOLD_PPM;
 
-  if ((prev > retrigger_threshold) && (adjusted <= retrigger_threshold)) {
-    hall_armed[index] = true;
-  }
-
-  bool fast_rise = rate >= HALL_TRIGGER_RATE;
-  bool threshold_crossed = (prev < on_threshold) && (adjusted >= on_threshold);
-
-  if ((threshold_crossed || (fast_rise && adjusted >= retrigger_threshold)) && hall_armed[index]) {
-    hall_gate[index] = true;
-    hall_note_on[index] = true;
-    hall_velocity[index] = hall_velocity_from_rate(rate);
-    hall_armed[index] = false;
-  }
-
-  if (hall_gate[index] && (prev > off_threshold) && (adjusted <= off_threshold)) {
-    hall_gate[index] = false;
-    hall_note_off[index] = true;
-    hall_armed[index] = true;
-  }
-
-  if (hall_gate[index]) {
-    hall_pressure[index] = hall_map_to_midi(adjusted, min_value, max_value);
+  /* évite underflow/overflow */
+  if (lo_ppm > half_hyst) {
+    lo_ppm -= half_hyst;
   } else {
-    hall_pressure[index] = 0U;
+    lo_ppm = 0U;
   }
 
-  hall_dbg_armed[index] = hall_armed[index];
-  hall_dbg_gate[index] = hall_gate[index];
+  hi_ppm += half_hyst;
+  if (hi_ppm > 1000U) {
+    hi_ppm = 1000U;
+  }
+
+  b->trig_lo = (uint16_t)(b->min + (range * lo_ppm) / 1000U);
+  b->trig_hi = (uint16_t)(b->min + (range * hi_ppm) / 1000U);
 }
+
+/* -------------------- Logique Grid-like ON/OFF (IRQ context) --------------------
+ *
+ * Hypothèse hardware: raw MONTE quand on appuie.
+ * -> NOTE ON quand raw dépasse trig_hi (montée)
+ * -> NOTE OFF quand raw redescend sous trig_lo (descente)
+ */
+static void hall_process_channel(uint8_t index, uint16_t raw) {
+
+  hall_button_t *b = &hall_btn[index];
+
+  /* 1) update min/max auto-cal SEULEMENT SI NON LOCKÉ */
+  if (b->locked == 0U) {
+
+    if (raw < b->min) {
+      b->min = raw;
+    }
+    if (raw > b->max) {
+      b->max = raw;
+    }
+  }
+
+
+  /* 2) recompute triggers */
+  hall_update_triggers(b);
+
+  /* 3) shift input history */
+  b->prev_in = b->curr_in;
+  b->curr_in = raw;
+
+  /* 4) shift output history */
+  b->prev_out = b->curr_out;
+
+  /* 5) Tant que la plage n'est pas valide, on force OFF (pas d'événements) */
+  if (!hall_range_valid(b)) {
+    b->curr_out = 0;
+    return;
+  }
+
+  /* 6) Schmitt trigger + direction check + LOCK */
+  if ((b->prev_out == 0U) &&
+      (b->curr_in >= b->trig_hi) &&
+      (b->curr_in > b->prev_in)) {
+
+    b->curr_out = 1U;
+    b->locked = 1U;   /* 🔒 on fige la calibration pendant l'appui */
+  }
+  else if ((b->prev_out != 0U) &&
+           (b->curr_in <= b->trig_lo) &&
+           (b->curr_in < b->prev_in)) {
+
+    b->curr_out = 0U;
+    b->locked = 0U;   /* 🔓 on réautorise l'auto-cal au relâchement */
+  }
+
+
+
+  /* 7) Edge detect -> flags */
+  if ((b->prev_out == 0U) && (b->curr_out == 1U)) {
+    hall_note_on[index] = true;
+  }
+  else if ((b->prev_out == 1U) && (b->curr_out == 0U)) {
+    hall_note_off[index] = true;
+  }
+}
+
+/* -------------------- API -------------------- */
 
 void hall_init(void) {
   if (hall_initialized) {
     return;
   }
 
+  /* GPIO MUX */
   palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL);
   palSetPadMode(GPIOA, 5, PAL_MODE_OUTPUT_PUSHPULL);
   palSetPadMode(GPIOA, 6, PAL_MODE_OUTPUT_PUSHPULL);
 
-  palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG);
-  palSetPadMode(GPIOA, 7, PAL_MODE_INPUT_ANALOG);
+  /* ADC pins */
+  palSetPadMode(GPIOC, 4, PAL_MODE_INPUT_ANALOG); /* IN4 */
+  palSetPadMode(GPIOA, 7, PAL_MODE_INPUT_ANALOG); /* IN7 */
 
-  for (unsigned i = 0; i < ADC_DMA_DEPTH * ADC_NUM_CHANNELS; i++) {
-    adc_buffer[i] = 0x1234;
-  }
-
-  for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
+  for (uint8_t i = 0U; i < HALL_SENSOR_COUNT; i++) {
     hall_values[i] = 0U;
-    hall_prev_values[i] = 0U;
-    hall_prev_times[i] = chVTGetSystemTimeX();
-    hall_gate[i] = false;
-    hall_armed[i] = true;
     hall_note_on[i] = false;
     hall_note_off[i] = false;
+
     hall_velocity[i] = 0U;
     hall_pressure[i] = 0U;
     hall_midi_value[i] = 0U;
+
+    hall_btn[i].min = UINT16_MAX;
+    hall_btn[i].max = 0U;
+    hall_btn[i].trig_lo = UINT16_MAX;
+    hall_btn[i].trig_hi = 0U;
+    hall_btn[i].prev_in = 0U;
+    hall_btn[i].curr_in = 0U;
+    hall_btn[i].prev_out = 0U;
+    hall_btn[i].curr_out = 0U;
+    hall_btn[i].locked = 0U;
+
   }
 
   hall_mux_index = 0U;
-  mux_select(hall_mux_index);
+  mux_select(0U);
 
   gptStart(&GPTD4, &hall_gptcfg);
 
@@ -305,34 +343,46 @@ void hall_init(void) {
   hall_initialized = true;
 }
 
+/* Intentionnellement no-op:
+ * Les événements sont consommés via getters read+clear atomiques.
+ */
 void hall_update(void) {
-  for (uint8_t i = 0; i < HALL_SENSOR_COUNT; i++) {
-    hall_note_on[i] = false;
-    hall_note_off[i] = false;
-  }
+  /* no-op */
 }
 
 uint16_t hall_get(uint8_t index) {
   if (index >= HALL_SENSOR_COUNT) {
-    return 0;
+    return 0U;
   }
   return hall_values[index];
 }
 
+/* Read+clear atomique pour éviter perte d'événement si l'IRQ écrit pendant la lecture */
 bool hall_get_note_on(uint8_t index) {
   if (index >= HALL_SENSOR_COUNT) {
     return false;
   }
-  return hall_note_on[index];
+  bool v;
+  chSysLock();
+  v = hall_note_on[index];
+  hall_note_on[index] = false;
+  chSysUnlock();
+  return v;
 }
 
 bool hall_get_note_off(uint8_t index) {
   if (index >= HALL_SENSOR_COUNT) {
     return false;
   }
-  return hall_note_off[index];
+  bool v;
+  chSysLock();
+  v = hall_note_off[index];
+  hall_note_off[index] = false;
+  chSysUnlock();
+  return v;
 }
 
+/* Stubs (compat header/main). */
 uint8_t hall_get_velocity(uint8_t index) {
   if (index >= HALL_SENSOR_COUNT) {
     return 0U;
@@ -352,4 +402,30 @@ uint8_t hall_get_midi_value(uint8_t index) {
     return 0U;
   }
   return hall_midi_value[index];
+}
+/* -------------------- DEBUG API -------------------- */
+
+uint16_t hall_dbg_get_min(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0;
+  return hall_btn[i].min;
+}
+
+uint16_t hall_dbg_get_max(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0;
+  return hall_btn[i].max;
+}
+
+uint16_t hall_dbg_get_trig_lo(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0;
+  return hall_btn[i].trig_lo;
+}
+
+uint16_t hall_dbg_get_trig_hi(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0;
+  return hall_btn[i].trig_hi;
+}
+
+uint8_t hall_dbg_get_state(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0;
+  return hall_btn[i].curr_out;
 }

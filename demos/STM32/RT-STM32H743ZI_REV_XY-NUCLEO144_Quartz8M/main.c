@@ -5,8 +5,11 @@
 #include "drivers/HallEffect/drv_hall.h"
 #include "midi/midi.h"
 #include "usb/usb_device.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 int main(void) {
 
@@ -20,67 +23,79 @@ int main(void) {
   midi_init();
 
   char line[32];
-  const uint8_t sensor_index = 4U;
-  const uint8_t base_note = 60U;
-  bool note_active[16];
-  uint8_t last_pressure[16];
 
+  const uint8_t base_note = 60U;
+  const uint8_t sensor_index = 3U;   /* <-- change la touche à observer ici */
+
+  bool note_active[16];
   memset(note_active, 0, sizeof(note_active));
-  memset(last_pressure, 0, sizeof(last_pressure));
 
   while (true) {
-    hall_update();
 
     drv_display_clear();
-    drv_display_draw_text(0, 0, "HALL B5 DEBUG");
 
     for (uint8_t i = 0U; i < 16U; i++) {
-      bool note_on = hall_get_note_on(i);
+
+      /* Ces getters consomment (read+clear) les events de façon atomique */
+      bool note_on  = hall_get_note_on(i);
       bool note_off = hall_get_note_off(i);
-      uint8_t velocity = hall_get_velocity(i);
-      uint8_t pressure = hall_get_pressure(i);
+      uint16_t raw  = hall_get(i);
+
       uint8_t note_number = (uint8_t)(base_note + i);
 
       if (note_on) {
         note_active[i] = true;
-        midi_note_on(MIDI_DEST_BOTH, 0U, note_number, velocity);
+        midi_note_on(MIDI_DEST_BOTH, 0U, note_number, 100U); /* velocity fixe */
       }
+
       if (note_off) {
         note_active[i] = false;
         midi_note_off(MIDI_DEST_BOTH, 0U, note_number, 0U);
       }
-      if (note_active[i]) {
-        if (pressure != last_pressure[i]) {
-          midi_poly_aftertouch(MIDI_DEST_BOTH, 0U, note_number, pressure);
-          last_pressure[i] = pressure;
-        }
-      } else {
-        last_pressure[i] = 0U;
+
+      if (i == sensor_index) {
+
+        uint16_t min = hall_dbg_get_min(i);
+        uint16_t max = hall_dbg_get_max(i);
+        uint16_t lo  = hall_dbg_get_trig_lo(i);
+        uint16_t hi  = hall_dbg_get_trig_hi(i);
+        uint8_t  st  = hall_dbg_get_state(i);
+
+        uint16_t range = (max >= min) ? (max - min) : 0;
+
+        uint8_t y = 0;
+
+        snprintf(line, sizeof(line), "RAW   = %5u", raw);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "MIN   = %5u", min);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "MAX   = %5u", max);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "RANGE = %5u", range);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "LO    = %5u", lo);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "HI    = %5u", hi);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "STATE = %s", st ? "ON " : "OFF");
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "ON  = %d", note_on ? 1 : 0);
+        drv_display_draw_text(0, y, line); y += 10;
+
+        snprintf(line, sizeof(line), "OFF = %d", note_off ? 1 : 0);
+        drv_display_draw_text(0, y, line); y += 10;
       }
     }
 
-    uint16_t raw = hall_get(sensor_index);
-    uint8_t midi_value = hall_get_midi_value(sensor_index);
-    uint8_t velocity = hall_get_velocity(sensor_index);
-    uint8_t pressure = hall_get_pressure(sensor_index);
-
-    snprintf(line, sizeof(line), "RAW = %4u", raw);
-    drv_display_draw_text(0, 12, line);
-
-    snprintf(line, sizeof(line), "MIDI = %3u", midi_value);
-    drv_display_draw_text(0, 20, line);
-
-    snprintf(line, sizeof(line), "ON/OFF = %s", note_active[sensor_index] ? "ON " : "OFF");
-    drv_display_draw_text(0, 28, line);
-
-    snprintf(line, sizeof(line), "VEL = %3u", velocity);
-    drv_display_draw_text(0, 36, line);
-
-    snprintf(line, sizeof(line), "PRES = %3u", pressure);
-    drv_display_draw_text(0, 44, line);
-
     drv_display_update();
 
-    chThdSleepMilliseconds(100);
+    chThdSleepMilliseconds(10);
   }
 }
