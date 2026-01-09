@@ -96,6 +96,7 @@ typedef struct {
   uint8_t  prev_out; /* 0=OFF, 1=ON */
   uint8_t  curr_out; /* 0=OFF, 1=ON */
   uint8_t locked;   // 0 = apprend, 1 = figé pendant appui
+  uint8_t armed;    // 0 = désarmé, 1 = prêt à déclencher un ON
 } hall_button_t;
 
 static hall_button_t hall_btn[HALL_SENSOR_COUNT];
@@ -238,7 +239,11 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
 
   hall_button_t *b = &hall_btn[index];
 
-  /* 1) update min/max auto-cal SEULEMENT SI NON LOCKÉ */
+  /* 1) shift input history */
+  b->prev_in = b->curr_in;
+  b->curr_in = raw;
+
+  /* 2) update min/max auto-cal SEULEMENT SI NON LOCKÉ */
   if (b->locked == 0U) {
 
     if (raw < b->min) {
@@ -250,29 +255,30 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
   }
 
 
-  /* 2) recompute triggers */
+  /* 3) recompute triggers */
   hall_update_triggers(b);
-
-  /* 3) shift input history */
-  b->prev_in = b->curr_in;
-  b->curr_in = raw;
 
   /* 4) shift output history */
   b->prev_out = b->curr_out;
+  b->curr_out = b->prev_out;
 
   /* 5) Tant que la plage n'est pas valide, on force OFF (pas d'événements) */
   if (!hall_range_valid(b)) {
     b->curr_out = 0;
+    b->locked = 0U;
+    b->armed = 1U;
     return;
   }
 
-  /* 6) Schmitt trigger + direction check + LOCK */
-  if ((b->prev_out == 0U) &&
+  /* 6) Schmitt trigger + direction check + ARM */
+  if ((b->armed != 0U) &&
+      (b->prev_out == 0U) &&
       (b->curr_in >= b->trig_hi) &&
       (b->curr_in > b->prev_in)) {
 
     b->curr_out = 1U;
     b->locked = 1U;   /* 🔒 on fige la calibration pendant l'appui */
+    b->armed = 0U;    /* désarmé jusqu'au relâchement complet */
   }
   else if ((b->prev_out != 0U) &&
            (b->curr_in <= b->trig_lo) &&
@@ -280,6 +286,11 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
 
     b->curr_out = 0U;
     b->locked = 0U;   /* 🔓 on réautorise l'auto-cal au relâchement */
+    b->armed = 1U;    /* prêt pour un prochain ON */
+  }
+
+  if ((b->curr_out == 0U) && (b->curr_in <= b->trig_lo)) {
+    b->armed = 1U;
   }
 
 
@@ -327,6 +338,7 @@ void hall_init(void) {
     hall_btn[i].prev_out = 0U;
     hall_btn[i].curr_out = 0U;
     hall_btn[i].locked = 0U;
+    hall_btn[i].armed = 1U;
 
   }
 
