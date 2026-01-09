@@ -5,7 +5,7 @@
  */
 
 #include "drivers.h"
-
+#include "drv_encoders.h"
 mutex_t spi5_mutex;
 
 void drivers_init_all(void) {
@@ -18,6 +18,7 @@ void drivers_init_all(void) {
        - drv_encoders  : start = init + thread de scan
        - drv_pots      : start = init + thread de scan */
     drv_display_init();
+    drv_encoders_start();
 
 }
 

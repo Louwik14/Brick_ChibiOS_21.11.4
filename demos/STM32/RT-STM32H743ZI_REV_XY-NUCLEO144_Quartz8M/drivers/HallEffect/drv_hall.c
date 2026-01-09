@@ -14,38 +14,78 @@
  *   GPT (TIM4_TRGO) -> ADC (ext trigger) -> DMA circulaire -> adc_cb() IRQ
  *   adc_cb(): lit A/B, map index capteur, avance MUX, appelle hall_process_channel()
  *
- * Logique "Grid-like" (bouton auto-calibrant):
+ * IMPORTANT (MUX + ADC S/H):
+ *   - Le premier échantillon après chaque changement de MUX est contaminé par le canal précédent.
+ *   - On le jette systématiquement (hall_discard_next).
+ *
+ * Logique bouton + vélocité (multi-modes + courbes):
  *   - Min/Max auto-observés par capteur
- *   - Seuils Schmitt dynamiques exprimés en % de la plage [min..max]
- *   - NOTE ON à la montée (raw monte quand on appuie)
- *   - NOTE OFF à la descente
+ *   - Seuils Schmitt dynamiques en % de [min..max]
+ *   - NOTE ON quand raw dépasse trig_hi
+ *   - NOTE OFF quand raw redescend sous trig_lo
+ *   - Vélocité: plusieurs algos (DV-peak, TIME, ENERGY) + courbes (linear/soft/hard/log/exp)
  *
  * Thread-safety:
- *   - Les flags note_on/off sont écrits en IRQ.
- *   - Le main les consomme via getters read+clear atomiques (chSysLock()).
- *   - hall_update() est un no-op pour éviter d'effacer des événements en course.
+ *   - note_on/off + velocity écrits en IRQ
+ *   - note_on/off consommés via getters read+clear atomiques
+ *   - hall_update() no-op
  */
 
 /* -------------------- Paramètres -------------------- */
 
 #define ADC_NUM_CHANNELS     2
 #define ADC_DMA_DEPTH        1
-
 #define HALL_SENSOR_COUNT    16U
 
-/* Fréquence globale de déclenchement ADC. Chaque capteur est vu à F/8. */
+/* Fréquence globale de déclenchement ADC */
 #define HALL_ADC_TRIGGER_HZ  5000U
 
-/* -------------------- Grid-like engine params (RAW 16-bit) --------------------
- *
+/* -------------------- Seuils dynamiques (RAW 16-bit) --------------------
  * threshold/hysteresis exprimés en millièmes de la plage [min..max].
- * Exemple: TH=700, HYST=120 -> ON à 76%, OFF à 64% (car hyst/2 = 60)
- *
- * Ajuste ces valeurs en fonction de ta mécanique (course utile, feel, etc).
  */
-#define HALL_THRESHOLD_PPM    700U   /* 0..1000 */
-#define HALL_HYST_PPM         120U   /* 0..1000 */
-#define HALL_MIN_RANGE        500U   /* plage minimale requise avant de considérer la calibration "valide" */
+#define HALL_THRESHOLD_PPM    200U   /* 0..1000 */
+#define HALL_HYST_PPM         40U    /* 0..1000 */
+#define HALL_MIN_RANGE        500U   /* plage minimale avant détection */
+
+/* -------------------- Vélocité: modes + courbes -------------------- */
+
+
+
+/* Sélection globale (peut devenir configurable utilisateur plus tard)
+ * -> Pour tester, change ces 2 lignes.
+ */
+static volatile hall_vel_mode_t  g_vel_mode  = HALL_VEL_MODE_TIME;
+static volatile hall_vel_curve_t g_vel_curve = HALL_VEL_CURVE_SOFT;
+
+/* --- Mode DV_PEAK (Grid-like) ---
+ * dv_slow = range >> SLOW_SHIFT
+ * dv_fast = range >> FAST_SHIFT
+ */
+#define HALL_VEL_SLOW_SHIFT   12U
+#define HALL_VEL_FAST_SHIFT   2U
+
+/* --- Mode TIME (piano-like) ---
+ * Mesure du temps (en nombre de samples valides) entre:
+ *   vel_start = min + range * START_PPM / 1000
+ *   vel_end   = trig_hi (ou min + range * END_PPM / 1000)
+ *
+ * Mapping dt_count -> velocity:
+ *   dt <= FAST_DT => 127
+ *   dt >= SLOW_DT => 1
+ */
+#define HALL_VEL_TIME_START_PPM   150U  /* départ mesure: 15% de course */
+#define HALL_VEL_TIME_END_PPM     0U    /* 0 => utilise trig_hi comme fin */
+#define HALL_VEL_TIME_FAST_DT     2U    /* en nb d'échantillons valides */
+#define HALL_VEL_TIME_SLOW_DT     14U   /* en nb d'échantillons valides */
+
+/* --- Mode ENERGY ---
+ * sum_dv = Σ max(0, raw[n]-raw[n-1]) pendant l'attaque.
+ * Mapping similaire à DV_PEAK mais plus "stable".
+ */
+#define HALL_VEL_ENERGY_SLOW_SHIFT  6U
+#define HALL_VEL_ENERGY_FAST_SHIFT  2U
+
+/* -------------------- MUX / ADC -------------------- */
 
 /* MUX pins */
 #define MUX_S0_PORT GPIOA
@@ -67,14 +107,10 @@ static adcsample_t adc_buffer[ADC_DMA_DEPTH * ADC_NUM_CHANNELS];
 
 /* -------------------- État capteurs -------------------- */
 
-/* Valeur brute par capteur (RAW 16-bit) */
 static volatile uint16_t hall_values[HALL_SENSOR_COUNT];
-
-/* Flags impulsionnels écrits en IRQ, consommés par le main */
 static volatile bool hall_note_on[HALL_SENSOR_COUNT];
 static volatile bool hall_note_off[HALL_SENSOR_COUNT];
 
-/* Stubs API (à implémenter plus tard) */
 static volatile uint8_t hall_velocity[HALL_SENSOR_COUNT];
 static volatile uint8_t hall_pressure[HALL_SENSOR_COUNT];
 static volatile uint8_t hall_midi_value[HALL_SENSOR_COUNT];
@@ -82,7 +118,10 @@ static volatile uint8_t hall_midi_value[HALL_SENSOR_COUNT];
 static bool hall_initialized;
 static uint8_t hall_mux_index;
 
-/* -------------------- Grid-like button state (par capteur) -------------------- */
+/* Discard du premier sample après chaque commutation MUX */
+static uint8_t hall_discard_next = 1U;
+
+/* -------------------- Button state (par capteur) -------------------- */
 
 typedef struct {
   uint16_t min;
@@ -90,13 +129,19 @@ typedef struct {
   uint16_t trig_lo;
   uint16_t trig_hi;
 
-  uint16_t prev_in;
-  uint16_t curr_in;
-
   uint8_t  prev_out; /* 0=OFF, 1=ON */
   uint8_t  curr_out; /* 0=OFF, 1=ON */
-  uint8_t locked;   // 0 = apprend, 1 = figé pendant appui
-  uint8_t armed;    // 0 = désarmé, 1 = prêt à déclencher un ON
+
+  /* Attaque / vélocité */
+  uint16_t prev_raw;
+  uint16_t dv_peak;
+  uint16_t sum_dv;
+
+  uint16_t vel_start_th;     /* seuil départ time */
+  uint16_t vel_end_th;       /* seuil fin time */
+  uint16_t time_count;       /* compteur de samples depuis start */
+  uint8_t  time_active;      /* mesure time en cours */
+  uint8_t  vel_latched;      /* 1..127 */
 } hall_button_t;
 
 static hall_button_t hall_btn[HALL_SENSOR_COUNT];
@@ -105,15 +150,20 @@ static hall_button_t hall_btn[HALL_SENSOR_COUNT];
 
 static void mux_select(uint8_t ch);
 static void hall_process_channel(uint8_t index, uint16_t raw);
+
 static void hall_update_triggers(hall_button_t *b);
 static bool hall_range_valid(const hall_button_t *b);
 
+static uint8_t hall_velocity_compute(hall_button_t *b, uint16_t range);
+static uint8_t hall_velocity_from_dv(uint16_t range, uint16_t dv_peak);
+static uint8_t hall_velocity_from_time(uint16_t dt_count);
+static uint8_t hall_velocity_from_energy(uint16_t range, uint16_t sum_dv);
+
+static uint8_t hall_apply_curve(uint8_t v, hall_vel_curve_t curve);
+static uint16_t isqrt_u32(uint32_t x);
+
 /* -------------------- GPT (TIM4_TRGO) -------------------- */
 
-/*
- * TIM4 est utilisé comme source de trigger ADC (TRGO sur Update Event).
- * EXTSEL_SRC(12) correspond à TIM4_TRGO dans les configs STM32H7 ChibiOS.
- */
 static const GPTConfig hall_gptcfg = {
   .frequency = STM32_TIMCLK1,
   .callback  = NULL,
@@ -128,23 +178,28 @@ static const gptcnt_t hall_gpt_interval = (STM32_TIMCLK1 / HALL_ADC_TRIGGER_HZ);
 static void adc_cb(ADCDriver *adcp) {
   (void)adcp;
 
-  /* Buffer depth = 1 => 2 samples: A puis B. */
   uint16_t vA = (uint16_t)adc_buffer[0U];
   uint16_t vB = (uint16_t)adc_buffer[1U];
 
+  /* Après un mux_select(), le premier sample est contaminé -> on le jette. */
+  if (hall_discard_next) {
+    hall_discard_next = 0U;
+    return;
+  }
+
   uint8_t mux = hall_mux_index;
 
-  /* Stocke brut (debug/telemetry) */
   hall_values[mux + 0U] = vA;
   hall_values[mux + 8U] = vB;
 
-  /* Moteur Grid-like par capteur */
   hall_process_channel((uint8_t)(mux + 0U), vA);
   hall_process_channel((uint8_t)(mux + 8U), vB);
 
   /* Next mux channel (0..7) */
   hall_mux_index = (uint8_t)((hall_mux_index + 1U) & 7U);
   mux_select(hall_mux_index);
+
+  hall_discard_next = 1U; /* le prochain sample sera jeté */
 }
 
 /* -------------------- ADC config -------------------- */
@@ -189,7 +244,7 @@ static void mux_select(uint8_t ch) {
   palWritePad(MUX_S2_PORT, MUX_S2_PIN, (ch >> 2) & 1U);
 }
 
-/* -------------------- Grid-like helpers -------------------- */
+/* -------------------- Helpers -------------------- */
 
 static bool hall_range_valid(const hall_button_t *b) {
   if (b->max <= b->min) {
@@ -200,7 +255,6 @@ static bool hall_range_valid(const hall_button_t *b) {
 }
 
 static void hall_update_triggers(hall_button_t *b) {
-  /* Si plage invalide, on met des triggers "neutres" */
   if (!hall_range_valid(b)) {
     b->trig_lo = b->min;
     b->trig_hi = b->max;
@@ -213,7 +267,6 @@ static void hall_update_triggers(hall_button_t *b) {
   uint32_t lo_ppm = (uint32_t)HALL_THRESHOLD_PPM;
   uint32_t hi_ppm = (uint32_t)HALL_THRESHOLD_PPM;
 
-  /* évite underflow/overflow */
   if (lo_ppm > half_hyst) {
     lo_ppm -= half_hyst;
   } else {
@@ -227,79 +280,252 @@ static void hall_update_triggers(hall_button_t *b) {
 
   b->trig_lo = (uint16_t)(b->min + (range * lo_ppm) / 1000U);
   b->trig_hi = (uint16_t)(b->min + (range * hi_ppm) / 1000U);
+
+  /* Seuils time-mode */
+  b->vel_start_th = (uint16_t)(b->min + (range * (uint32_t)HALL_VEL_TIME_START_PPM) / 1000U);
+
+  if (HALL_VEL_TIME_END_PPM == 0U) {
+    b->vel_end_th = b->trig_hi;
+  } else {
+    b->vel_end_th = (uint16_t)(b->min + (range * (uint32_t)HALL_VEL_TIME_END_PPM) / 1000U);
+  }
 }
 
-/* -------------------- Logique Grid-like ON/OFF (IRQ context) --------------------
- *
- * Hypothèse hardware: raw MONTE quand on appuie.
- * -> NOTE ON quand raw dépasse trig_hi (montée)
- * -> NOTE OFF quand raw redescend sous trig_lo (descente)
- */
+/* -------------------- Courbes -------------------- */
+
+static uint16_t isqrt_u32(uint32_t x) {
+  /* integer sqrt (floor), simple et suffisant pour 0..(127*127) */
+  uint32_t op = x;
+  uint32_t res = 0;
+  uint32_t one = 1UL << 30;
+  while (one > op) one >>= 2;
+  while (one != 0) {
+    if (op >= res + one) {
+      op -= res + one;
+      res = res + 2 * one;
+    }
+    res >>= 1;
+    one >>= 2;
+  }
+  return (uint16_t)res;
+}
+
+static uint8_t hall_apply_curve(uint8_t v, hall_vel_curve_t curve) {
+  if (v < 1U) v = 1U;
+  if (v > 127U) v = 127U;
+
+  switch (curve) {
+    case HALL_VEL_CURVE_LINEAR:
+      return v;
+
+    case HALL_VEL_CURVE_SOFT: {
+      /* v^2 / 127 */
+      uint32_t vv = (uint32_t)v * (uint32_t)v;
+      uint32_t out = vv / 127U;
+      if (out < 1U) out = 1U;
+      if (out > 127U) out = 127U;
+      return (uint8_t)out;
+    }
+
+    case HALL_VEL_CURVE_HARD: {
+      /* sqrt(v/127)*127 => sqrt(v*127) */
+      uint32_t x = (uint32_t)v * 127U;
+      uint16_t out = isqrt_u32(x);
+      if (out < 1U) out = 1U;
+      if (out > 127U) out = 127U;
+      return (uint8_t)out;
+    }
+
+    case HALL_VEL_CURVE_LOG: {
+      /* inverse de SOFT: 127 - (127-v)^2/127 */
+      uint32_t d = (uint32_t)(127U - v);
+      uint32_t dd = d * d;
+      uint32_t out = 127U - (dd / 127U);
+      if (out < 1U) out = 1U;
+      if (out > 127U) out = 127U;
+      return (uint8_t)out;
+    }
+
+    case HALL_VEL_CURVE_EXP: {
+      /* v^3 / (127^2) */
+      uint32_t vv = (uint32_t)v * (uint32_t)v * (uint32_t)v;
+      uint32_t out = vv / (127U * 127U);
+      if (out < 1U) out = 1U;
+      if (out > 127U) out = 127U;
+      return (uint8_t)out;
+    }
+
+    default:
+      return v;
+  }
+}
+
+/* -------------------- Vélocité: mapping par mode -------------------- */
+
+static uint8_t hall_velocity_from_dv(uint16_t range, uint16_t dv_peak) {
+  if (range == 0U) return 1U;
+
+  uint16_t dv_slow = (uint16_t)(range >> HALL_VEL_SLOW_SHIFT);
+  uint16_t dv_fast = (uint16_t)(range >> HALL_VEL_FAST_SHIFT);
+
+  if (dv_slow < 1U) dv_slow = 1U;
+  if (dv_fast <= (uint16_t)(dv_slow + 1U)) dv_fast = (uint16_t)(dv_slow + 2U);
+
+  if (dv_peak <= dv_slow) return 1U;
+  if (dv_peak >= dv_fast) return 127U;
+
+  uint32_t num = (uint32_t)(dv_peak - dv_slow) * 126U;
+  uint32_t den = (uint32_t)(dv_fast - dv_slow);
+  uint32_t v = 1U + (num / den);
+
+  if (v < 1U) v = 1U;
+  if (v > 127U) v = 127U;
+  return (uint8_t)v;
+}
+
+static uint8_t hall_velocity_from_time(uint16_t dt_count) {
+  /* dt_count = nb de samples valides entre start et end */
+  if (dt_count <= HALL_VEL_TIME_FAST_DT) return 127U;
+  if (dt_count >= HALL_VEL_TIME_SLOW_DT) return 1U;
+
+  uint32_t num = (uint32_t)(HALL_VEL_TIME_SLOW_DT - dt_count) * 126U;
+  uint32_t den = (uint32_t)(HALL_VEL_TIME_SLOW_DT - HALL_VEL_TIME_FAST_DT);
+  uint32_t v = 1U + (num / den);
+
+  if (v < 1U) v = 1U;
+  if (v > 127U) v = 127U;
+  return (uint8_t)v;
+}
+
+static uint8_t hall_velocity_from_energy(uint16_t range, uint16_t sum_dv) {
+  if (range == 0U) return 1U;
+
+  uint16_t e_slow = (uint16_t)(range >> HALL_VEL_ENERGY_SLOW_SHIFT);
+  uint16_t e_fast = (uint16_t)(range >> HALL_VEL_ENERGY_FAST_SHIFT);
+
+  if (e_slow < 1U) e_slow = 1U;
+  if (e_fast <= (uint16_t)(e_slow + 1U)) e_fast = (uint16_t)(e_slow + 2U);
+
+  if (sum_dv <= e_slow) return 1U;
+  if (sum_dv >= e_fast) return 127U;
+
+  uint32_t num = (uint32_t)(sum_dv - e_slow) * 126U;
+  uint32_t den = (uint32_t)(e_fast - e_slow);
+  uint32_t v = 1U + (num / den);
+
+  if (v < 1U) v = 1U;
+  if (v > 127U) v = 127U;
+  return (uint8_t)v;
+}
+
+static uint8_t hall_velocity_compute(hall_button_t *b, uint16_t range) {
+  uint8_t vel_raw = 1U;
+
+  hall_vel_mode_t mode = (hall_vel_mode_t)g_vel_mode;
+  switch (mode) {
+    case HALL_VEL_MODE_TIME:
+      vel_raw = hall_velocity_from_time(b->time_count);
+      break;
+
+    case HALL_VEL_MODE_ENERGY:
+      vel_raw = hall_velocity_from_energy(range, b->sum_dv);
+      break;
+
+    case HALL_VEL_MODE_DV_PEAK:
+    default:
+      vel_raw = hall_velocity_from_dv(range, b->dv_peak);
+      break;
+  }
+
+  hall_vel_curve_t curve = (hall_vel_curve_t)g_vel_curve;
+  return hall_apply_curve(vel_raw, curve);
+}
+
+/* -------------------- Logique ON/OFF + velocity (IRQ context) -------------------- */
+
 static void hall_process_channel(uint8_t index, uint16_t raw) {
 
   hall_button_t *b = &hall_btn[index];
 
-  /* 1) shift input history */
-  b->prev_in = b->curr_in;
-  b->curr_in = raw;
+  /* auto-cal min/max */
+  if (raw < b->min) b->min = raw;
+  if (raw > b->max) b->max = raw;
 
-  /* 2) update min/max auto-cal SEULEMENT SI NON LOCKÉ */
-  if (b->locked == 0U) {
-
-    if (raw < b->min) {
-      b->min = raw;
-    }
-    if (raw > b->max) {
-      b->max = raw;
-    }
-  }
-
-
-  /* 3) recompute triggers */
+  /* triggers dynamiques + thresholds time-mode */
   hall_update_triggers(b);
 
-  /* 4) shift output history */
+  /* historique sortie */
   b->prev_out = b->curr_out;
-  b->curr_out = b->prev_out;
 
-  /* 5) Tant que la plage n'est pas valide, on force OFF (pas d'événements) */
+  /* Tant que plage invalide, force OFF + reset attaque */
   if (!hall_range_valid(b)) {
-    b->curr_out = 0;
-    b->locked = 0U;
-    b->armed = 1U;
+    b->curr_out = 0U;
+    b->prev_raw = raw;
+    b->dv_peak = 0U;
+    b->sum_dv = 0U;
+    b->time_count = 0U;
+    b->time_active = 0U;
+    b->vel_latched = 0U;
     return;
   }
 
-  /* 6) Schmitt trigger + direction check + ARM */
-  if ((b->armed != 0U) &&
-      (b->prev_out == 0U) &&
-      (b->curr_in >= b->trig_hi) &&
-      (b->curr_in > b->prev_in)) {
+  /* ---------- Attaque (features) ---------- */
 
+  /* dv positif */
+  uint16_t dv = 0U;
+  if (raw > b->prev_raw) dv = (uint16_t)(raw - b->prev_raw);
+  b->prev_raw = raw;
+
+  /* reset au repos bas */
+  if ((b->curr_out == 0U) && (raw <= b->trig_lo)) {
+    b->dv_peak = 0U;
+    b->sum_dv = 0U;
+    b->time_count = 0U;
+    b->time_active = 0U;
+  }
+
+  /* accumulate pendant OFF */
+  if (b->curr_out == 0U) {
+    if (dv > b->dv_peak) b->dv_peak = dv;
+
+    /* sum_dv saturée */
+    uint32_t s = (uint32_t)b->sum_dv + (uint32_t)dv;
+    if (s > 65535U) s = 65535U;
+    b->sum_dv = (uint16_t)s;
+
+    /* time-mode: démarrage quand on dépasse start */
+    if (!b->time_active && raw >= b->vel_start_th) {
+      b->time_active = 1U;
+      b->time_count = 0U;
+    }
+    if (b->time_active) {
+      if (b->time_count < 65535U) b->time_count++;
+      /* fin quand on dépasse end */
+      if (raw >= b->vel_end_th) {
+        /* on garde time_count tel quel, time_active peut rester 1 */
+        b->time_active = 0U;
+      }
+    }
+  }
+
+  /* ---------- Schmitt ---------- */
+
+  if ((b->curr_out == 0U) && (raw >= b->trig_hi)) {
     b->curr_out = 1U;
-    b->locked = 1U;   /* 🔒 on fige la calibration pendant l'appui */
-    b->armed = 0U;    /* désarmé jusqu'au relâchement complet */
-  }
-  else if ((b->prev_out != 0U) &&
-           (b->curr_in <= b->trig_lo) &&
-           (b->curr_in < b->prev_in)) {
 
+    /* Latch velocity au NOTE ON */
+    uint16_t range = (uint16_t)(b->max - b->min);
+    b->vel_latched = hall_velocity_compute(b, range);
+    hall_velocity[index] = b->vel_latched;
+
+  } else if ((b->curr_out != 0U) && (raw <= b->trig_lo)) {
     b->curr_out = 0U;
-    b->locked = 0U;   /* 🔓 on réautorise l'auto-cal au relâchement */
-    b->armed = 1U;    /* prêt pour un prochain ON */
   }
 
-  if ((b->curr_out == 0U) && (b->curr_in <= b->trig_lo)) {
-    b->armed = 1U;
-  }
-
-
-
-  /* 7) Edge detect -> flags */
+  /* edge detect -> flags */
   if ((b->prev_out == 0U) && (b->curr_out == 1U)) {
     hall_note_on[index] = true;
-  }
-  else if ((b->prev_out == 1U) && (b->curr_out == 0U)) {
+  } else if ((b->prev_out == 1U) && (b->curr_out == 0U)) {
     hall_note_off[index] = true;
   }
 }
@@ -307,9 +533,7 @@ static void hall_process_channel(uint8_t index, uint16_t raw) {
 /* -------------------- API -------------------- */
 
 void hall_init(void) {
-  if (hall_initialized) {
-    return;
-  }
+  if (hall_initialized) return;
 
   /* GPIO MUX */
   palSetPadMode(GPIOA, 4, PAL_MODE_OUTPUT_PUSHPULL);
@@ -333,17 +557,25 @@ void hall_init(void) {
     hall_btn[i].max = 0U;
     hall_btn[i].trig_lo = UINT16_MAX;
     hall_btn[i].trig_hi = 0U;
-    hall_btn[i].prev_in = 0U;
-    hall_btn[i].curr_in = 0U;
+
     hall_btn[i].prev_out = 0U;
     hall_btn[i].curr_out = 0U;
-    hall_btn[i].locked = 0U;
-    hall_btn[i].armed = 1U;
 
+    hall_btn[i].prev_raw = 0U;
+    hall_btn[i].dv_peak = 0U;
+    hall_btn[i].sum_dv = 0U;
+
+    hall_btn[i].vel_start_th = 0U;
+    hall_btn[i].vel_end_th = 0U;
+    hall_btn[i].time_count = 0U;
+    hall_btn[i].time_active = 0U;
+
+    hall_btn[i].vel_latched = 0U;
   }
 
   hall_mux_index = 0U;
   mux_select(0U);
+  hall_discard_next = 1U;
 
   gptStart(&GPTD4, &hall_gptcfg);
 
@@ -355,25 +587,17 @@ void hall_init(void) {
   hall_initialized = true;
 }
 
-/* Intentionnellement no-op:
- * Les événements sont consommés via getters read+clear atomiques.
- */
 void hall_update(void) {
   /* no-op */
 }
 
 uint16_t hall_get(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return 0U;
-  }
+  if (index >= HALL_SENSOR_COUNT) return 0U;
   return hall_values[index];
 }
 
-/* Read+clear atomique pour éviter perte d'événement si l'IRQ écrit pendant la lecture */
 bool hall_get_note_on(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return false;
-  }
+  if (index >= HALL_SENSOR_COUNT) return false;
   bool v;
   chSysLock();
   v = hall_note_on[index];
@@ -383,9 +607,7 @@ bool hall_get_note_on(uint8_t index) {
 }
 
 bool hall_get_note_off(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return false;
-  }
+  if (index >= HALL_SENSOR_COUNT) return false;
   bool v;
   chSysLock();
   v = hall_note_off[index];
@@ -394,50 +616,72 @@ bool hall_get_note_off(uint8_t index) {
   return v;
 }
 
-/* Stubs (compat header/main). */
 uint8_t hall_get_velocity(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return 0U;
-  }
+  if (index >= HALL_SENSOR_COUNT) return 0U;
   return hall_velocity[index];
 }
 
 uint8_t hall_get_pressure(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return 0U;
-  }
+  if (index >= HALL_SENSOR_COUNT) return 0U;
   return hall_pressure[index];
 }
 
 uint8_t hall_get_midi_value(uint8_t index) {
-  if (index >= HALL_SENSOR_COUNT) {
-    return 0U;
-  }
+  if (index >= HALL_SENSOR_COUNT) return 0U;
   return hall_midi_value[index];
 }
+
+/* Optionnel: setters si tu veux changer à runtime (ajoute les prototypes dans drv_hall.h si besoin) */
+void hall_set_velocity_mode(uint8_t mode) {
+  if (mode < (uint8_t)HALL_VEL_MODE_COUNT) {
+    g_vel_mode = (hall_vel_mode_t)mode;
+  }
+}
+
+
+void hall_set_velocity_curve(uint8_t curve) {
+  if (curve < (uint8_t)HALL_VEL_CURVE_COUNT) {
+    g_vel_curve = (hall_vel_curve_t)curve;
+  }
+}
+
+
+uint8_t hall_get_velocity_mode(void) {
+  return (uint8_t)g_vel_mode;
+}
+
+uint8_t hall_get_velocity_curve(void) {
+  return (uint8_t)g_vel_curve;
+}
+
 /* -------------------- DEBUG API -------------------- */
 
 uint16_t hall_dbg_get_min(uint8_t i) {
-  if (i >= HALL_SENSOR_COUNT) return 0;
+  if (i >= HALL_SENSOR_COUNT) return 0U;
   return hall_btn[i].min;
 }
 
 uint16_t hall_dbg_get_max(uint8_t i) {
-  if (i >= HALL_SENSOR_COUNT) return 0;
+  if (i >= HALL_SENSOR_COUNT) return 0U;
   return hall_btn[i].max;
 }
 
 uint16_t hall_dbg_get_trig_lo(uint8_t i) {
-  if (i >= HALL_SENSOR_COUNT) return 0;
+  if (i >= HALL_SENSOR_COUNT) return 0U;
   return hall_btn[i].trig_lo;
 }
 
 uint16_t hall_dbg_get_trig_hi(uint8_t i) {
-  if (i >= HALL_SENSOR_COUNT) return 0;
+  if (i >= HALL_SENSOR_COUNT) return 0U;
   return hall_btn[i].trig_hi;
 }
 
 uint8_t hall_dbg_get_state(uint8_t i) {
-  if (i >= HALL_SENSOR_COUNT) return 0;
+  if (i >= HALL_SENSOR_COUNT) return 0U;
   return hall_btn[i].curr_out;
+}
+
+uint8_t hall_dbg_get_velocity(uint8_t i) {
+  if (i >= HALL_SENSOR_COUNT) return 0U;
+  return hall_btn[i].vel_latched;
 }
