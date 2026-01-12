@@ -344,7 +344,7 @@
 #define GPIOG_SPI1_SCK               GPIOG_PIN11
 #define GPIOG_SPI6_MISO              GPIOG_PIN12
 #define GPIOG_SPI6_SCK               GPIOG_PIN13
-#define GPIOG_SPI6_MOSI              GPIOG_PIN14
+#define GPIOG_USART6_TX              GPIOG_PIN14
 #define GPIOG_FMC_SDNCAS             GPIOG_PIN15
 
 #define GPIOI_SPI2_SCK               GPIOI_PIN1
@@ -452,7 +452,7 @@
 #define LINE_SPI1_SCK                PAL_LINE(GPIOG, 11U)
 #define LINE_SPI6_MISO               PAL_LINE(GPIOG, 12U)
 #define LINE_SPI6_SCK                PAL_LINE(GPIOG, 13U)
-#define LINE_SPI6_MOSI               PAL_LINE(GPIOG, 14U)
+#define LINE_USART6_TX               PAL_LINE(GPIOG, 14U)
 #define LINE_FMC_SDNCAS              PAL_LINE(GPIOG, 15U)
 
 #define LINE_SPI2_SCK                PAL_LINE(GPIOI, 1U)
@@ -1239,7 +1239,7 @@
                                      PIN_MODE_ALTERNATE(GPIOG_SPI1_SCK) | \
                                      PIN_MODE_ALTERNATE(GPIOG_SPI6_MISO) |\
                                      PIN_MODE_ALTERNATE(GPIOG_SPI6_SCK) | \
-                                     PIN_MODE_ALTERNATE(GPIOG_SPI6_MOSI) |\
+                                     PIN_MODE_ALTERNATE(GPIOG_USART6_TX) |\
                                      FMC_PIN_MODE(GPIOG_FMC_SDNCAS))
 #define VAL_GPIOG_OTYPER            (FMC_PIN_OTYPE(GPIOG_FMC_A10) |         \
                                      FMC_PIN_OTYPE(GPIOG_FMC_A11) |         \
@@ -1255,7 +1255,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOG_SPI1_SCK) |  \
                                      PIN_OTYPE_PUSHPULL(GPIOG_SPI6_MISO) | \
                                      PIN_OTYPE_PUSHPULL(GPIOG_SPI6_SCK) |  \
-                                     PIN_OTYPE_PUSHPULL(GPIOG_SPI6_MOSI) | \
+                                     PIN_OTYPE_PUSHPULL(GPIOG_USART6_TX) | \
                                      FMC_PIN_OTYPE(GPIOG_FMC_SDNCAS))
 #define VAL_GPIOG_OSPEEDR           (FMC_PIN_OSPEED(GPIOG_FMC_A10) |        \
                                      FMC_PIN_OSPEED(GPIOG_FMC_A11) |        \
@@ -1271,7 +1271,7 @@
                                      PIN_OSPEED_HIGH(GPIOG_SPI1_SCK) |     \
                                      PIN_OSPEED_HIGH(GPIOG_SPI6_MISO) |    \
                                      PIN_OSPEED_HIGH(GPIOG_SPI6_SCK) |     \
-                                     PIN_OSPEED_HIGH(GPIOG_SPI6_MOSI) |    \
+                                     PIN_OSPEED_HIGH(GPIOG_USART6_TX) |    \
                                      FMC_PIN_OSPEED(GPIOG_FMC_SDNCAS))
 #define VAL_GPIOG_PUPDR             (FMC_PIN_PUPDR(GPIOG_FMC_A10) |         \
                                      FMC_PIN_PUPDR(GPIOG_FMC_A11) |         \
@@ -1287,7 +1287,7 @@
                                      PIN_PUPDR_FLOATING(GPIOG_SPI1_SCK) |  \
                                      PIN_PUPDR_FLOATING(GPIOG_SPI6_MISO) | \
                                      PIN_PUPDR_FLOATING(GPIOG_SPI6_SCK) |  \
-                                     PIN_PUPDR_FLOATING(GPIOG_SPI6_MOSI) | \
+                                     PIN_PUPDR_FLOATING(GPIOG_USART6_TX) | \
                                      FMC_PIN_PUPDR(GPIOG_FMC_SDNCAS))
 #define VAL_GPIOG_ODR               (FMC_PIN_ODR(GPIOG_FMC_A10) |           \
                                      FMC_PIN_ODR(GPIOG_FMC_A11) |           \
@@ -1303,7 +1303,7 @@
                                      PIN_ODR_LOW(GPIOG_SPI1_SCK) |         \
                                      PIN_ODR_LOW(GPIOG_SPI6_MISO) |        \
                                      PIN_ODR_LOW(GPIOG_SPI6_SCK) |         \
-                                     PIN_ODR_LOW(GPIOG_SPI6_MOSI) |        \
+                                     PIN_ODR_LOW(GPIOG_USART6_TX) |        \
                                      FMC_PIN_ODR(GPIOG_FMC_SDNCAS))
 #define VAL_GPIOG_AFRL              (FMC_PIN_AF(GPIOG_FMC_A10) |            \
                                      FMC_PIN_AF(GPIOG_FMC_A11) |            \
@@ -1319,7 +1319,7 @@
                                      PIN_AFIO_AF(GPIOG_SPI1_SCK, 5U) |     \
                                      PIN_AFIO_AF(GPIOG_SPI6_MISO, 5U) |    \
                                      PIN_AFIO_AF(GPIOG_SPI6_SCK, 5U) |     \
-                                     PIN_AFIO_AF(GPIOG_SPI6_MOSI, 5U) |    \
+                                     PIN_AFIO_AF(GPIOG_USART6_TX, 8U) |    \
                                      FMC_PIN_AF(GPIOG_FMC_SDNCAS))
 
 /*
