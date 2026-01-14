@@ -432,12 +432,7 @@
 #define STM32_SPI_SPI6_IRQ_PRIORITY         10
 #define STM32_SPI_DMA_ERROR_HOOK(spip)      osalSysHalt("DMA failure")
 
-/*
- * FMC/FSMC + SDRAM driver system settings (ChibiOS-Contrib).
- */
-#define STM32_FSMC_USE_FSMC1               TRUE
-#define STM32_SDRAM_USE_SDRAM1             TRUE
-#define STM32_SDRAM_USE_SDRAM2             FALSE
+
 /*
  * ST driver system settings.
  */
