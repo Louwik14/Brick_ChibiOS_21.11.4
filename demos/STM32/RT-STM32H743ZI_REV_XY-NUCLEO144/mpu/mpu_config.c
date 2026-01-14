@@ -9,6 +9,15 @@
 #include "hal.h"
 #include "sdram_ext.h"
 
+#ifndef MPU_RASR_ATTR_DEVICE
+#define MPU_RASR_ATTR_DEVICE \
+  ((0U << MPU_RASR_TEX_Pos) | \
+   (1U << MPU_RASR_B_Pos)   | \
+   (0U << MPU_RASR_C_Pos)   | \
+   (1U << MPU_RASR_S_Pos))
+#endif
+
+
 extern uint8_t __nocache_base__;
 extern uint8_t __nocache_end__;
 
@@ -57,11 +66,17 @@ bool mpu_config_init_once(void) {
    * 32MB @ 0xC0000000.
    */
   mpuConfigureRegion(
-      MPU_REGION_SDRAM_MAIN,
-      SDRAM_EXT_BASE,
-      MPU_RASR_SIZE_32M |
-      MPU_RASR_ATTR_NON_CACHEABLE
+    MPU_REGION_SDRAM_MAIN,
+    SDRAM_EXT_BASE,
+    MPU_RASR_SIZE_32M |
+    (0 << MPU_RASR_TEX_Pos) |
+    (0 << MPU_RASR_B_Pos)   |
+    (0 << MPU_RASR_C_Pos)   |
+    (1 << MPU_RASR_S_Pos)   |
+    (3 << MPU_RASR_AP_Pos)  |
+    (1 << MPU_RASR_ENABLE_Pos)
   );
+
 
   /*
    * Configure ONE region for .nocache

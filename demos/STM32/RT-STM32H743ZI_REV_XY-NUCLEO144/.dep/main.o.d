@@ -91,8 +91,10 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
- ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
- ../../../os/hal/include/hal_spi.h ../../../os/hal/include/hal_spi_v2.h \
+ ../../../os/hal/include/hal_sdc.h \
+ ../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h \
+ ../../../os/hal/include/hal_sio.h ../../../os/hal/include/hal_spi.h \
+ ../../../os/hal/include/hal_spi_v2.h \
  ../../../os/hal/ports/STM32/LLD/SPIv3/hal_spi_v2_lld.h \
  ../../../os/hal/include/hal_trng.h ../../../os/hal/include/hal_uart.h \
  ../../../os/hal/include/hal_usb.h \
@@ -120,7 +122,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- ../../../os/hal/lib/streams/chprintf.h audio/audio_conf.h
+ ../../../os/hal/lib/streams/chprintf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -240,6 +242,7 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
 ../../../os/hal/include/hal_sdc.h:
+../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h:
 ../../../os/hal/include/hal_sio.h:
 ../../../os/hal/include/hal_spi.h:
 ../../../os/hal/include/hal_spi_v2.h:
@@ -273,4 +276,3 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 ../../../os/hal/lib/streams/chprintf.h:
-audio/audio_conf.h:

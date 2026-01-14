@@ -91,8 +91,10 @@ build/obj/sdram_ext.o: sdram/sdram_ext.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
- ../../../os/hal/include/hal_sdc.h ../../../os/hal/include/hal_sio.h \
- ../../../os/hal/include/hal_spi.h ../../../os/hal/include/hal_spi_v2.h \
+ ../../../os/hal/include/hal_sdc.h \
+ ../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h \
+ ../../../os/hal/include/hal_sio.h ../../../os/hal/include/hal_spi.h \
+ ../../../os/hal/include/hal_spi_v2.h \
  ../../../os/hal/ports/STM32/LLD/SPIv3/hal_spi_v2_lld.h \
  ../../../os/hal/include/hal_trng.h ../../../os/hal/include/hal_uart.h \
  ../../../os/hal/include/hal_usb.h \
@@ -119,6 +121,7 @@ build/obj/sdram_ext.o: sdram/sdram_ext.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
+ ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
  sdram/sdram_ext.h
 ../../../os/rt/include/ch.h:
@@ -240,6 +243,7 @@ cfg/mcuconf.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
 ../../../os/hal/include/hal_sdc.h:
+../../../os/hal/ports/STM32/LLD/SDMMCv2/hal_sdc_lld.h:
 ../../../os/hal/include/hal_sio.h:
 ../../../os/hal/include/hal_spi.h:
 ../../../os/hal/include/hal_spi_v2.h:
@@ -271,5 +275,6 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_usb_msd.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
+../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 sdram/sdram_ext.h:

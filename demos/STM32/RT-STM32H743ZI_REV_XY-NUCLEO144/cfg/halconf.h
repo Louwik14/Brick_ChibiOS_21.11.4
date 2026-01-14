@@ -144,7 +144,7 @@
  * @brief   Enables the SDC subsystem.
  */
 #if !defined(HAL_USE_SDC) || defined(__DOXYGEN__)
-#define HAL_USE_SDC                         FALSE
+#define HAL_USE_SDC                         TRUE
 #endif
 
 /**
@@ -571,6 +571,11 @@
 #if !defined(WSPI_USE_MUTUAL_EXCLUSION) || defined(__DOXYGEN__)
 #define WSPI_USE_MUTUAL_EXCLUSION           TRUE
 #endif
+
+#if !defined(HAL_USE_FSMC) || defined(__DOXYGEN__)
+#define HAL_USE_FSMC                TRUE
+#endif
+
 
 #endif /* HALCONF_H */
 
