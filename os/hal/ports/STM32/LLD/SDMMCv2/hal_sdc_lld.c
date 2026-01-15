@@ -468,8 +468,9 @@ void sdc_lld_stop(SDCDriver *sdcp) {
 void sdc_lld_start_clk(SDCDriver *sdcp) {
 
   /* Initial clock setting: 400kHz, 1bit mode.*/
-  sdcp->sdmmc->CLKCR  = sdc_lld_clkdiv(sdcp, 400000U) | SDMMC_CLKCR_CLKEN;
+  sdcp->sdmmc->CLKCR  = sdc_lld_clkdiv(sdcp, 400000U);
   sdcp->sdmmc->POWER |= SDMMC_POWER_PWRCTRL_0 | SDMMC_POWER_PWRCTRL_1;
+/* TODO sdcp->sdmmc->CLKCR |= SDMMC_CLKCR_CLKEN;*/
 
   /* Clock activation delay.*/
   osalThreadSleep(OSAL_MS2I(STM32_SDC_SDMMC_CLOCK_DELAY));
