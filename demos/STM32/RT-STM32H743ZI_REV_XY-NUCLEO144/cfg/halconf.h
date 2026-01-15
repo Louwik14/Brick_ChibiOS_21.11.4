@@ -123,7 +123,7 @@
  * @brief   Enables the MMC_SPI subsystem.
  */
 #if !defined(HAL_USE_MMC_SPI) || defined(__DOXYGEN__)
-#define HAL_USE_MMC_SPI                     TRUE
+#define HAL_USE_MMC_SPI                     FALSE
 #endif
 
 /**
@@ -179,7 +179,7 @@
  * @brief   Enables the SAI subsystem.
  */
 #if !defined(HAL_USE_SAI) || defined(__DOXYGEN__)
-#define HAL_USE_SAI                         TRUE
+#define HAL_USE_SAI                         FALSE
 #endif
 
 /**
