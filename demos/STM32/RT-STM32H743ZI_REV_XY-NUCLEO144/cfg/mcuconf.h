@@ -89,7 +89,7 @@
 #define STM32_PLL1_ENABLED                  TRUE
 #define STM32_PLL1_P_ENABLED                TRUE
 #define STM32_PLL1_Q_ENABLED                TRUE
-#define STM32_PLL1_R_ENABLED                FALSE
+#define STM32_PLL1_R_ENABLED                TRUE
 #define STM32_PLL1_DIVM_VALUE               5
 #define STM32_PLL1_DIVN_VALUE               160
 #define STM32_PLL1_FRACN_VALUE              0
@@ -100,7 +100,7 @@
 /* PLL2: SAI2 audio master clock (fractional only where required). */
 #define STM32_PLL2_ENABLED                  TRUE
 #define STM32_PLL2_P_ENABLED                TRUE
-#define STM32_PLL2_Q_ENABLED                FALSE
+#define STM32_PLL2_Q_ENABLED                TRUE
 #define STM32_PLL2_R_ENABLED                TRUE
 #define STM32_PLL2_DIVM_VALUE               5
 #define STM32_PLL2_DIVN_VALUE               98
@@ -148,7 +148,7 @@
 #define STM32_STOPWUCK                      0
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_CKPERSEL                      STM32_CKPERSEL_HSI_CK
-#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL2_R_CK
+#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL1_Q_CK
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
@@ -517,7 +517,7 @@
  */
 #define STM32_SAI_USE_SAI1A                 FALSE
 #define STM32_SAI_USE_SAI1B                 FALSE
-#define STM32_SAI_USE_SAI2A                 TRUE
+#define STM32_SAI_USE_SAI2A                 FALSE
 #define STM32_SAI_USE_SAI2B                 FALSE
 
 #define STM32_SAI_SAI2A_IRQ_PRIORITY        5
