@@ -148,7 +148,7 @@
 #define STM32_STOPWUCK                      0
 #define STM32_RTCPRE_VALUE                  8
 #define STM32_CKPERSEL                      STM32_CKPERSEL_HSI_CK
-#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL1_Q_CK
+#define STM32_SDMMCSEL                      STM32_SDMMCSEL_PLL2_R_CK
 #define STM32_QSPISEL                       STM32_QSPISEL_HCLK
 #define STM32_FMCSEL                        STM32_FMCSEL_HCLK
 #define STM32_SWPSEL                        STM32_SWPSEL_PCLK1
