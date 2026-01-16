@@ -1,0 +1,122 @@
+SAI LLD — Hardware Bring-up Playbook
+
+RÉFÉRENCES
+- RM0433 Rev 5 (STM32H743) : SAI + DMA.
+- agent.md (contraintes figées).
+- ROADMAP SAI consolidée.
+- “SAI LLD — Bring-up Safe Profile & Hardening”.
+
+OBJECTIF
+- Playbook terrain pour bring-up SAI, sans improvisation.
+- Localiser rapidement l’origine d’un échec (clocking, DMA, format, IRQ).
+
+1) CHECKLIST AVANT POWER-ON (ACTIONNABLE)
+-----------------------------------------
+RCC / CLOCKS
+- [ ] SAIxSEL configuré (PLLx) pour SAI1/SAI2 (RM0433).
+- [ ] PCLK_APB2 > 2×BCLK (RM : resynchronisation interne).
+- [ ] MCKDIV/FRL/NOMCK cohérents (si NOMCK=0, FRL+1 power-of-2 et 8..256).
+
+CONFIG COMPILATION / HAL
+- [ ] HAL_USE_SAI = TRUE.
+- [ ] STM32_SAI_USE_SAI1A/SAI1B/SAI2A/SAI2B (un seul bloc actif pour bring-up).
+- [ ] STM32_SAI_SAIx_*_DMA_STREAM définis explicitement (pas STM32_DMA_STREAM_ID_ANY).
+- [ ] IRQ priorities fixées (DMA audio prioritaire vs autres DMA).
+
+INSTRUMENTATION
+- [ ] GPIO debug: entrée IRQ HT/TC (toggle).
+- [ ] Compteurs HT/TC, DMA errors, SAI flags (OVRUDR/WCKCFG).
+- [ ] Aucune trace UART dans IRQ audio.
+
+MÉMOIRE
+- [ ] Buffers DMA en SRAM AXI/D2 (agent.md).
+- [ ] Alignement buffers >= 32 bytes.
+- [ ] Buffers statiques, pas de heap.
+
+2) OBSERVABILITÉ — QUE MESURER ET COMMENT
+-----------------------------------------
+Étape A — SAI master sans DMA
+- Signal: SCK, FS
+- Outil: analyseur logique ou oscilloscope
+- Attendu:
+  - FS = 48 kHz (ordre de grandeur)
+  - BCLK = FS × bits/frame (ex: 64 bits/frame → ~3.072 MHz)
+- Écart:
+  - FS absent → clock SAIxSEL/MCKDIV/SAIEN invalides
+  - FS fréquence incorrecte → FRL/NOMCK/clock source incorrects
+
+Étape B — SAI + DMA (silence)
+- Signal: GPIO HT/TC toggle
+- Outil: oscilloscope / LA
+- Attendu:
+  - HT/TC périodiques, cadence stable (2× cadence audio bloc)
+- Écart:
+  - HT/TC absent → DMA stream/DMAMUX non configurés
+  - HT/TC storm → flags DMA non clear ou NDTR incorrect
+
+Étape C — SAI + DMA + callback minimal
+- Signal: GPIO toggle dans callback
+- Outil: oscilloscope
+- Attendu:
+  - toggle régulier, stable, pas de jitter visible
+- Écart:
+  - jitter → IRQ priorité mal réglée ou callback trop lourd
+
+3) MATRICE DE PANNES (SYMPTÔME → CAUSE → ACTION)
+------------------------------------------------
+Symptôme | Cause probable | Où regarder | Action recommandée
+- Silence total | SAI clock absente / SAIEN non effectif | SCK/FS, RCC SAIxSEL | Vérifier clocks RCC + SAIEN
+- IRQ HT/TC absentes | DMAMUX mapping faux / DMA stream mal configuré | DMAMUX config, DMA stream ID | Forcer stream explicite + DMAMUX1_SAIx
+- IRQ storm | Flags DMA non clear / NDTR incohérent | DMA ISR flags, NDTR | Clear flags + vérifier size
+- WCKCFG flag | FRL/NOMCK invalide | SAI SR/CLRFR | Corriger FRL+1 (power-of-2 si NOMCK=0)
+- OVRUDR RX | SAI RX sans DMA prêt | Sequence start | DMA d’abord, SAI ensuite
+- Jitter HT/TC | IRQ priorités / callback trop longue | NVIC prio, callback | Remonter prio DMA audio, réduire callback
+
+4) STRATÉGIE DE DEBUG PROGRESSIF
+--------------------------------
+Ordre STRICT :
+1. Valider clock tree (SAIxSEL, PCLK, MCKDIV).
+2. Valider SAI master sans DMA (SCK/FS propres).
+3. Valider DMA seul (HT/TC) avec buffers silence.
+4. Activer callback minimal (GPIO + compteur uniquement).
+5. Introduire traitement audio (après stabilité mesurée).
+
+Ne pas toucher:
+- DMA/DMAMUX tant que SCK/FS ne sont pas corrects.
+- FRL/DS/SLOTSZ tant que clocking de base n’est pas validé.
+
+Stop immédiat si:
+- WCKCFG ou OVRUDR persistants.
+- IRQ storm.
+- Absence totale de SCK/FS.
+
+5) RÈGLES DE DISCIPLINE JOUR J
+-------------------------------
+INTERDIT
+- Ajouter printf/logs dans IRQ audio.
+- Modifier DMA et SAI dans la même itération.
+- Changer clock tree sans revalider SCK/FS.
+- Multiplier les points de debug sans les consigner.
+
+TOUJOURS
+- Une seule modification par itération.
+- Reset complet entre chaque test.
+- Noter chaque changement et son effet.
+- Mesurer SCK/FS/IRQ avant de conclure.
+
+6) CRITÈRES GO / NO-GO IMMÉDIATS
+--------------------------------
+GO
+- SCK/FS stables, fréquence cohérente.
+- HT/TC cadence stable sur 10+ minutes.
+- Aucun WCKCFG, OVRUDR, DMA error.
+
+NO-GO
+- SCK/FS absents ou instables.
+- IRQ storm ou absence d’IRQ.
+- WCKCFG persistant.
+
+POINTS DÉPENDANTS DU HARDWARE (NON SÉCURISABLES SANS CARTE)
+- Qualité des clocks physiques et jitter SAI.
+- Stabilité du signal SCK/FS sous charge.
+- Variations dues à câblage ou alimentation.

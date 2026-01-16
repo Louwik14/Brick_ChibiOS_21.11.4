@@ -1,0 +1,30 @@
+/**
+ * @file drivers.c
+ * @brief Point d’entrée unique pour l’initialisation de tous les drivers matériels du firmware.
+ * @ingroup drivers
+ */
+
+#include "drivers.h"
+
+mutex_t spi5_mutex;
+
+void drivers_init_all(void) {
+    chMtxObjectInit(&spi5_mutex);
+
+    /* Contrat de démarrage :
+       - drv_display   : init + start (thread de rafraîchissement)
+       - drv_leds_addr : init uniquement (rendu déclenché côté UI)
+       - drv_buttons   : start = init + thread de scan
+       - drv_encoders  : start = init + thread de scan
+       - drv_pots      : start = init + thread de scan */
+    drv_display_init();
+    drv_display_start();
+
+}
+
+/* Mise à jour périodique : surtout pour l’écran (les LEDs sont rendues via ui_led_backend_refresh). */
+void drivers_update_all(void) {
+    /* ⚠️ Ne **pas** appeler drv_leds_addr_update() ici.
+       Le pipeline LED passe par ui_led_backend_refresh() → drv_leds_addr_render(). */
+    drv_display_update();
+}

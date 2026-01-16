@@ -1,0 +1,174 @@
+SAI LLD — Bring-up Safe Profile & Hardening
+
+RÉFÉRENCES
+- RM0433 Rev 5 (STM32H743) : chapitres SAI + DMA.
+- agent.md (contraintes audio/DMA/mémoire fixées).
+- Driver actuel : os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.*
+
+OBJECTIF
+- Transformer le driver actuel en profil de bring-up sûr, sans changer l’architecture LLD.
+- Ajouter garde-fous (compile-time/runtime) et figer une config safe pour premier flash.
+
+1) HARDENING RM — CONFIGURATION SAI
+-----------------------------------
+Paramètres à valider avant SAIEN/DMAEN (RM0433):
+
+A. NOMCK / FRL / WCKCFG
+- Règle RM: si NOMCK=0 (MCLK généré), alors (FRL+1) doit être puissance de 2 et 8..256.
+- Si règle violée => WCKCFG, bloc auto-disable.
+
+Garde-fous proposés:
+- Runtime (dans sai_lld_start, avant écriture CR1/FRCR):
+  - Extraire NOMCK, FRL.
+  - Si NOMCK=0: assert “(FRL+1) est power-of-2” et 8..256.
+  - Si NOMCK=1: assert “FRL+1” entre 8..256 (RM). 
+
+B. DS / SLOTSZ / FRCR cohérence
+- Règles RM :
+  - DS ≤ SLOTSZ.
+  - NBSLOT × SLOTSZ ≤ FRL.
+  - FBOFF ≤ (SLOTSZ - DS).
+  - Nombre de slots pair si FSDEF=1.
+
+Garde-fous proposés:
+- Runtime (dans sai_lld_start, avant enable):
+  - Déduire DS, SLOTSZ, NBSLOT, FBOFF, FRL.
+  - Assert toutes les contraintes ci-dessus.
+
+C. PCLK > 2×BCLK
+- RM: PCLK APB doit être > 2×bit clock (resynchronisation interne).
+- Hardening réaliste: impossible à vérifier sans connaissance exacte de clock tree runtime.
+
+Mitigation:
+- Documenter clairement dans le profil safe:
+  - “Configurer RCC de sorte que PCLK_APB2 >> BCLK (≥ 2×).”
+- Ajouter un commentaire RM dans le code.
+
+Emplacement des checks:
+- LLD: sai_lld_start() avant configuration CR1/CR2/FRCR/SLOTR.
+- HAL: pas de check (HAL doit rester minimal).
+
+2) HARDENING RM — DMA / DMAMUX
+------------------------------
+A. Interdire STM32_DMA_STREAM_ID_ANY
+- Objectif: éviter mapping implicite en production.
+
+Garde-fou compile-time:
+- Dans hal_sai_lld.h: 
+  - #if STM32_SAI_USE_SAIx && (STM32_SAI_SAIx_*_DMA_STREAM == STM32_DMA_STREAM_ID_ANY)
+    #error "DMA stream must be explicit for bring-up"
+
+Emplacement: hal_sai_lld.h (compile-time).
+
+B. Validation NDTR / PSIZE / MSIZE
+- RM: NDTR = items (PSIZE), PSIZE/MSIZE cohérents.
+
+Garde-fou runtime (LLD sai_lld_set_buffers):
+- Assert size <= STM32_DMA_MAX_TRANSFER.
+- Assert size pair (déjà présent, garder).
+- Ajouter assert “PSIZE == MSIZE” en mode direct.
+- Ajouter assert “PSIZE aligné avec DS/SLOTSZ”.
+  - Exemple: DS=24 bits -> PSIZE/MSIZE = 32 bits.
+
+C. HT/TC flag clear systématique
+- RM: flags DMA doivent être cleared pour éviter IRQ storm.
+
+Garde-fou runtime:
+- Dans handler DMA (sai_lld_serve_dma_interrupt):
+  - Appeler dmaStreamClearInterrupt(dmastp) au début.
+  - Ceci doit être fait avant callback audio.
+
+Emplacement: LLD (sai_lld_serve_dma_interrupt).
+
+3) SAFE MODE — PROFIL DE BRING-UP
+---------------------------------
+Profil recommandé pour premier test (conservateur, stable):
+
+- Protocole: PCM/TDM simple (pas de AC’97, pas de SPDIF).
+- Mode: SAI master TX (ou RX unique). Pas de sync multi-bloc.
+- Slots: 2 slots (stéréo).
+- SLOTSZ = 32 bits.
+- DS = 24 bits ou 32 bits, mais buffer DMA en 32 bits.
+- FRL = 63 (FRL+1 = 64 bits/frame) pour stéréo 32-bit.
+- NOMCK = 1 (pas de MCLK) pour éviter contrainte “power-of-2” + réduire dépendance externe.
+- CKSTR = 0 (strobe edge standard).
+- FIFO threshold: half (FTH=010b) pour amortir jitter DMA.
+- DMA: direct mode, pas de burst, PSIZE=MSIZE=word (32-bit), CIRC on, HT/TC on.
+
+Objectif: cadence stable, configuration simple, risques clocking minimisés.
+
+4) SÉQUENCE BRING-UP HARDWARE (PAS À PAS)
+-----------------------------------------
+1) Init clocks RCC / PLL
+   - Configurer SAIxSEL (PLLx) et prescalers.
+   - Vérifier PCLK_APB2 >= 2×BCLK (RM).
+   - Échec immédiat: SAI clock non stable ou absente.
+
+2) Init driver (sans DMA)
+   - Appeler saiStart() avec config safe.
+   - Laisser DMA disabled.
+   - Observer SCK/FS à l’analyseur logique.
+   - Échec immédiat: pas de FS/SCK en master => clocking incorrect.
+
+3) Validation signaux SAI
+   - Vérifier fréquence FS = 48 kHz (±tolérance).
+   - Vérifier BCLK cohérent (FS × bits/frame).
+   - Échec: FS instable, mauvais duty cycle, absence de frame.
+
+4) Activation DMA (sans traitement audio)
+   - saiSetBuffers() avec buffer statique silence.
+   - saiStartExchange().
+   - Observer HT/TC sur GPIO debug.
+   - Échec: absence IRQ ou IRQ storm.
+
+5) Validation cadence HT/TC
+   - HT/TC cadence stable (2× cadence audio bloc).
+   - Compteur HT/TC doit être monotone sans drop.
+   - Échec: jitter > tolérance, IRQ manquées.
+
+6) Activation callback audio minimal
+   - Callback qui toggle GPIO + incrémente compteur.
+   - Pas de traitement audio.
+   - Échec: sur-réaction IRQ ou blocage.
+
+STOP immédiat si:
+- WCKCFG flag set ou auto-disable.
+- OVRUDR flag persistant.
+- DMA error (TEIF/DMEIF) détecté.
+
+5) ASSERTIONS & DIAGNOSTIC
+---------------------------
+Assertions à activer (bring-up):
+- osalDbgAssert activé.
+- Assertions SAI (NOMCK/FRL, DS/SLOTSZ/NBSLOT, FBOFF).
+- Assertions DMA (stream explicit, size <= max, PSIZE/MSIZE cohérents).
+
+Compteurs utiles (hors IRQ audio):
+- compteur HT/TC total.
+- compteur erreurs DMA (TEIF/DMEIF).
+- compteur flags SAI (OVRUDR, WCKCFG).
+
+Logs non audio-safe (thread normal):
+- Log événement “start/stop/reinit”.
+- Log erreurs critiques avec code (WCKCFG/OVRUDR/DMA).
+
+6) CRITÈRES GO / NO-GO POST BRING-UP
+-------------------------------------
+GO si:
+- FS/SCK stables et corrects.
+- IRQ HT/TC cadence stable sur 10+ minutes.
+- Aucun OVRUDR/WCKCFG/DMA error.
+
+GO AVEC RISQUES si:
+- jitter léger mais audio stable.
+- erreurs rares mais récupérables (sans silence).
+
+NO-GO si:
+- WCKCFG ou OVRUDR persistants.
+- DMA error ou IRQ storm.
+- Absence de FS/SCK en master.
+
+POINTS NON SÉCURISABLES SANS MATÉRIEL
+- Validation exacte du clock tree (PCLK > 2×BCLK).
+- Comportement réel FS/SCK selon charge system.
+- Qualité de signal SAI sur lignes physiques.

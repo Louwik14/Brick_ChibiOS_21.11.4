@@ -1,0 +1,148 @@
+ROADMAP — Driver SAI bas niveau (ChibiOS STM32H743)
+
+1. OBJECTIF
+- Produire un driver SAI LLD ChibiOS minimaliste, audio hard real-time.
+- Remplacer complètement le HAL ST.
+- Focus : SAI + DMA (half/full IRQ) comme métronome audio.
+
+2. RÉFÉRENCES NORMATIVES (OBLIGATOIRES)
+- agent.md (architecture, contraintes audio/DMA/mémoire).
+- RM0433 Rev 5 : STM32H743/753 — chapitre 50 (SAI) + chapitre 14 (DMA).
+- Modèle LLD ChibiOS (ex. os/hal/ports/STM32/LLD/SPIv2/hal_spi_lld.*).
+
+3. CONTRAINTES AUDIO / ARCHI PROJET (FIXÉES)
+- 48 kHz, 64 samples/bloc, hard real-time.
+- DMA SAI = source unique du timing audio (IRQ HT/TC).
+- DMA = transport uniquement (pas de logique métier dans IRQ).
+- Pas de heap, pas de D-Cache, pas de MPU.
+- Buffers DMA en SRAM AXI/D2, alignement >= 32 bytes.
+- DTCM interdit aux buffers DMA.
+
+4. BORNES DU DRIVER (SCOPE / NON-SCOPE)
+- Scope : SAI audio PCM/TDM avec DMA circulaire + IRQ HT/TC.
+- Non-scope : PDM, AC’97, SPDIF, HAL ST, optimisations avancées (cache/MPU).
+- Non-scope : drivers haut niveau (API audio applicative).
+
+5. EXIGENCES RM — SAI (POINTS À RESPECTER)
+- Deux sous-blocs indépendants A/B, chacun avec FIFO 8 mots et interface DMA dédiée.
+- FIFO : un accès au SAI_xDR = un mot FIFO (un slot). FIFO pointeurs incrémentés d’un mot.
+- Données SAI_xDR : alignées à droite en TX, et RX retourne aligné à droite.
+- DMA : activé par SAI_xCR1.DMAEN. Le bloc démarre en mode TX après reset : config MODE avant DMAEN.
+- DMA request = même mécanisme que FREQ interrupt : dépend de FTH (SAI_xCR2) et du sens TX/RX.
+- Activation SAI : SAIEN=1. En mode maître, l’horloge d’entrée doit être présente avant SAIEN.
+- Désactivation SAI : clear SAIEN, la trame en cours se termine avant arrêt complet.
+- SAI synchro interne : si un bloc est synchrone, désactiver le maître en premier.
+- Mode maître + NOMCK=0 : (FRL+1) doit être une puissance de 2 et 8..256, sinon WCKCFG et auto-disable.
+- NOMCK=1 : MCLK absent, FRL+1 peut prendre 8..256 sans contrainte “power of 2”.
+- Clocking : CKSTR, LSBFIRST, DS, SYNCEN, FRCR/SLOTR doivent être configurés bloc désactivé.
+- Note RM explicite : PCLK APB > 2 × bit clock (contrainte interne de resynchronisation).
+
+6. EXIGENCES RM — DMA (POINTS À RESPECTER)
+- DMA utilisé : DMA1/DMA2 + DMAMUX1 (chap. 14 + DMAMUX). BDMA/MDMA hors-scope SAI.
+- Séquence config stream RM : disable → attendre EN=0 → clear flags → config registres → EN=1.
+- DMA_SxNDTR = nombre d’items sur le port périphérique (PSIZE), pas en bytes.
+- Circular mode : supporté. Si bursts activés, respecter règle NDTR = multiple de la taille de burst.
+- Direct mode : PSIZE=MSIZE obligatoires (pas de packing/unpacking).
+- Changement d’adresses mémoire interdit pendant EN=1 (sauf double-buffer mode).
+- IRQ HT/TC : flags dans DMA_LISR/HISR, clear via DMA_LIFCR/HIFCR avant ré-activation.
+
+7. ARCHITECTURE LLD CHIBIOS (MODÈLE)
+- Nouveau dossier LLD (ex. os/hal/ports/STM32/LLD/SAIv1/).
+- Fichiers attendus :
+  - hal_sai_lld.h / hal_sai_lld.c
+  - Intégration hal_sai.h côté HAL si besoin strict.
+- Macro “sai_lld_driver_fields” calquée sur SPIv2 :
+  - SAIx regs, DMA RX/TX stream, mode DMA, IRQ infos.
+- Macro “sai_lld_config_fields” :
+  - CR1/CR2/FRCR/SLOTR + paramètres audio (slots, data size, FS, CKSTR, sync).
+- Drivers (SAID1/SAID2) conditionnés par STM32_SAI_USE_SAIx.
+- Compile-time : mapping DMA/DMAMUX, IRQ priority, DMA priority.
+- Runtime : configuration audio (FRCR/SLOTR/CR1/CR2) + buffer addresses.
+
+8. DÉFINITION DES MODÈLES D’USAGE AUDIO (MINIMAL)
+- Mode recommandé :
+  - SAI en maître (ou slave si clock externe), protocole PCM/TDM.
+  - DMA circulaire, HT/TC interrupt actifs.
+  - FIFO threshold cohérent avec cadence HT/TC (ex. half/quarter selon latence).
+- Buffers : double-buffer logiciel (deux demi-buffers) alignés 32 bytes.
+- Format audio : définir explicitement DS/SLOTSZ/FRL pour correspondance exacte au buffer.
+
+9. PLAN D’INIT / START / STOP (SEQUENCES RM-CONFORMES)
+- Init SAI (hors DMA) :
+  1) SAIEN=0 (poll à 0), config CR1/CR2/FRCR/SLOTR.
+  2) Config FIFO threshold (FTH) et FFLUSH si besoin (SAI désactivé).
+  3) Config clocks (NOMCK, MCKDIV, OSR) si maître.
+- Init DMA :
+  1) Disable stream + wait EN=0, clear flags DMA_LIFCR/HIFCR.
+  2) PAR = &SAI_xDR, M0AR = buffer, NDTR = items.
+  3) DIR, PSIZE/MSIZE, MINC, CIRC, HTIE/TCIE, PL.
+  4) Route DMAMUX1 request SAI A/B (table RM DMAMUX).
+  5) Enable stream EN=1.
+- Start : enable DMA d’abord (stream EN=1), puis SAIEN=1.
+- Stop : clear SAIEN, poll SAIEN=0, ensuite disable DMA stream + wait EN=0.
+- Séquences dangereuses (interdites) :
+  - Activer SAI avant DMA en mode RX (risque d’OVRUDR).
+  - Reconfigurer CR1/CR2/FRCR/SLOTR alors que SAIEN=1.
+  - Modifier M0AR/M1AR hors double-buffer mode.
+
+10. DMA IRQ / MÉTRONOME AUDIO
+- IRQ DMA HT/TC = seul déclencheur audio.
+- Handler minimal :
+  - clear flags HT/TC
+  - flip buffer index
+  - signaler audio engine (fonction dédiée, sans blocage)
+- Aucune logique UI / MIDI / USB en IRQ audio.
+
+11. ERREURS / DIAGNOSTIC (RM)
+- Flags SAI : OVRUDR, AFSDET, LFSDET, WCKCFG, MUTEDET, CNRDY.
+- WCKCFG (maître + NOMCK=0 + FRL invalide) => auto-disable SAIEN.
+- OVRUDR : sous/sur-réseau FIFO (TX/RX), à clear via SAI_xCLRFR.
+- AFSDET/LFSDET : erreurs de FS en slave, à clear via SAI_xCLRFR.
+- CNRDY : AC’97 uniquement (hors-scope) — ignorer si protocoles audio PCM/TDM.
+- MUTEDET : RX uniquement, dépend du mode mute.
+- Politique recovery :
+  - IRQ audio ne fait que flagger l’erreur.
+  - Recovery (stop/re-init) dans thread non-audio.
+  - Si la cause dépend du câblage/clock externe : signaler “à valider matériel”.
+
+12. MÉMOIRE / ALIGNEMENT
+- Buffers DMA en SRAM AXI/D2 uniquement (agent.md).
+- Alignement >= 32 bytes (DMA + cache OFF).
+- Vérifications statiques dans le driver (asserts compile-time si possible).
+
+13. INTÉGRATION CHIBIOS
+- Ajouts compile-time dans halconf.h / mcuconf.h :
+  - HAL_USE_SAI
+  - STM32_SAI_USE_SAI1/SAI2
+  - DMA streams + DMAMUX IDs
+  - IRQ priorities
+- Hook d’init : hal_lld_init() + sai_lld_init().
+- API HAL minimale : start/stop + set_buffers + set_config (pas d’API métier).
+
+14. VALIDATION / TESTS HARD REAL-TIME
+- Tests unitaires driver :
+  - enable/disable stable (1000 cycles)
+  - DMA HT/TC cadence 48 kHz / 64 samples
+  - no underrun/overrun sur 10+ minutes
+- Observabilité :
+  - GPIO debug : entrée IRQ HT/TC
+  - Analyseur logique sur SCK/FS/SD
+- Tests d’intégration audio :
+  - jitter mesuré HT/TC
+  - absence de glitch sous charge UI/MIDI/USB
+- Points nécessitant validation matériel :
+  - comportements clock externe (slave) + marges de jitter
+  - stabilité FIFO threshold vs latence audio
+
+15. RISQUES TECHNIQUES / POINTS D’ATTENTION
+- Mauvaise config FRL/NOMCK => WCKCFG et auto-disable.
+- Mauvais ordre enable/disable DMA/SAI => underrun/overrun.
+- Erreur de mapping DMAMUX => silence ou FIFO underrun.
+- Buffers hors SRAM AXI/D2 => incohérences DMA.
+- NDTR/PSIZE/MSIZE incohérents => transfert tronqué ou décalé.
+
+16. LIVRABLES ATTENDUS
+- Fichiers LLD SAI + hooks de config.
+- Table de config example (SAI1 TX/RX + DMA).
+- Guide d’intégration rapide (1 page) : init + start + stop.
+
