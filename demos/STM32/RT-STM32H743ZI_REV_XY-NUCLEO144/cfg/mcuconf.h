@@ -44,7 +44,7 @@
 /*
  * Memory attributes settings.
  */
-#define STM32_NOCACHE_ENABLE                FALSE
+#define STM32_NOCACHE_ENABLE                TRUE
 #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
 #define STM32_NOCACHE_RBAR                  0x24000000U
 #define STM32_NOCACHE_RASR                  MPU_RASR_SIZE_16K
@@ -85,7 +85,6 @@
 #define STM32_PLLCFGR_MASK                  ~0
 
 
-/* PLL1: SYSCLK = 400 MHz (system only, within rev XY limits). */
 #define STM32_PLL1_ENABLED                  TRUE
 #define STM32_PLL1_P_ENABLED                TRUE
 #define STM32_PLL1_Q_ENABLED                TRUE
@@ -97,19 +96,17 @@
 #define STM32_PLL1_DIVQ_VALUE               10
 #define STM32_PLL1_DIVR_VALUE               2
 
-/* PLL2: SAI2 audio master clock (fractional only where required). */
 #define STM32_PLL2_ENABLED                  TRUE
 #define STM32_PLL2_P_ENABLED                TRUE
 #define STM32_PLL2_Q_ENABLED                TRUE
 #define STM32_PLL2_R_ENABLED                TRUE
 #define STM32_PLL2_DIVM_VALUE               5
 #define STM32_PLL2_DIVN_VALUE               98
-#define STM32_PLL2_FRACN_VALUE              2494   /* 491.52 MHz VCO */
-#define STM32_PLL2_DIVP_VALUE               10     /* SAI kernel = 49.152 MHz */
-#define STM32_PLL2_DIVQ_VALUE               2      /* unused */
-#define STM32_PLL2_DIVR_VALUE               12     /* SDMMC kernel = 40.96 MHz */
+#define STM32_PLL2_FRACN_VALUE              2494
+#define STM32_PLL2_DIVP_VALUE               10
+#define STM32_PLL2_DIVQ_VALUE               2
+#define STM32_PLL2_DIVR_VALUE               12
 
-/* PLL3: ADC + SPI (integer-only, independent of audio/SYSCLK). */
 #define STM32_PLL3_ENABLED                  TRUE
 #define STM32_PLL3_P_ENABLED                TRUE
 #define STM32_PLL3_Q_ENABLED                FALSE
@@ -117,9 +114,9 @@
 #define STM32_PLL3_DIVM_VALUE               25
 #define STM32_PLL3_DIVN_VALUE               288
 #define STM32_PLL3_FRACN_VALUE              0
-#define STM32_PLL3_DIVP_VALUE               4      /* SPI123 kernel = 72 MHz */
-#define STM32_PLL3_DIVQ_VALUE               6      /* unused */
-#define STM32_PLL3_DIVR_VALUE               8      /* ADC kernel = 36 MHz */
+#define STM32_PLL3_DIVP_VALUE               4
+#define STM32_PLL3_DIVQ_VALUE               6
+#define STM32_PLL3_DIVR_VALUE               8
 
 /*
  * Core clocks dynamic settings (can be changed at runtime).
@@ -288,7 +285,7 @@
  */
 #define STM32_I2C_USE_I2C1                  FALSE
 #define STM32_I2C_USE_I2C2                  TRUE
-#define STM32_I2C_USE_I2C3                  FALSE /* PH7 is LED (active-low). */
+#define STM32_I2C_USE_I2C3                  FALSE
 #define STM32_I2C_USE_I2C4                  FALSE
 #define STM32_I2C_BUSY_TIMEOUT              50
 #define STM32_I2C_I2C1_RX_DMA_STREAM        STM32_DMA_STREAM_ID_ANY
