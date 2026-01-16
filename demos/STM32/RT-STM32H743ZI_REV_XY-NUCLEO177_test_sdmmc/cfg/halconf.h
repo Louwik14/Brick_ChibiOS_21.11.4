@@ -34,10 +34,10 @@
 #include "mcuconf.h"
 
 /**
- * @brief   Enables the community drivers subsystem.
+ * @brief   Enables the HAL safety subsystem.
  */
-#if !defined(HAL_USE_COMMUNITY) || defined(__DOXYGEN__)
-#define HAL_USE_COMMUNITY                  TRUE
+#if !defined(HAL_USE_SAFETY) || defined(__DOXYGEN__)
+#define HAL_USE_SAFETY                      FALSE
 #endif
 
 /**
@@ -51,7 +51,7 @@
  * @brief   Enables the ADC subsystem.
  */
 #if !defined(HAL_USE_ADC) || defined(__DOXYGEN__)
-#define HAL_USE_ADC                         TRUE
+#define HAL_USE_ADC                         FALSE
 #endif
 
 /**
@@ -75,8 +75,6 @@
 #define HAL_USE_DAC                         FALSE
 #endif
 
-#define HAL_USE_SDRAM           TRUE
-#define HAL_USE_FSMC            TRUE
 /**
  * @brief   Enables the EFlash subsystem.
  */
@@ -95,7 +93,7 @@
  * @brief   Enables the I2C subsystem.
  */
 #if !defined(HAL_USE_I2C) || defined(__DOXYGEN__)
-#define HAL_USE_I2C                         TRUE
+#define HAL_USE_I2C                         FALSE
 #endif
 
 /**
@@ -172,14 +170,7 @@
  * @brief   Enables the SPI subsystem.
  */
 #if !defined(HAL_USE_SPI) || defined(__DOXYGEN__)
-#define HAL_USE_SPI                         TRUE
-#endif
-
-/**
- * @brief   Enables the SAI subsystem.
- */
-#if !defined(HAL_USE_SAI) || defined(__DOXYGEN__)
-#define HAL_USE_SAI                         FALSE
+#define HAL_USE_SPI                         FALSE
 #endif
 
 /**
@@ -200,7 +191,7 @@
  * @brief   Enables the USB subsystem.
  */
 #if !defined(HAL_USE_USB) || defined(__DOXYGEN__)
-#define HAL_USE_USB                         TRUE
+#define HAL_USE_USB                         FALSE
 #endif
 
 /**
@@ -571,11 +562,6 @@
 #if !defined(WSPI_USE_MUTUAL_EXCLUSION) || defined(__DOXYGEN__)
 #define WSPI_USE_MUTUAL_EXCLUSION           TRUE
 #endif
-
-#if !defined(HAL_USE_FSMC) || defined(__DOXYGEN__)
-#define HAL_USE_FSMC                TRUE
-#endif
-
 
 #endif /* HALCONF_H */
 
