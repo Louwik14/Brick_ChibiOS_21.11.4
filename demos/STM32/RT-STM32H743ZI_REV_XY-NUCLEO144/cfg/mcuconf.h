@@ -44,7 +44,7 @@
 /*
  * Memory attributes settings.
  */
-#define STM32_NOCACHE_ENABLE                TRUE
+#define STM32_NOCACHE_ENABLE                FALSE
 #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
 #define STM32_NOCACHE_RBAR                  0x24000000U
 #define STM32_NOCACHE_RASR                  MPU_RASR_SIZE_16K
@@ -514,7 +514,7 @@
  */
 #define STM32_SAI_USE_SAI1A                 FALSE
 #define STM32_SAI_USE_SAI1B                 FALSE
-#define STM32_SAI_USE_SAI2A                 FALSE
+#define STM32_SAI_USE_SAI2A                 TRUE
 #define STM32_SAI_USE_SAI2B                 FALSE
 
 #define STM32_SAI_SAI2A_IRQ_PRIORITY        5
