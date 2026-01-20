@@ -8,6 +8,52 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
+#include <math.h>
+
+/* -------------------------------------------------------------------------- */
+/* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
+/* -------------------------------------------------------------------------- */
+/*
+ * SAI1 kernel clock source: STM32_SAI1SEL = PLL2_P (mcuconf.h)
+ * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
+ *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
+ *
+ * Frame: 2 slots × 32 bits = 64 bits/frame (FRL+1 = 64, power of two)
+ * BCLK = 48 kHz × 64 = 3.072 MHz
+ * With MCKEN and NODIV=0, MCKDIV uses:
+ *   MCKDIV = f_SAI1 / (FS * 256) ≈ 4 (HAL formula for 256×FS MCLK)
+ *
+ * RM0433: PCLK_APB2 > 2 × BCLK requirement.
+ */
+
+#define AUDIO_SAMPLE_RATE_HZ      48000U
+#define AUDIO_FRAME_SAMPLES       64U
+#define AUDIO_CHANNELS            2U
+#define AUDIO_SLOT_BITS           32U
+#define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
+#define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
+#define AUDIO_BUFFER_HALVES       2U
+
+#define SAI_MCKDIV                4U
+
+#define SINE_FREQ_HZ              1000U
+#define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
+#define SINE_AMPLITUDE            0x007FFFFF
+#define AUDIO_TWO_PI              6.2831853071795864769f
+
+#if defined(STM32_PCLK2)
+#if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
+#error "PCLK2 must be >= 2x BCLK per RM0433"
+#endif
+#endif
+
+_Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
+               "Sine table must be integer length");
+_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
+
+/* -------------------------------------------------------------------------- */
+/* UART1 (SD1)                                                                */
+/* -------------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------- */
 /* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
