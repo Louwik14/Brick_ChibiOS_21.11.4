@@ -44,7 +44,7 @@
 /*
  * Memory attributes settings.
  */
-#define STM32_NOCACHE_ENABLE                TRUE
+#define STM32_NOCACHE_ENABLE                FALSE
 #define STM32_NOCACHE_MPU_REGION            MPU_REGION_6
 #define STM32_NOCACHE_RBAR                  0x24000000U
 #define STM32_NOCACHE_RASR                  MPU_RASR_SIZE_16K
@@ -155,7 +155,7 @@
 #define STM32_SPI45SEL                      STM32_SPI45SEL_PCLK2
 #define STM32_SPI123SEL                     STM32_SPI123SEL_PLL1_Q_CK
 #define STM32_SAI23SEL                      STM32_SAI23SEL_PLL2_P_CK
-#define STM32_SAI1SEL                       STM32_SAI1SEL_PLL1_Q_CK
+#define STM32_SAI1SEL                       STM32_SAI1SEL_PLL2_P_CK
 #define STM32_LPTIM1SEL                     STM32_LPTIM1SEL_PCLK1
 #define STM32_CECSEL                        STM32_CECSEL_LSI_CK
 #define STM32_USBSEL                        STM32_USBSEL_HSI48_CK
@@ -284,8 +284,8 @@
  * I2C driver system settings.
  */
 #define STM32_I2C_USE_I2C1                  FALSE
-#define STM32_I2C_USE_I2C2                  TRUE
-#define STM32_I2C_USE_I2C3                  FALSE
+#define STM32_I2C_USE_I2C2                  FALSE
+#define STM32_I2C_USE_I2C3                  TRUE
 #define STM32_I2C_USE_I2C4                  FALSE
 #define STM32_I2C_BUSY_TIMEOUT              50
 #define STM32_I2C_I2C1_RX_DMA_STREAM        STM32_DMA_STREAM_ID_ANY
@@ -512,14 +512,18 @@
 /*
  * SAI driver settings (bring-up test).
  */
-#define STM32_SAI_USE_SAI1A                 FALSE
+#define STM32_SAI_USE_SAI1A                 TRUE
 #define STM32_SAI_USE_SAI1B                 FALSE
 #define STM32_SAI_USE_SAI2A                 FALSE
 #define STM32_SAI_USE_SAI2B                 FALSE
 
-#define STM32_SAI_SAI2A_IRQ_PRIORITY        5
-#define STM32_SAI_SAI2A_DMA_PRIORITY        2
+#define STM32_SAI_SAI1A_IRQ_PRIORITY        5
+#define STM32_SAI_SAI1A_DMA_PRIORITY        2
 
+#define STM32_SAI_SAI1A_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 1)
+#define STM32_SAI_SAI1A_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 0)
+
+/* Explicit SAI2A streams to avoid bring-up warnings if enabled elsewhere. */
 #define STM32_SAI_SAI2A_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SAI_SAI2A_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 0)
 

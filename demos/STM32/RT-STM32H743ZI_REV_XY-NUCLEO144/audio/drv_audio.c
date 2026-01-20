@@ -522,8 +522,15 @@ static void audio_hw_configure_sai(void) {
     audio_sai_hal_debug_test();
 
     /* Active les horloges SAI et force la réinitialisation. */
+#if (AUDIO_SAI_RX == SAI1)
+    rccEnableSAI1(true);
+    rccResetSAI1();
+#elif (AUDIO_SAI_RX == SAI2)
     rccEnableSAI2(true);
     rccResetSAI2();
+#else
+#error "Unsupported AUDIO_SAI_RX instance"
+#endif
 
     /*
      * Horloges audio : PLL3_P = 49.152 MHz (mcuconf.h) -> MCLK = PLL3_P / 4 = 12.288 MHz.
