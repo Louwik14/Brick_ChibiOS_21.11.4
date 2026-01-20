@@ -8,95 +8,8 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
-#include <math.h>
-
-/* -------------------------------------------------------------------------- */
-/* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
-/* -------------------------------------------------------------------------- */
-/*
- * SAI1 kernel clock source: STM32_SAI1SEL = PLL2_P (mcuconf.h)
- * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
- *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
- *
- * Frame: 2 slots × 32 bits = 64 bits/frame (FRL+1 = 64, power of two)
- * BCLK = 48 kHz × 64 = 3.072 MHz
- * With MCKEN and NODIV=0, MCKDIV uses:
- *   MCKDIV = f_SAI1 / (FS * 256) ≈ 4 (HAL formula for 256×FS MCLK)
- *
- * RM0433: PCLK_APB2 > 2 × BCLK requirement.
- */
-
-#define AUDIO_SAMPLE_RATE_HZ      48000U
-#define AUDIO_FRAME_SAMPLES       64U
-#define AUDIO_CHANNELS            2U
-#define AUDIO_SLOT_BITS           32U
-#define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
-#define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
-#define AUDIO_BUFFER_HALVES       2U
-
-#define SAI_MCKDIV                4U
-
-#define SINE_FREQ_HZ              1000U
-#define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
-#define SINE_AMPLITUDE            0x007FFFFF
-#define AUDIO_TWO_PI              6.2831853071795864769f
-
-#if defined(STM32_PCLK2)
-#if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
-#error "PCLK2 must be >= 2x BCLK per RM0433"
-#endif
-#endif
-
-_Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
-               "Sine table must be integer length");
-_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
-
-/* -------------------------------------------------------------------------- */
-/* UART1 (SD1)                                                                */
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
-/* -------------------------------------------------------------------------- */
-/*
- * SAI1 kernel clock source: STM32_SAI1SEL = PLL2_P (mcuconf.h)
- * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
- *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
- *
- * Frame: 2 slots × 32 bits = 64 bits/frame (FRL+1 = 64, power of two)
- * BCLK = 48 kHz × 64 = 3.072 MHz
- * With MCKEN and NODIV=0, MCKDIV uses:
- *   MCKDIV = f_SAI1 / (FS * 256) ≈ 4 (HAL formula for 256×FS MCLK)
- *
- * RM0433: PCLK_APB2 > 2 × BCLK requirement.
- */
-
-#define AUDIO_SAMPLE_RATE_HZ      48000U
-#define AUDIO_FRAME_SAMPLES       64U
-#define AUDIO_CHANNELS            2U
-#define AUDIO_SLOT_BITS           32U
-#define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
-#define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
-#define AUDIO_BUFFER_HALVES       2U
-
-#define SAI_MCKDIV                4U
-
-#define SINE_FREQ_HZ              1000U
-#define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
-
-#if defined(STM32_PCLK2)
-#if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
-#error "PCLK2 must be >= 2x BCLK per RM0433"
-#endif
-#endif
-
-_Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
-               "Sine table must be integer length");
-_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
-
-/* -------------------------------------------------------------------------- */
-/* UART1 (SD1)                                                                */
-/* -------------------------------------------------------------------------- */
+#include "audio_codec_ada1979.h"
+#include "audio_codec_pcm4104.h"
 
 /* -------------------------------------------------------------------------- */
 /* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
@@ -190,6 +103,7 @@ static void sai_tx_end_cb(SAIDriver *saip, bool half);
 static void dump_rcc_clocks(BaseSequentialStream *chp);
 static void dump_sai_registers(BaseSequentialStream *chp, const char *tag);
 static void dump_dma_registers(BaseSequentialStream *chp, const SAIDriver *saip);
+static void codec_diagnostics(BaseSequentialStream *chp);
 
 /* -------------------------------------------------------------------------- */
 /* SAI DMA error hook (called inside DMA ISR)                                 */
@@ -434,22 +348,51 @@ static const char *sai_fifo_level_name(uint32_t flvl) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Codec diagnostics                                                          */
+/* -------------------------------------------------------------------------- */
+
+static void codec_diagnostics(BaseSequentialStream *chp) {
+  msg_t st;
+  uint32_t i2c_err;
+
+  chprintf(chp, "=== CODEC INIT ===\r\n");
+  adau1979_set_log_stream(chp);
+  audio_codec_pcm4104_set_log_stream(chp);
+
+  st = adau1979_init();
+  i2c_err = i2cGetErrors(&AUDIO_I2C_DRIVER);
+
+  chprintf(chp, "I2C init %s (state=%u err=0x%08lx)\r\n",
+           (AUDIO_I2C_DRIVER.state != I2C_STOP) ? "OK" : "FAIL",
+           (unsigned)AUDIO_I2C_DRIVER.state,
+           (unsigned long)i2c_err);
+
+  chprintf(chp, "ADAU1979 init %s\r\n", (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
+
+  chprintf(chp, "Resetting PCM4104\r\n");
+  audio_codec_pcm4104_init();
+  chprintf(chp, "PCM4104 reg writes: N/A (hardware mode)\r\n");
+  chprintf(chp, "Unmuting PCM4104\r\n");
+  audio_codec_pcm4104_set_mute(false);
+
+  st = adau1979_set_default_config();
+  chprintf(chp, "ADAU1979 default config %s\r\n",
+           (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
+  adau1979_mute(false);
+
+  chprintf(chp, "=== CODEC SUMMARY ===\r\n");
+  chprintf(chp, "PCM4104: OK / UNMUTED\r\n");
+  chprintf(chp, "ADAU1979: %s\r\n", (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
+  chprintf(chp, "I2C: %s\r\n", (AUDIO_I2C_DRIVER.state != I2C_STOP) ? "OK" : "FAIL");
+  chprintf(chp, "\r\n");
+}
+
+/* -------------------------------------------------------------------------- */
 /* Main                                                                        */
 /* -------------------------------------------------------------------------- */
 
 int main(void) {
   BaseSequentialStream *chp;
-
-  for (i = 0U; i < AUDIO_FRAME_SAMPLES; i++) {
-    int32_t sample = sine_table[sine_index];
-    sine_index++;
-    if (sine_index >= SINE_TABLE_SIZE) {
-      sine_index = 0U;
-    }
-    buf[i][0] = sample;
-    buf[i][1] = sample;
-  }
-}
 
 /* -------------------------------------------------------------------------- */
 /* Main                                                                        */
@@ -466,6 +409,8 @@ int main(void) {
            "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, stereo, MCLK) ===\r\n");
 
   dump_rcc_clocks(chp);
+
+  codec_diagnostics(chp);
 
   fill_half_buffer(0U);
   fill_half_buffer(1U);

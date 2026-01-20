@@ -4,6 +4,7 @@
  */
 
 #include "audio_codec_ada1979.h"
+#include "chprintf.h"
 
 #if !HAL_USE_I2C
 #error "Le driver ADAU1979 requiert HAL_USE_I2C = TRUE dans halconf.h"
@@ -50,6 +51,7 @@
 #define ADAU1979_PLL_LOCK_TIMEOUT_MS  20U
 
 static I2CDriver *audio_i2c = &AUDIO_I2C_DRIVER;
+static BaseSequentialStream *adau1979_log = NULL;
 static const uint8_t adau1979_addresses[2] = {
     ADAU1979_I2C_ADDRESS_0,
     ADAU1979_I2C_ADDRESS_1
@@ -67,11 +69,29 @@ static const I2CConfig adau1979_default_i2c_cfg = {
 
 static msg_t adau1979_write_reg(uint8_t addr, uint8_t reg, uint8_t value) {
     uint8_t txbuf[2] = {reg, value};
-    return i2cMasterTransmitTimeout(audio_i2c, addr, txbuf, sizeof(txbuf), NULL, 0, TIME_MS2I(10));
+    msg_t st = i2cMasterTransmitTimeout(audio_i2c, addr, txbuf, sizeof(txbuf), NULL, 0, TIME_MS2I(10));
+    if (adau1979_log != NULL) {
+        chprintf(adau1979_log,
+                 "I2C ADAU1979 WR @0x%02X reg 0x%02X = 0x%02X -> %s\r\n",
+                 addr, reg, value, (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
+    }
+    return st;
 }
 
 static msg_t adau1979_read_reg(uint8_t addr, uint8_t reg, uint8_t *value) {
-    return i2cMasterTransmitTimeout(audio_i2c, addr, &reg, 1, value, 1, TIME_MS2I(10));
+    msg_t st = i2cMasterTransmitTimeout(audio_i2c, addr, &reg, 1, value, 1, TIME_MS2I(10));
+    if (adau1979_log != NULL) {
+        if (st == HAL_RET_SUCCESS) {
+            chprintf(adau1979_log,
+                     "I2C ADAU1979 RD @0x%02X reg 0x%02X -> 0x%02X\r\n",
+                     addr, reg, *value);
+        } else {
+            chprintf(adau1979_log,
+                     "I2C ADAU1979 RD @0x%02X reg 0x%02X -> FAIL\r\n",
+                     addr, reg);
+        }
+    }
+    return st;
 }
 
 static msg_t adau1979_broadcast_write(uint8_t reg, uint8_t value) {
@@ -131,6 +151,9 @@ static msg_t adau1979_wait_pll_locked(void) {
 /* -------------------------------------------------------------------------- */
 
 msg_t adau1979_init(void) {
+    if (adau1979_log != NULL) {
+        chprintf(adau1979_log, "Initializing ADAU1979 (I2C3)\r\n");
+    }
     if (audio_i2c->state == I2C_STOP) {
         i2cStart(audio_i2c, &adau1979_default_i2c_cfg);
     }
@@ -138,6 +161,9 @@ msg_t adau1979_init(void) {
 }
 
 msg_t adau1979_set_default_config(void) {
+    if (adau1979_log != NULL) {
+        chprintf(adau1979_log, "Configuring ADAU1979 default TDM settings\r\n");
+    }
     /* Réinitialise l'alimentation SAI/ADC pour éviter toute capture parasite. */
     msg_t st = adau1979_broadcast_write(ADAU1979_REG_BLOCK_POWER_SAI, 0x00U);
     st |= adau1979_broadcast_write(ADAU1979_REG_BLOCK_POWER_ADC, 0x00U);
@@ -191,6 +217,9 @@ msg_t adau1979_set_default_config(void) {
 }
 
 void adau1979_mute(bool en) {
+    if (adau1979_log != NULL) {
+        chprintf(adau1979_log, "AD1979 mute=%s\r\n", en ? "ON" : "OFF");
+    }
     for (size_t i = 0; i < 2; ++i) {
         uint8_t misc = 0U;
         if (adau1979_read_reg(adau1979_addresses[i], ADAU1979_REG_MISC_CTRL, &misc) != HAL_RET_SUCCESS) {
@@ -205,3 +234,6 @@ void adau1979_mute(bool en) {
     }
 }
 
+void adau1979_set_log_stream(BaseSequentialStream *chp) {
+    adau1979_log = chp;
+}

@@ -101,7 +101,7 @@ static THD_FUNCTION(audioThread, arg);
 
 static void audio_sai_dump_regs(BaseSequentialStream *chp,
                                 const char *tag,
-                                const SAI_Block_TypeDef *block);
+                                const SAI_Block_TypeDef *block) __attribute__((unused));
 static void audio_sai_hal_debug_test(void);
 
 /* -------------------------------------------------------------------------- */
