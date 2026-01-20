@@ -25,4 +25,9 @@ msg_t adau1979_set_default_config(void);
  */
 void adau1979_mute(bool en);
 
+/**
+ * @brief Inject a logging stream for diagnostic output.
+ */
+void adau1979_set_log_stream(BaseSequentialStream *chp);
+
 #endif /* AUDIO_CODEC_ADA1979_H */
