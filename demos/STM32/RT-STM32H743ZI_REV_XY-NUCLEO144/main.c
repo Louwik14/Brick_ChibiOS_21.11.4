@@ -55,6 +55,49 @@ _Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
 /* UART1 (SD1)                                                                */
 /* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
+/* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
+/* -------------------------------------------------------------------------- */
+/*
+ * SAI1 kernel clock source: STM32_SAI1SEL = PLL2_P (mcuconf.h)
+ * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
+ *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
+ *
+ * Frame: 2 slots × 32 bits = 64 bits/frame (FRL+1 = 64, power of two)
+ * BCLK = 48 kHz × 64 = 3.072 MHz
+ * With MCKEN and NODIV=0, MCKDIV uses:
+ *   MCKDIV = f_SAI1 / (FS * 256) ≈ 4 (HAL formula for 256×FS MCLK)
+ *
+ * RM0433: PCLK_APB2 > 2 × BCLK requirement.
+ */
+
+#define AUDIO_SAMPLE_RATE_HZ      48000U
+#define AUDIO_FRAME_SAMPLES       64U
+#define AUDIO_CHANNELS            2U
+#define AUDIO_SLOT_BITS           32U
+#define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
+#define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
+#define AUDIO_BUFFER_HALVES       2U
+
+#define SAI_MCKDIV                4U
+
+#define SINE_FREQ_HZ              1000U
+#define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
+
+#if defined(STM32_PCLK2)
+#if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
+#error "PCLK2 must be >= 2x BCLK per RM0433"
+#endif
+#endif
+
+_Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
+               "Sine table must be integer length");
+_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
+
+/* -------------------------------------------------------------------------- */
+/* UART1 (SD1)                                                                */
+/* -------------------------------------------------------------------------- */
+
 static SerialConfig sercfg = {
   115200,
   0,
@@ -75,7 +118,14 @@ audio_tx_buffer[AUDIO_BUFFER_HALVES][AUDIO_FRAME_SAMPLES][AUDIO_CHANNELS];
 /* Sine generation                                                            */
 /* -------------------------------------------------------------------------- */
 
-static int32_t sine_table[SINE_TABLE_SIZE];
+static const int32_t sine_table[SINE_TABLE_SIZE] = {
+  0, 1094933, 2171131, 3210181, 4194303, 5106660, 5931641, 6655129,
+  7264747, 7750062, 8102772, 8316841, 8388607, 8316841, 8102772, 7750062,
+  7264747, 6655129, 5931641, 5106660, 4194303, 3210181, 2171131, 1094933,
+  0, -1094933, -2171131, -3210181, -4194303, -5106660, -5931641, -6655129,
+  -7264747, -7750062, -8102772, -8316841, -8388607, -8316841, -8102772, -7750062,
+  -7264747, -6655129, -5931641, -5106660, -4194304, -3210181, -2171131, -1094933
+};
 static uint32_t sine_index = 0U;
 
 /* -------------------------------------------------------------------------- */
@@ -166,19 +216,12 @@ static void fill_half_buffer(uint8_t half) {
 /* -------------------------------------------------------------------------- */
 
 int main(void) {
-  size_t i;
-
   halInit();
   chSysInit();
 
   sdStart(&SD1, &sercfg);
   chprintf((BaseSequentialStream *)&SD1,
            "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, stereo, MCLK) ===\r\n");
-
-  for (i = 0U; i < SINE_TABLE_SIZE; i++) {
-    float phase = (AUDIO_TWO_PI * (float)i) / (float)SINE_TABLE_SIZE;
-    sine_table[i] = (int32_t)(sinf(phase) * (float)SINE_AMPLITUDE);
-  }
 
   fill_half_buffer(0U);
   fill_half_buffer(1U);

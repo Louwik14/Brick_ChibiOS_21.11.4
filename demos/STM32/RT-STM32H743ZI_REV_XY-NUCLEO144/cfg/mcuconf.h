@@ -523,6 +523,10 @@
 #define STM32_SAI_SAI1A_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 1)
 #define STM32_SAI_SAI1A_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 0)
 
+/* Explicit SAI2A streams to avoid bring-up warnings if enabled elsewhere. */
+#define STM32_SAI_SAI2A_RX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 1)
+#define STM32_SAI_SAI2A_TX_DMA_STREAM       STM32_DMA_STREAM_ID(2, 0)
+
 #define STM32_SAI_DMA_ERROR_HOOK(saip)      sai_dma_error_hook(saip)
 
 #endif /* MCUCONF_H */
