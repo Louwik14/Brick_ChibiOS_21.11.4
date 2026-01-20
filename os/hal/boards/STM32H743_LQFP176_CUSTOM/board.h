@@ -39,7 +39,7 @@
 #define FMC_PIN_AF(pin)             PIN_AFIO_AF(pin, 12U)
 
 #if defined(STM32_I2C_USE_I2C3) && (STM32_I2C_USE_I2C3 == FALSE)
-#error "I2C3 must be enabled for PH7/PH8 (codec control)."
+#error "I2C3 must be enabled for codec control (PA8/PH8)."
 #endif
 
 /*
@@ -257,7 +257,7 @@
 #define GPIOA_MXH_S2                 GPIOA_PIN2
 #define GPIOA_MXH_S1                 GPIOA_PIN5
 #define GPIOA_MXH_S0                 GPIOA_PIN6
-#define GPIOA_ENC2_A                 GPIOA_PIN8
+#define GPIOA_I2C3_SCL               GPIOA_PIN8
 #define GPIOA_USART1_TX              GPIOA_PIN9
 #define GPIOA_USART1_RX              GPIOA_PIN10
 #define GPIOA_USB_DM                 GPIOA_PIN11
@@ -348,7 +348,7 @@
 #define GPIOH_FMC_SDCKE0             GPIOH_PIN2
 #define GPIOH_FMC_SDNE0              GPIOH_PIN3
 #define GPIOH_FMC_SDNWE              GPIOH_PIN5
-#define GPIOH_I2C3_SCL               GPIOH_PIN7
+#define GPIOH_LED                    GPIOH_PIN7
 #define GPIOH_I2C3_SDA               GPIOH_PIN8
 
 #define GPIOI_SPI2_SCK               GPIOI_PIN1
@@ -369,7 +369,7 @@
 #define LINE_MXH_S2                  PAL_LINE(GPIOA, 2U)
 #define LINE_MXH_S1                  PAL_LINE(GPIOA, 5U)
 #define LINE_MXH_S0                  PAL_LINE(GPIOA, 6U)
-#define LINE_ENC2_A                  PAL_LINE(GPIOA, 8U)
+#define LINE_I2C3_SCL                PAL_LINE(GPIOA, 8U)
 #define LINE_USART1_TX               PAL_LINE(GPIOA, 9U)
 #define LINE_USART1_RX               PAL_LINE(GPIOA, 10U)
 #define LINE_USB_DM                  PAL_LINE(GPIOA, 11U)
@@ -517,7 +517,7 @@
  * PA5  - MXH_S1                    (output pushpull).
  * PA6  - MXH_S0                    (output pushpull).
  * PA7  - PIN7                      (analog).
- * PA8  - ENC2_A                    (input).
+ * PA8  - I2C3_SCL                  (alternate 4, open-drain).
  * PA9  - USART1_TX                 (alternate 7).
  * PA10 - USART1_RX                 (alternate 7).
  * PA11 - USB_DM                    (alternate 10).
@@ -534,7 +534,7 @@
                                      PIN_MODE_OUTPUT(GPIOA_MXH_S1) |        \
                                      PIN_MODE_OUTPUT(GPIOA_MXH_S0) |        \
                                      PIN_MODE_ANALOG(GPIOA_PIN7) |          \
-                                     PIN_MODE_INPUT(GPIOA_ENC2_A) |         \
+                                     PIN_MODE_ALTERNATE(GPIOA_I2C3_SCL) |   \
                                      PIN_MODE_ALTERNATE(GPIOA_USART1_TX) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_USART1_RX) |  \
                                      PIN_MODE_ALTERNATE(GPIOA_USB_DM) |     \
@@ -550,7 +550,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOA_MXH_S1) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_MXH_S0) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_PIN7) |       \
-                                     PIN_OTYPE_PUSHPULL(GPIOA_ENC2_A) |      \
+                                     PIN_OTYPE_OPENDRAIN(GPIOA_I2C3_SCL) |  \
                                      PIN_OTYPE_PUSHPULL(GPIOA_USART1_TX) |  \
                                      PIN_OTYPE_PUSHPULL(GPIOA_USART1_RX) |  \
                                      PIN_OTYPE_PUSHPULL(GPIOA_USB_DM) |     \
@@ -566,7 +566,7 @@
                                      PIN_OSPEED_LOW(GPIOA_MXH_S1) |         \
                                      PIN_OSPEED_LOW(GPIOA_MXH_S0) |         \
                                      PIN_OSPEED_VERYLOW(GPIOA_PIN7) |       \
-                                     PIN_OSPEED_LOW(GPIOA_ENC2_A) |         \
+                                     PIN_OSPEED_HIGH(GPIOA_I2C3_SCL) |      \
                                      PIN_OSPEED_HIGH(GPIOA_USART1_TX) |     \
                                      PIN_OSPEED_HIGH(GPIOA_USART1_RX) |     \
                                      PIN_OSPEED_HIGH(GPIOA_USB_DM) |        \
@@ -582,7 +582,7 @@
                                      PIN_PUPDR_FLOATING(GPIOA_MXH_S1) |     \
                                      PIN_PUPDR_FLOATING(GPIOA_MXH_S0) |     \
                                      PIN_PUPDR_FLOATING(GPIOA_PIN7) |       \
-                                     PIN_PUPDR_FLOATING(GPIOA_ENC2_A) |     \
+                                     PIN_PUPDR_PULLUP(GPIOA_I2C3_SCL) |     \
                                      PIN_PUPDR_FLOATING(GPIOA_USART1_TX) | \
                                      PIN_PUPDR_FLOATING(GPIOA_USART1_RX) | \
                                      PIN_PUPDR_FLOATING(GPIOA_USB_DM) |    \
@@ -598,7 +598,7 @@
                                      PIN_ODR_LOW(GPIOA_MXH_S1) |           \
                                      PIN_ODR_LOW(GPIOA_MXH_S0) |           \
                                      PIN_ODR_LOW(GPIOA_PIN7) |             \
-                                     PIN_ODR_LOW(GPIOA_ENC2_A) |           \
+                                     PIN_ODR_HIGH(GPIOA_I2C3_SCL) |         \
                                      PIN_ODR_LOW(GPIOA_USART1_TX) |        \
                                      PIN_ODR_LOW(GPIOA_USART1_RX) |        \
                                      PIN_ODR_LOW(GPIOA_USB_DM) |           \
@@ -614,7 +614,7 @@
                                      PIN_AFIO_AF(GPIOA_MXH_S1, 0U) |        \
                                      PIN_AFIO_AF(GPIOA_MXH_S0, 0U) |        \
                                      PIN_AFIO_AF(GPIOA_PIN7, 0U))
-#define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_ENC2_A, 0U) |        \
+#define VAL_GPIOA_AFRH              (PIN_AFIO_AF(GPIOA_I2C3_SCL, 4U) |      \
                                      PIN_AFIO_AF(GPIOA_USART1_TX, 7U) |     \
                                      PIN_AFIO_AF(GPIOA_USART1_RX, 7U) |     \
                                      PIN_AFIO_AF(GPIOA_USB_DM, 10U) |       \
@@ -1335,7 +1335,7 @@
  * PH4  - PIN4                      (analog).
  * PH5  - FMC_SDNWE                 (alternate 12).
  * PH6  - PIN6                      (analog).
- * PH7  - I2C3_SCL                  (alternate 4, open-drain).
+ * PH7  - LED                       (output push-pull).
  * PH8  - I2C3_SDA                  (alternate 4, open-drain).
  * PH9  - PIN9                      (analog).
  * PH10 - PIN10                     (analog).
@@ -1352,7 +1352,7 @@
                                      PIN_MODE_ANALOG(GPIOH_PIN4) |         \
                                      FMC_PIN_MODE(GPIOH_FMC_SDNWE) |       \
                                      PIN_MODE_ANALOG(GPIOH_PIN6) |         \
-                                     PIN_MODE_ALTERNATE(GPIOH_I2C3_SCL) |   \
+                                     PIN_MODE_OUTPUT(GPIOH_LED) |          \
                                      PIN_MODE_ALTERNATE(GPIOH_I2C3_SDA) |   \
                                      PIN_MODE_ANALOG(GPIOH_PIN9) |         \
                                      PIN_MODE_ANALOG(GPIOH_PIN10) |        \
@@ -1368,7 +1368,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN4) |       \
                                      FMC_PIN_OTYPE(GPIOH_FMC_SDNWE) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN6) |       \
-                                     PIN_OTYPE_OPENDRAIN(GPIOH_I2C3_SCL) |  \
+                                     PIN_OTYPE_PUSHPULL(GPIOH_LED) |       \
                                      PIN_OTYPE_OPENDRAIN(GPIOH_I2C3_SDA) |  \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN9) |       \
                                      PIN_OTYPE_PUSHPULL(GPIOH_PIN10) |      \
@@ -1384,7 +1384,7 @@
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN4) |      \
                                      FMC_PIN_OSPEED(GPIOH_FMC_SDNWE) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN6) |      \
-                                     PIN_OSPEED_HIGH(GPIOH_I2C3_SCL) |      \
+                                     PIN_OSPEED_LOW(GPIOH_LED) |           \
                                      PIN_OSPEED_HIGH(GPIOH_I2C3_SDA) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN9) |      \
                                      PIN_OSPEED_VERYLOW(GPIOH_PIN10) |     \
@@ -1400,7 +1400,7 @@
                                      PIN_PUPDR_FLOATING(GPIOH_PIN4) |      \
                                      FMC_PIN_PUPDR(GPIOH_FMC_SDNWE) |       \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN6) |      \
-                                     PIN_PUPDR_PULLUP(GPIOH_I2C3_SCL) |     \
+                                     PIN_PUPDR_FLOATING(GPIOH_LED) |       \
                                      PIN_PUPDR_PULLUP(GPIOH_I2C3_SDA) |     \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN9) |      \
                                      PIN_PUPDR_FLOATING(GPIOH_PIN10) |     \
@@ -1416,7 +1416,7 @@
                                      PIN_ODR_LOW(GPIOH_PIN4) |             \
                                      FMC_PIN_ODR(GPIOH_FMC_SDNWE) |         \
                                      PIN_ODR_LOW(GPIOH_PIN6) |             \
-                                     PIN_ODR_HIGH(GPIOH_I2C3_SCL) |         \
+                                     PIN_ODR_HIGH(GPIOH_LED) |             \
                                      PIN_ODR_HIGH(GPIOH_I2C3_SDA) |         \
                                      PIN_ODR_LOW(GPIOH_PIN9) |             \
                                      PIN_ODR_LOW(GPIOH_PIN10) |            \
@@ -1432,7 +1432,7 @@
                                      PIN_AFIO_AF(GPIOH_PIN4, 0U) |         \
                                      FMC_PIN_AF(GPIOH_FMC_SDNWE) |         \
                                      PIN_AFIO_AF(GPIOH_PIN6, 0U) |         \
-                                     PIN_AFIO_AF(GPIOH_I2C3_SCL, 4U))
+                                     PIN_AFIO_AF(GPIOH_LED, 0U))
 #define VAL_GPIOH_AFRH              (PIN_AFIO_AF(GPIOH_I2C3_SDA, 4U) |      \
                                      PIN_AFIO_AF(GPIOH_PIN9, 0U) |         \
                                      PIN_AFIO_AF(GPIOH_PIN10, 0U) |        \
