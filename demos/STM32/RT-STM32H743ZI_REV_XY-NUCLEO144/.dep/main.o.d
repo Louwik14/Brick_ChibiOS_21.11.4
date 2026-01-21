@@ -122,8 +122,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- ../../../os/hal/lib/streams/chprintf.h audio/audio_codec_ada1979.h \
- audio/audio_conf.h audio/audio_codec_pcm4104.h
+ ../../../os/hal/lib/streams/chprintf.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -277,6 +276,3 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 ../../../os/hal/lib/streams/chprintf.h:
-audio/audio_codec_ada1979.h:
-audio/audio_conf.h:
-audio/audio_codec_pcm4104.h:

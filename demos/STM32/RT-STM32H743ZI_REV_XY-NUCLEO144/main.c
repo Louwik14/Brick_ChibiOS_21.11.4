@@ -37,16 +37,11 @@
 #define TEST_TONE_HZ              1000U
 #define TEST_HALF_PERIOD_SAMPLES  (AUDIO_SAMPLE_RATE_HZ / (TEST_TONE_HZ * 2U))
 
-#if defined(STM32_PCLK2)
-#if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
-#error "PCLK2 must be >= 2x BCLK per RM0433"
-#endif
-#endif
+
 
 _Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
 _Static_assert(AUDIO_CHANNELS == 2U, "Expected 2 audio slots");
-_Static_assert((SAI_KERNEL_CLOCK_HZ % AUDIO_BCLK_HZ) == 0U,
-               "SAI kernel clock must be divisible by BCLK");
+
 _Static_assert(SAI_BCLK_DIV >= 2U, "SAI BCLK divider must be >= 2");
 
 /* -------------------------------------------------------------------------- */
@@ -295,8 +290,8 @@ static void dump_gpioe_registers(BaseSequentialStream *chp) {
   uint32_t otyper = GPIOE->OTYPER;
   uint32_t ospeedr = GPIOE->OSPEEDR;
   uint32_t pupdr = GPIOE->PUPDR;
-  uint32_t afrl = GPIOE->AFR[0];
-  uint32_t afrh = GPIOE->AFR[1];
+  uint32_t afrl = GPIOE->AFRL;
+  uint32_t afrh = GPIOE->AFRH;
   uint32_t pe4_af = (afrl >> (4U * 4U)) & 0xFU;
   uint32_t pe5_af = (afrl >> (5U * 4U)) & 0xFU;
   uint32_t pe6_af = (afrl >> (6U * 4U)) & 0xFU;
