@@ -38,8 +38,7 @@
 #define SAI_KERNEL_CLOCK_HZ       STM32_PLL2_P_CK
 #define SAI_MCKDIV                (SAI_KERNEL_CLOCK_HZ / (AUDIO_SAMPLE_RATE_HZ * 256U))
 
-#define SINE_FREQ_HZ              1000U
-#define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
+#define TEST_AMPLITUDE            0x00600000
 
 #if defined(STM32_PCLK2)
 #if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
@@ -47,8 +46,6 @@
 #endif
 #endif
 
-_Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
-               "Sine table must be integer length");
 _Static_assert(AUDIO_FRAME_BITS == 256U, "Expected 256 bits per audio frame");
 _Static_assert(AUDIO_CHANNELS == 8U, "Expected 8 audio slots");
 
@@ -79,18 +76,10 @@ static int32_t AUDIO_DMA_BUFFER_ATTR
 audio_tx_buffer[AUDIO_BUFFER_HALVES][AUDIO_FRAME_SAMPLES][AUDIO_CHANNELS];
 
 /* -------------------------------------------------------------------------- */
-/* Sine generation                                                            */
+/* Beep state                                                                 */
 /* -------------------------------------------------------------------------- */
 
-static const int32_t sine_table[SINE_TABLE_SIZE] = {
-  0, 1094933, 2171131, 3210181, 4194303, 5106660, 5931641, 6655129,
-  7264747, 7750062, 8102772, 8316841, 8388607, 8316841, 8102772, 7750062,
-  7264747, 6655129, 5931641, 5106660, 4194303, 3210181, 2171131, 1094933,
-  0, -1094933, -2171131, -3210181, -4194303, -5106660, -5931641, -6655129,
-  -7264747, -7750062, -8102772, -8316841, -8388607, -8316841, -8102772, -7750062,
-  -7264747, -6655129, -5931641, -5106660, -4194304, -3210181, -2171131, -1094933
-};
-static uint32_t sine_index = 0U;
+static bool audio_beep_on = false;
 
 /* -------------------------------------------------------------------------- */
 /* Diagnostics                                                                */
@@ -170,11 +159,7 @@ static void fill_half_buffer(uint8_t half) {
   int32_t (*buf)[AUDIO_CHANNELS] = audio_tx_buffer[half];
 
   for (i = 0U; i < AUDIO_FRAME_SAMPLES; i++) {
-    int32_t sample = sine_table[sine_index];
-    sine_index++;
-    if (sine_index >= SINE_TABLE_SIZE) {
-      sine_index = 0U;
-    }
+    int32_t sample = audio_beep_on ? TEST_AMPLITUDE : 0;
     buf[i][0] = sample;
     buf[i][1] = sample;
     for (size_t slot = 2U; slot < AUDIO_CHANNELS; slot++) {
@@ -511,6 +496,14 @@ int main(void) {
              (unsigned long)flvl);
 
     chThdSleepMilliseconds(1000);
+
+    audio_beep_on = !audio_beep_on;
+    if (audio_beep_on) {
+      chprintf(chp, "[AUDIO] BEEP ON\r\n");
+    }
+    else {
+      chprintf(chp, "[AUDIO] BEEP OFF\r\n");
+    }
   }
 
   return 0;
