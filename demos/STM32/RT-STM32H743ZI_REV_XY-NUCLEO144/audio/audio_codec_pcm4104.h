@@ -20,4 +20,9 @@ void audio_codec_pcm4104_init(void);
  */
 void audio_codec_pcm4104_set_mute(bool mute);
 
+/**
+ * @brief Inject a logging stream for diagnostic output.
+ */
+void audio_codec_pcm4104_set_log_stream(BaseSequentialStream *chp);
+
 #endif /* AUDIO_CODEC_PCM4104_H */

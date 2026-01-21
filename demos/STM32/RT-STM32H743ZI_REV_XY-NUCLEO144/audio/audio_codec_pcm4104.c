@@ -8,6 +8,7 @@
  */
 
 #include "audio_codec_pcm4104.h"
+#include "chprintf.h"
 
 /* Aucun MUTE matériel utilisé dans ce projet.
  * Le mute est géré uniquement en software via le volume global.
@@ -16,7 +17,12 @@
 #define AUDIO_HP_MUTE_LINE    PAL_NOLINE
 #endif
 
+static BaseSequentialStream *pcm4104_log = NULL;
+
 void audio_codec_pcm4104_init(void) {
+    if (pcm4104_log != NULL) {
+        chprintf(pcm4104_log, "Initializing PCM4104 (hardware mode)\r\n");
+    }
 #if (AUDIO_HP_MUTE_LINE != PAL_NOLINE)
     /* Si un jour une broche MUTE est ajoutée en hardware,
        elle sera configurée ici automatiquement. */
@@ -26,6 +32,9 @@ void audio_codec_pcm4104_init(void) {
 }
 
 void audio_codec_pcm4104_set_mute(bool mute) {
+    if (pcm4104_log != NULL) {
+        chprintf(pcm4104_log, "PCM4104 mute=%s\r\n", mute ? "ON" : "OFF");
+    }
 #if (AUDIO_HP_MUTE_LINE != PAL_NOLINE)
     if (mute) {
         palClearLine(AUDIO_HP_MUTE_LINE);
@@ -36,4 +45,8 @@ void audio_codec_pcm4104_set_mute(bool mute) {
     /* Mute purement logiciel : aucune action hardware */
     (void)mute;
 #endif
+}
+
+void audio_codec_pcm4104_set_log_stream(BaseSequentialStream *chp) {
+    pcm4104_log = chp;
 }
