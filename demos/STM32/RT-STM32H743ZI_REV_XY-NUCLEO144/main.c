@@ -1,44 +1,41 @@
 /*
  * Minimal SAI bring-up: STM32H743 + ChibiOS SAI LLD (SAI1A TX master).
- * - 48 kHz, TDM8, 32-bit slots
+ * - 48 kHz, I2S stereo (2 slots), 32-bit samples
  * - DMA HT/TC callback = audio metronome
  * - No heap, no cache/MPU usage in application code
+ * - UART1 verbose logging for hardware validation
  */
 
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
-#include "audio_codec_ada1979.h"
-#include "audio_codec_pcm4104.h"
 
 /* -------------------------------------------------------------------------- */
 /* Clock/format assumptions (validated against mcuconf.h + RCC setup)         */
 /* -------------------------------------------------------------------------- */
 /*
- * SAI1 kernel clock source: STM32_SAI1SEL = PLL2_P (mcuconf.h)
- * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
- *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
- *
- * Frame: 8 slots × 32 bits = 256 bits/frame (FRL+1 = 256)
- * BCLK = 48 kHz × 256 = 12.288 MHz
- * With MCKEN and NODIV=0, MCKDIV uses:
- *   MCKDIV = f_SAI1 / (FS * 256) (HAL formula for 256×FS MCLK)
- *
- * RM0433: PCLK_APB2 > 2 × BCLK requirement.
+ * SAI1 kernel clock source: STM32_SAI1SEL from RCC->D2CCIP1R (mcuconf.h)
+ * Test goal: I2S stereo @ 48 kHz, 32-bit slots
+ * Frame: 2 slots x 32 bits = 64 bits/frame
+ * BCLK = 48 kHz x 64 = 3.072 MHz
+ * MCLK disabled (PCM5100A does not require it).
  */
 
 #define AUDIO_SAMPLE_RATE_HZ      48000U
 #define AUDIO_FRAME_SAMPLES       64U
-#define AUDIO_CHANNELS            8U
+#define AUDIO_CHANNELS            2U
 #define AUDIO_SLOT_BITS           32U
 #define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
 #define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
 #define AUDIO_BUFFER_HALVES       2U
 
 #define SAI_KERNEL_CLOCK_HZ       STM32_PLL2_P_CK
-#define SAI_MCKDIV                (SAI_KERNEL_CLOCK_HZ / (AUDIO_SAMPLE_RATE_HZ * 256U))
+#define SAI_BCLK_DIV              (SAI_KERNEL_CLOCK_HZ / AUDIO_BCLK_HZ)
+#define SAI_MCKDIV                (SAI_BCLK_DIV - 1U)
 
-#define TEST_AMPLITUDE            0x00600000
+#define TEST_AMPLITUDE            0x60000000
+#define TEST_TONE_HZ              1000U
+#define TEST_HALF_PERIOD_SAMPLES  (AUDIO_SAMPLE_RATE_HZ / (TEST_TONE_HZ * 2U))
 
 #if defined(STM32_PCLK2)
 #if STM32_PCLK2 < (2U * AUDIO_BCLK_HZ)
@@ -46,8 +43,11 @@
 #endif
 #endif
 
-_Static_assert(AUDIO_FRAME_BITS == 256U, "Expected 256 bits per audio frame");
-_Static_assert(AUDIO_CHANNELS == 8U, "Expected 8 audio slots");
+_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
+_Static_assert(AUDIO_CHANNELS == 2U, "Expected 2 audio slots");
+_Static_assert((SAI_KERNEL_CLOCK_HZ % AUDIO_BCLK_HZ) == 0U,
+               "SAI kernel clock must be divisible by BCLK");
+_Static_assert(SAI_BCLK_DIV >= 2U, "SAI BCLK divider must be >= 2");
 
 /* -------------------------------------------------------------------------- */
 /* UART1 (SD1)                                                                */
@@ -58,12 +58,6 @@ static SerialConfig sercfg = {
   0,
   USART_CR2_STOP1_BITS,
   0
-};
-
-static const I2CConfig audio_i2c_cfg = {
-  .timingr = 0x10909CEC,
-  .cr1 = 0,
-  .cr2 = 0
 };
 
 /* -------------------------------------------------------------------------- */
@@ -79,7 +73,7 @@ audio_tx_buffer[AUDIO_BUFFER_HALVES][AUDIO_FRAME_SAMPLES][AUDIO_CHANNELS];
 /* Beep state                                                                 */
 /* -------------------------------------------------------------------------- */
 
-static bool audio_beep_on = false;
+static uint32_t test_phase = 0U;
 
 /* -------------------------------------------------------------------------- */
 /* Diagnostics                                                                */
@@ -100,8 +94,6 @@ static void sai_tx_end_cb(SAIDriver *saip, bool half);
 static void dump_rcc_clocks(BaseSequentialStream *chp);
 static void dump_sai_registers(BaseSequentialStream *chp, const char *tag);
 static void dump_dma_registers(BaseSequentialStream *chp, const SAIDriver *saip);
-static void codec_diagnostics(BaseSequentialStream *chp);
-static void i2c_scan(BaseSequentialStream *chp);
 
 /* -------------------------------------------------------------------------- */
 /* SAI DMA error hook (called inside DMA ISR)                                 */
@@ -113,7 +105,7 @@ void sai_dma_error_hook(SAIDriver *saip) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* SAI configuration (safe bring-up profile)                                  */
+/* SAI configuration (I2S stereo, MCLK disabled)                              */
 /* -------------------------------------------------------------------------- */
 
 static const SAIConfig sai_tx_config = {
@@ -125,16 +117,15 @@ static const SAIConfig sai_tx_config = {
   .cr1 = SAI_xCR1_PRTCFG_0 |
          SAI_xCR1_DS_1 | SAI_xCR1_DS_2 |
          SAI_xCR1_OUTDRIV |
-         SAI_xCR1_MCKEN |
          (SAI_MCKDIV << SAI_xCR1_MCKDIV_Pos),
   .cr2 = SAI_xCR2_FTH_0,
   .frcr = ((AUDIO_FRAME_BITS - 1U) << SAI_xFRCR_FRL_Pos) |
           ((AUDIO_FRAME_BITS / 2U - 1U) << SAI_xFRCR_FSALL_Pos) |
-          SAI_xFRCR_FSDEF | SAI_xFRCR_FSOFF,
+          SAI_xFRCR_FSOFF,
   .slotr = (0U << SAI_xSLOTR_FBOFF_Pos) |
            SAI_xSLOTR_SLOTSZ_1 |
            ((AUDIO_CHANNELS - 1U) << SAI_xSLOTR_NBSLOT_Pos) |
-           0x00FFU,
+           0x0003U,
   .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD
 };
 
@@ -159,11 +150,16 @@ static void fill_half_buffer(uint8_t half) {
   int32_t (*buf)[AUDIO_CHANNELS] = audio_tx_buffer[half];
 
   for (i = 0U; i < AUDIO_FRAME_SAMPLES; i++) {
-    int32_t sample = audio_beep_on ? TEST_AMPLITUDE : 0;
+    int32_t sample = (test_phase < TEST_HALF_PERIOD_SAMPLES) ?
+                     (int32_t)TEST_AMPLITUDE :
+                     -(int32_t)TEST_AMPLITUDE;
+
     buf[i][0] = sample;
     buf[i][1] = sample;
-    for (size_t slot = 2U; slot < AUDIO_CHANNELS; slot++) {
-      buf[i][slot] = 0;
+
+    test_phase++;
+    if (test_phase >= (TEST_HALF_PERIOD_SAMPLES * 2U)) {
+      test_phase = 0U;
     }
   }
 }
@@ -280,10 +276,13 @@ static void dump_rcc_clocks(BaseSequentialStream *chp) {
            (unsigned long)sai1sel,
            sai1src,
            (unsigned long)sai1clk);
-  chprintf(chp, "BCLK=%lu Hz (FS * frame_bits)\r\n",
-           (unsigned long)AUDIO_BCLK_HZ);
-  chprintf(chp, "Expected MCLK=%lu Hz\r\n",
-           (unsigned long)(AUDIO_SAMPLE_RATE_HZ * 256U));
+  chprintf(chp, "FS=%lu Hz\r\n", (unsigned long)AUDIO_SAMPLE_RATE_HZ);
+  chprintf(chp, "Frame bits=%lu (slots=%lu, slot bits=%lu)\r\n",
+           (unsigned long)AUDIO_FRAME_BITS,
+           (unsigned long)AUDIO_CHANNELS,
+           (unsigned long)AUDIO_SLOT_BITS);
+  chprintf(chp, "BCLK=%lu Hz\r\n", (unsigned long)AUDIO_BCLK_HZ);
+  chprintf(chp, "MCLK=DISABLED\r\n");
   chprintf(chp, "MCKDIV=%lu (kernel=%lu Hz)\r\n",
            (unsigned long)SAI_MCKDIV,
            (unsigned long)SAI_KERNEL_CLOCK_HZ);
@@ -352,79 +351,10 @@ static const char *sai_fifo_level_name(uint32_t flvl) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* I2C scan                                                                   */
-/* -------------------------------------------------------------------------- */
-
-static void i2c_scan(BaseSequentialStream *chp) {
-  chprintf(chp, "=== I2C SCAN (0x03 .. 0x77) ===\r\n");
-
-  for (uint8_t addr = 0x03U; addr <= 0x77U; addr++) {
-    msg_t st;
-
-    i2cAcquireBus(&AUDIO_I2C_DRIVER);
-    st = i2cMasterTransmitTimeout(&AUDIO_I2C_DRIVER,
-                                  (i2caddr_t)(addr << 1U),
-                                  NULL,
-                                  0,
-                                  NULL,
-                                  0,
-                                  TIME_MS2I(10));
-    i2cReleaseBus(&AUDIO_I2C_DRIVER);
-
-    if (st == MSG_OK) {
-      chprintf(chp, "I2C device found at 0x%02X\r\n", addr);
-    }
-  }
-
-  chprintf(chp, "=== I2C SCAN DONE ===\r\n");
-}
-
-/* -------------------------------------------------------------------------- */
-/* Codec diagnostics                                                          */
-/* -------------------------------------------------------------------------- */
-
-static void codec_diagnostics(BaseSequentialStream *chp) {
-  msg_t st;
-  uint32_t i2c_err;
-
-  chprintf(chp, "=== CODEC INIT ===\r\n");
-  adau1979_set_log_stream(chp);
-  audio_codec_pcm4104_set_log_stream(chp);
-
-  st = adau1979_init();
-  i2c_err = i2cGetErrors(&AUDIO_I2C_DRIVER);
-
-  chprintf(chp, "I2C init %s (state=%u err=0x%08lx)\r\n",
-           (AUDIO_I2C_DRIVER.state != I2C_STOP) ? "OK" : "FAIL",
-           (unsigned)AUDIO_I2C_DRIVER.state,
-           (unsigned long)i2c_err);
-
-  chprintf(chp, "ADAU1979 init %s\r\n", (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
-
-  chprintf(chp, "Resetting PCM4104\r\n");
-  audio_codec_pcm4104_init();
-  chprintf(chp, "PCM4104 reg writes: N/A (hardware mode)\r\n");
-  chprintf(chp, "Unmuting PCM4104\r\n");
-  audio_codec_pcm4104_set_mute(false);
-
-  st = adau1979_set_default_config();
-  chprintf(chp, "ADAU1979 default config %s\r\n",
-           (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
-  adau1979_mute(false);
-
-  chprintf(chp, "=== CODEC SUMMARY ===\r\n");
-  chprintf(chp, "PCM4104: OK / UNMUTED\r\n");
-  chprintf(chp, "ADAU1979: %s\r\n", (st == HAL_RET_SUCCESS) ? "OK" : "FAIL");
-  chprintf(chp, "I2C: %s\r\n", (AUDIO_I2C_DRIVER.state != I2C_STOP) ? "OK" : "FAIL");
-  chprintf(chp, "\r\n");
-}
-
-/* -------------------------------------------------------------------------- */
-/* Main                                                                        */
+/* Main                                                                       */
 /* -------------------------------------------------------------------------- */
 
 int main(void) {
-
   BaseSequentialStream *chp;
 
   halInit();
@@ -434,14 +364,9 @@ int main(void) {
   chp = (BaseSequentialStream *)&SD1;
 
   chprintf(chp,
-           "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, TDM8, MCLK) ===\r\n");
+           "\r\n=== STM32H743 SAI1A I2S BRING-UP (48 kHz, STEREO, NO MCLK) ===\r\n");
 
   dump_rcc_clocks(chp);
-
-  i2cStart(&AUDIO_I2C_DRIVER, &audio_i2c_cfg);
-  i2c_scan(chp);
-
-  codec_diagnostics(chp);
 
   fill_half_buffer(0U);
   fill_half_buffer(1U);
@@ -496,14 +421,6 @@ int main(void) {
              (unsigned long)flvl);
 
     chThdSleepMilliseconds(1000);
-
-    audio_beep_on = !audio_beep_on;
-    if (audio_beep_on) {
-      chprintf(chp, "[AUDIO] BEEP ON\r\n");
-    }
-    else {
-      chprintf(chp, "[AUDIO] BEEP OFF\r\n");
-    }
   }
 
   return 0;
