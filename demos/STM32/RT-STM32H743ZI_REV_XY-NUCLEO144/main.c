@@ -1,6 +1,6 @@
 /*
  * Minimal SAI bring-up: STM32H743 + ChibiOS SAI LLD (SAI1A TX master).
- * - 48 kHz, stereo, 32-bit slots
+ * - 48 kHz, TDM8, 32-bit slots
  * - DMA HT/TC callback = audio metronome
  * - No heap, no cache/MPU usage in application code
  */
@@ -19,23 +19,24 @@
  * PLL2: HSE=25 MHz, DIVM=5, DIVN=98, FRACN=2494, DIVP=10
  *   => f_SAI1 ≈ 49.152 MHz (fractional PLL), suitable for 48 kHz audio.
  *
- * Frame: 2 slots × 32 bits = 64 bits/frame (FRL+1 = 64, power of two)
- * BCLK = 48 kHz × 64 = 3.072 MHz
+ * Frame: 8 slots × 32 bits = 256 bits/frame (FRL+1 = 256)
+ * BCLK = 48 kHz × 256 = 12.288 MHz
  * With MCKEN and NODIV=0, MCKDIV uses:
- *   MCKDIV = f_SAI1 / (FS * 256) ≈ 4 (HAL formula for 256×FS MCLK)
+ *   MCKDIV = f_SAI1 / (FS * 256) (HAL formula for 256×FS MCLK)
  *
  * RM0433: PCLK_APB2 > 2 × BCLK requirement.
  */
 
 #define AUDIO_SAMPLE_RATE_HZ      48000U
 #define AUDIO_FRAME_SAMPLES       64U
-#define AUDIO_CHANNELS            2U
+#define AUDIO_CHANNELS            8U
 #define AUDIO_SLOT_BITS           32U
 #define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
 #define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
 #define AUDIO_BUFFER_HALVES       2U
 
-#define SAI_MCKDIV                4U
+#define SAI_KERNEL_CLOCK_HZ       STM32_PLL2_P_CK
+#define SAI_MCKDIV                (SAI_KERNEL_CLOCK_HZ / (AUDIO_SAMPLE_RATE_HZ * 256U))
 
 #define SINE_FREQ_HZ              1000U
 #define SINE_TABLE_SIZE           (AUDIO_SAMPLE_RATE_HZ / SINE_FREQ_HZ)
@@ -48,7 +49,8 @@
 
 _Static_assert((AUDIO_SAMPLE_RATE_HZ % SINE_FREQ_HZ) == 0U,
                "Sine table must be integer length");
-_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
+_Static_assert(AUDIO_FRAME_BITS == 256U, "Expected 256 bits per audio frame");
+_Static_assert(AUDIO_CHANNELS == 8U, "Expected 8 audio slots");
 
 /* -------------------------------------------------------------------------- */
 /* UART1 (SD1)                                                                */
@@ -143,7 +145,7 @@ static const SAIConfig sai_tx_config = {
   .slotr = (0U << SAI_xSLOTR_FBOFF_Pos) |
            SAI_xSLOTR_SLOTSZ_1 |
            ((AUDIO_CHANNELS - 1U) << SAI_xSLOTR_NBSLOT_Pos) |
-           0x0003U,
+           0x00FFU,
   .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD
 };
 
@@ -175,6 +177,9 @@ static void fill_half_buffer(uint8_t half) {
     }
     buf[i][0] = sample;
     buf[i][1] = sample;
+    for (size_t slot = 2U; slot < AUDIO_CHANNELS; slot++) {
+      buf[i][slot] = 0;
+    }
   }
 }
 
@@ -290,6 +295,13 @@ static void dump_rcc_clocks(BaseSequentialStream *chp) {
            (unsigned long)sai1sel,
            sai1src,
            (unsigned long)sai1clk);
+  chprintf(chp, "BCLK=%lu Hz (FS * frame_bits)\r\n",
+           (unsigned long)AUDIO_BCLK_HZ);
+  chprintf(chp, "Expected MCLK=%lu Hz\r\n",
+           (unsigned long)(AUDIO_SAMPLE_RATE_HZ * 256U));
+  chprintf(chp, "MCKDIV=%lu (kernel=%lu Hz)\r\n",
+           (unsigned long)SAI_MCKDIV,
+           (unsigned long)SAI_KERNEL_CLOCK_HZ);
   chprintf(chp, "\r\n");
 }
 
@@ -437,7 +449,7 @@ int main(void) {
   chp = (BaseSequentialStream *)&SD1;
 
   chprintf(chp,
-           "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, stereo, MCLK) ===\r\n");
+           "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, TDM8, MCLK) ===\r\n");
 
   dump_rcc_clocks(chp);
 
