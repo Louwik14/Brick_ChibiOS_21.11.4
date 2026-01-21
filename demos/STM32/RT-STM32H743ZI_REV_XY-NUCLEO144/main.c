@@ -61,6 +61,12 @@ static SerialConfig sercfg = {
   0
 };
 
+static const I2CConfig audio_i2c_cfg = {
+  .timingr = 0x10909CEC,
+  .cr1 = 0,
+  .cr2 = 0
+};
+
 /* -------------------------------------------------------------------------- */
 /* DMA-safe buffers (D2 SRAM, aligned >= 32 bytes)                            */
 /* -------------------------------------------------------------------------- */
@@ -104,6 +110,7 @@ static void dump_rcc_clocks(BaseSequentialStream *chp);
 static void dump_sai_registers(BaseSequentialStream *chp, const char *tag);
 static void dump_dma_registers(BaseSequentialStream *chp, const SAIDriver *saip);
 static void codec_diagnostics(BaseSequentialStream *chp);
+static void i2c_scan(BaseSequentialStream *chp);
 
 /* -------------------------------------------------------------------------- */
 /* SAI DMA error hook (called inside DMA ISR)                                 */
@@ -348,6 +355,34 @@ static const char *sai_fifo_level_name(uint32_t flvl) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* I2C scan                                                                   */
+/* -------------------------------------------------------------------------- */
+
+static void i2c_scan(BaseSequentialStream *chp) {
+  chprintf(chp, "=== I2C SCAN (0x03 .. 0x77) ===\r\n");
+
+  for (uint8_t addr = 0x03U; addr <= 0x77U; addr++) {
+    msg_t st;
+
+    i2cAcquireBus(&AUDIO_I2C_DRIVER);
+    st = i2cMasterTransmitTimeout(&AUDIO_I2C_DRIVER,
+                                  (i2caddr_t)(addr << 1U),
+                                  NULL,
+                                  0,
+                                  NULL,
+                                  0,
+                                  TIME_MS2I(10));
+    i2cReleaseBus(&AUDIO_I2C_DRIVER);
+
+    if (st == MSG_OK) {
+      chprintf(chp, "I2C device found at 0x%02X\r\n", addr);
+    }
+  }
+
+  chprintf(chp, "=== I2C SCAN DONE ===\r\n");
+}
+
+/* -------------------------------------------------------------------------- */
 /* Codec diagnostics                                                          */
 /* -------------------------------------------------------------------------- */
 
@@ -405,6 +440,9 @@ int main(void) {
            "\r\n=== STM32H743 SAI1A TX BRING-UP (48 kHz, stereo, MCLK) ===\r\n");
 
   dump_rcc_clocks(chp);
+
+  i2cStart(&AUDIO_I2C_DRIVER, &audio_i2c_cfg);
+  i2c_scan(chp);
 
   codec_diagnostics(chp);
 
