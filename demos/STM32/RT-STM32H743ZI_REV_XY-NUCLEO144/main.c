@@ -392,9 +392,9 @@ static void codec_diagnostics(BaseSequentialStream *chp) {
 /* -------------------------------------------------------------------------- */
 
 int main(void) {
+
   BaseSequentialStream *chp;
 
-int main(void) {
   halInit();
   chSysInit();
 

@@ -87,6 +87,7 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../os/hal/include/hal_i2s.h ../../../os/hal/include/hal_icu.h \
  ../../../os/hal/include/hal_mac.h ../../../os/hal/include/hal_pwm.h \
  ../../../os/hal/include/hal_rtc.h ../../../os/hal/include/hal_sai.h \
+ ../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h \
  ../../../os/hal/include/hal_serial.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h \
  ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h \
@@ -121,7 +122,8 @@ build/obj/main.o: main.c ../../../os/rt/include/ch.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_nand.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h \
  ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h \
- ../../../os/hal/lib/streams/chprintf.h
+ ../../../os/hal/lib/streams/chprintf.h audio/audio_codec_ada1979.h \
+ audio/audio_conf.h audio/audio_codec_pcm4104.h
 ../../../os/rt/include/ch.h:
 ../../../os/license/chlicense.h:
 ../../../os/license/chversion.h:
@@ -236,6 +238,7 @@ cfg/mcuconf.h:
 ../../../os/hal/include/hal_pwm.h:
 ../../../os/hal/include/hal_rtc.h:
 ../../../os/hal/include/hal_sai.h:
+../../../os/hal/ports/STM32/LLD/SAIv1/hal_sai_lld.h:
 ../../../os/hal/include/hal_serial.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/hal_serial_lld.h:
 ../../../os/hal/ports/STM32/LLD/USARTv3/stm32_usart.h:
@@ -274,3 +277,6 @@ cfg/mcuconf.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sram.h:
 ../../../ChibiOS-Contrib-chibios-21.11.x/os/hal/include/hal_sdram.h:
 ../../../os/hal/lib/streams/chprintf.h:
+audio/audio_codec_ada1979.h:
+audio/audio_conf.h:
+audio/audio_codec_pcm4104.h:
