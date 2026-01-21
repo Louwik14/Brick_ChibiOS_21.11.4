@@ -92,6 +92,7 @@ static volatile uint32_t audio_sai_error_repeats = 0U;
 static void fill_half_buffer(uint8_t half);
 static void sai_tx_end_cb(SAIDriver *saip, bool half);
 static void dump_rcc_clocks(BaseSequentialStream *chp);
+static void dump_gpioe_registers(BaseSequentialStream *chp);
 static void dump_sai_registers(BaseSequentialStream *chp, const char *tag);
 static void dump_dma_registers(BaseSequentialStream *chp, const SAIDriver *saip);
 
@@ -289,6 +290,33 @@ static void dump_rcc_clocks(BaseSequentialStream *chp) {
   chprintf(chp, "\r\n");
 }
 
+static void dump_gpioe_registers(BaseSequentialStream *chp) {
+  uint32_t moder = GPIOE->MODER;
+  uint32_t otyper = GPIOE->OTYPER;
+  uint32_t ospeedr = GPIOE->OSPEEDR;
+  uint32_t pupdr = GPIOE->PUPDR;
+  uint32_t afrl = GPIOE->AFR[0];
+  uint32_t afrh = GPIOE->AFR[1];
+  uint32_t pe4_af = (afrl >> (4U * 4U)) & 0xFU;
+  uint32_t pe5_af = (afrl >> (5U * 4U)) & 0xFU;
+  uint32_t pe6_af = (afrl >> (6U * 4U)) & 0xFU;
+
+  chprintf(chp, "=== GPIOE REGISTERS ===\r\n");
+  chprintf(chp, "MODER=0x%08lx OTYPER=0x%08lx OSPEEDR=0x%08lx PUPDR=0x%08lx\r\n",
+           (unsigned long)moder,
+           (unsigned long)otyper,
+           (unsigned long)ospeedr,
+           (unsigned long)pupdr);
+  chprintf(chp, "AFRL=0x%08lx AFRH=0x%08lx\r\n",
+           (unsigned long)afrl,
+           (unsigned long)afrh);
+  chprintf(chp, "PE4_AF=%lu PE5_AF=%lu PE6_AF=%lu\r\n",
+           (unsigned long)pe4_af,
+           (unsigned long)pe5_af,
+           (unsigned long)pe6_af);
+  chprintf(chp, "\r\n");
+}
+
 /* -------------------------------------------------------------------------- */
 /* SAI + DMA register diagnostics                                             */
 /* -------------------------------------------------------------------------- */
@@ -367,6 +395,18 @@ int main(void) {
            "\r\n=== STM32H743 SAI1A I2S BRING-UP (48 kHz, STEREO, NO MCLK) ===\r\n");
 
   dump_rcc_clocks(chp);
+  chprintf(chp, "=== RCC CLOCK ENABLES ===\r\n");
+  chprintf(chp, "AHB4ENR=0x%08lx (GPIOEEN=%lu)\r\n",
+           (unsigned long)RCC->AHB4ENR,
+           (unsigned long)((RCC->AHB4ENR & RCC_AHB4ENR_GPIOEEN) ? 1U : 0U));
+  chprintf(chp, "APB2ENR=0x%08lx (SAI1EN=%lu)\r\n",
+           (unsigned long)RCC->APB2ENR,
+           (unsigned long)((RCC->APB2ENR & RCC_APB2ENR_SAI1EN) ? 1U : 0U));
+  chprintf(chp, "D2CCIP1R=0x%08lx (SAI1SEL=%lu)\r\n\r\n",
+           (unsigned long)RCC->D2CCIP1R,
+           (unsigned long)((RCC->D2CCIP1R & RCC_D2CCIP1R_SAI1SEL_Msk) >>
+                           RCC_D2CCIP1R_SAI1SEL_Pos));
+  dump_gpioe_registers(chp);
 
   fill_half_buffer(0U);
   fill_half_buffer(1U);
