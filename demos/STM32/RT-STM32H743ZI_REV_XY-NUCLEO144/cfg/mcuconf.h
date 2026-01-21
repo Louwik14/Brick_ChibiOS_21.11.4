@@ -514,7 +514,7 @@
  */
 #define STM32_SAI_USE_SAI1A                 TRUE
 #define STM32_SAI_USE_SAI1B                 FALSE
-#define STM32_SAI_USE_SAI2A                 FALSE
+#define STM32_SAI_USE_SAI2A                 TRUE
 #define STM32_SAI_USE_SAI2B                 FALSE
 
 #define STM32_SAI_SAI1A_IRQ_PRIORITY        5
