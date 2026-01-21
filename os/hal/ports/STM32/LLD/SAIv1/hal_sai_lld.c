@@ -238,18 +238,38 @@ void sai_lld_start(SAIDriver *saip) {
   SAI_Block_TypeDef *block_a;
   SAI_Block_TypeDef *block_b;
 
-  if (saip->state == SAI_STOP) {
-    if (saip->sai == SAI1) {
+  if (saip->sai == SAI1) {
+    if (saip->state == SAI_STOP) {
       if (sai1_ref++ == 0U) {
+        /* Without this, the SAI block remains clock-gated and produces no output signal. */
         rccEnableSAI1(true);
+#if defined(RCC_APB2RSTR_SAI1RST)
+        rccResetAPB2(RCC_APB2RSTR_SAI1RST);
+#endif
       }
     }
     else {
+      /* Ensure the SAI clock is enabled before touching registers. */
+      rccEnableSAI1(true);
+    }
+  }
+  else {
+    if (saip->state == SAI_STOP) {
       if (sai2_ref++ == 0U) {
+        /* Without this, the SAI block remains clock-gated and produces no output signal. */
         rccEnableSAI2(true);
+#if defined(RCC_APB2RSTR_SAI2RST)
+        rccResetAPB2(RCC_APB2RSTR_SAI2RST);
+#endif
       }
     }
+    else {
+      /* Ensure the SAI clock is enabled before touching registers. */
+      rccEnableSAI2(true);
+    }
+  }
 
+  if (saip->state == SAI_STOP) {
     is_rx = sai_lld_is_rx(saip);
 
     if (is_rx) {
