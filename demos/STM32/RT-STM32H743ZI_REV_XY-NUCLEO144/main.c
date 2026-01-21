@@ -394,10 +394,6 @@ static void codec_diagnostics(BaseSequentialStream *chp) {
 int main(void) {
   BaseSequentialStream *chp;
 
-/* -------------------------------------------------------------------------- */
-/* Main                                                                        */
-/* -------------------------------------------------------------------------- */
-
 int main(void) {
   halInit();
   chSysInit();
@@ -466,4 +462,6 @@ int main(void) {
 
     chThdSleepMilliseconds(1000);
   }
+
+  return 0;
 }
