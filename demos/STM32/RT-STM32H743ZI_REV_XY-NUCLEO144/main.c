@@ -1,6 +1,6 @@
 /*
  * Minimal SAI bring-up: STM32H743 + ChibiOS SAI LLD (SAI1A TX master).
- * - 48 kHz, I2S stereo (2 slots), 32-bit samples
+ * - 48 kHz, I2S stereo (2 slots), 16-bit samples
  * - DMA HT/TC callback = audio metronome
  * - No heap, no cache/MPU usage in application code
  * - UART1 verbose logging for hardware validation
@@ -15,16 +15,16 @@
 /* -------------------------------------------------------------------------- */
 /*
  * SAI1 kernel clock source: STM32_SAI1SEL from RCC->D2CCIP1R (mcuconf.h)
- * Test goal: I2S stereo @ 48 kHz, 32-bit slots
- * Frame: 2 slots x 32 bits = 64 bits/frame
- * BCLK = 48 kHz x 64 = 3.072 MHz
+ * Test goal: I2S Philips stereo @ 48 kHz, 16-bit slots
+ * Frame: 2 slots x 16 bits = 32 bits/frame
+ * BCLK = 48 kHz x 32 = 1.536 MHz
  * MCLK disabled (PCM5100A does not require it).
  */
 
 #define AUDIO_SAMPLE_RATE_HZ      48000U
 #define AUDIO_FRAME_SAMPLES       64U
 #define AUDIO_CHANNELS            2U
-#define AUDIO_SLOT_BITS           32U
+#define AUDIO_SLOT_BITS           16U
 #define AUDIO_FRAME_BITS          (AUDIO_CHANNELS * AUDIO_SLOT_BITS)
 #define AUDIO_BCLK_HZ             (AUDIO_SAMPLE_RATE_HZ * AUDIO_FRAME_BITS)
 #define AUDIO_BUFFER_HALVES       2U
@@ -33,13 +33,13 @@
 #define SAI_BCLK_DIV              (SAI_KERNEL_CLOCK_HZ / AUDIO_BCLK_HZ)
 #define SAI_MCKDIV                (SAI_BCLK_DIV - 1U)
 
-#define TEST_AMPLITUDE            0x60000000
+#define TEST_AMPLITUDE            12000
 #define TEST_TONE_HZ              1000U
 #define TEST_HALF_PERIOD_SAMPLES  (AUDIO_SAMPLE_RATE_HZ / (TEST_TONE_HZ * 2U))
 
 
 
-_Static_assert(AUDIO_FRAME_BITS == 64U, "Expected 64 bits per audio frame");
+_Static_assert(AUDIO_FRAME_BITS == 32U, "Expected 32 bits per audio frame");
 _Static_assert(AUDIO_CHANNELS == 2U, "Expected 2 audio slots");
 
 _Static_assert(SAI_BCLK_DIV >= 2U, "SAI BCLK divider must be >= 2");
@@ -61,7 +61,7 @@ static SerialConfig sercfg = {
 
 #define AUDIO_DMA_BUFFER_ATTR __attribute__((section(".ram_d2"), aligned(32)))
 
-static int32_t AUDIO_DMA_BUFFER_ATTR
+static int16_t AUDIO_DMA_BUFFER_ATTR
 audio_tx_buffer[AUDIO_BUFFER_HALVES][AUDIO_FRAME_SAMPLES][AUDIO_CHANNELS];
 
 /* -------------------------------------------------------------------------- */
@@ -110,19 +110,19 @@ static const SAIConfig sai_tx_config = {
   .size = (AUDIO_FRAME_SAMPLES * AUDIO_CHANNELS * AUDIO_BUFFER_HALVES),
   .end_cb = sai_tx_end_cb,
   .gcr = 0U,
-  .cr1 = SAI_xCR1_PRTCFG_0 |
-         SAI_xCR1_DS_1 | SAI_xCR1_DS_2 |
+  .cr1 = SAI_xCR1_PRTCFG_1 |
+         SAI_xCR1_DS_1 |
          SAI_xCR1_OUTDRIV |
          (SAI_MCKDIV << SAI_xCR1_MCKDIV_Pos),
   .cr2 = SAI_xCR2_FTH_0,
   .frcr = ((AUDIO_FRAME_BITS - 1U) << SAI_xFRCR_FRL_Pos) |
-          ((AUDIO_FRAME_BITS / 2U - 1U) << SAI_xFRCR_FSALL_Pos) |
+          ((AUDIO_SLOT_BITS - 1U) << SAI_xFRCR_FSALL_Pos) |
           SAI_xFRCR_FSOFF,
   .slotr = (0U << SAI_xSLOTR_FBOFF_Pos) |
-           SAI_xSLOTR_SLOTSZ_1 |
+           SAI_xSLOTR_SLOTSZ_0 |
            ((AUDIO_CHANNELS - 1U) << SAI_xSLOTR_NBSLOT_Pos) |
            0x0003U,
-  .dma_mode = STM32_DMA_CR_PSIZE_WORD | STM32_DMA_CR_MSIZE_WORD
+  .dma_mode = STM32_DMA_CR_PSIZE_HWORD | STM32_DMA_CR_MSIZE_HWORD
 };
 
 /* -------------------------------------------------------------------------- */
@@ -143,12 +143,12 @@ static void sai_tx_end_cb(SAIDriver *saip, bool half) {
 
 static void fill_half_buffer(uint8_t half) {
   size_t i;
-  int32_t (*buf)[AUDIO_CHANNELS] = audio_tx_buffer[half];
+  int16_t (*buf)[AUDIO_CHANNELS] = audio_tx_buffer[half];
 
   for (i = 0U; i < AUDIO_FRAME_SAMPLES; i++) {
-    int32_t sample = (test_phase < TEST_HALF_PERIOD_SAMPLES) ?
-                     (int32_t)TEST_AMPLITUDE :
-                     -(int32_t)TEST_AMPLITUDE;
+    int16_t sample = (test_phase < TEST_HALF_PERIOD_SAMPLES) ?
+                     (int16_t)TEST_AMPLITUDE :
+                     (int16_t)-TEST_AMPLITUDE;
 
     buf[i][0] = sample;
     buf[i][1] = sample;
